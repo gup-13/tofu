@@ -33,14 +33,16 @@ def save_parameters(params, file_path):
 # Note: The ordering of parameters should match the ordering of parameters in ".yaml" parameter file
 
 mapTable = [
+    # Format: [param name, dict name, key1 in dict, key2 in dict[key1]]
+    # i.e. param <-> dict[key1][key2]
     # PATHS
     ['main_config_input_dir','ezvars','inout','input-dir'],          # EZVARS['inout']['input-dir'] str
     ['main_config_temp_dir','ezvars','inout','tmp-dir'],             # EZVARS['inout']['tmp-dir']  str
     ['main_config_output_dir','ezvars','inout','output-dir'],        # EZVARS['inout']['output-dir'] str
-    ['main_config_darks_dir_name','none'],        # None str
-    ['main_config_flats_dir_name','none'],        # None str
-    ['main_config_tomo_dir_name','none'],         # None str
-    ['main_config_flats2_dir_name','none'],       # None str
+    ['main_config_darks_dir_name','ezvars', 'inout', 'darks-dir'],        # None str (EZVARS['inout']['darks-dir])
+    ['main_config_flats_dir_name','ezvars', 'inout', 'flats-dir'],        # None str (EZVARS['inout']['flats-dir])
+    ['main_config_tomo_dir_name','ezvars', 'inout', 'tomo-dir'],         # None str (EZVARS['inout']['tomo-dir])
+    ['main_config_flats2_dir_name','ezvars', 'inout', 'flats2-dir'],       # None str (EZVARS['inout']['flats2-dir])
     ['main_config_save_multipage_tiff','ezvars','inout','bigtiff-output'],   # EZVARS['inout']['bigtiff-output'] str
     
     # center of rotation parameters
@@ -110,7 +112,7 @@ mapTable = [
 
     
     ## Settings for using file/darks across multiple experiments
-    ['main_config_open_viewer','none'],                                         #None bool
+    ['main_config_open_viewer','ezvars','inout','open-viewer'],                 #None bool (EZVARS['inout']['open-viewer'])
     ['main_config_common_flats_darks','ezvars','inout','shared-flatsdarks'],    #EZVARS['inout']['shared-flatsdarks'] bool
     ['main_config_darks_path','ezvars','inout','path2-shared-darks'],           #EZVARS['inout']['path2-shared-darks'] str
     ['main_config_flats_path','ezvars','inout','path2-shared-flats'],           #EZVARS['inout']['path2-shared-flats'] str
@@ -148,90 +150,276 @@ mapTable = [
     ['advanced_optimize_slices_per_device','sections','general-reconstruction','num-gpu-threads']# '#SECTIONS['general-reconstruction']['num-gpu-threads'] (??) str -> int[1,inf]
 ]
 
-# 1. check if the parameter key has a matching dictionary entry (or does not exist in a dictionary, or parameter entry is not valid)
-# 2. use table to match key to their respective places -> what to do with stuff that uses param directly? Create new dictionary values?
-# 3. assign values in param to their respective dictionary entries
-# 4. use the `sections` and `ezvars` dictionaries instead of `args` list
-# 4a. Fill in `ezvars` and missing `sections` information -> what to put in "help"?; Create variable for min&max?;
-
-#Need to add in "help" and "default" for all values.
-# Do I perhaps need a min and max values? - restrict values? -> may need to define separately
-
 EZVARS = OrderedDict()
+
 EZVARS['inout'] = {
-    'input-dir': None,
-    'output-dir': None,
-    'tmp-dir' : None,
-    'bigtiff-output': None,
-    'input_ROI': None,
-    'clip_hist': None,
-    'preprocess': None,
-    'preprocess-command': None,
-    'output-ROI': None,
-    'output-x': None,
-    'output-width': None,
-    'output-y': None,
-    'output-height': None,
-    'dryrun': None,
-    'save-params': None,
-    'keep-tmp': None,
-    'shared-flatsdarks': None,
-    'path2-shared-darks': None,
-    'path2-shared-flats': None,
-    'shared-flats-after': None,
-    'path2-shared-flats-after': None,
+    'input-dir': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'output-dir': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'tmp-dir' : {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'darks-dir': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'flats-dir': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'tomo-dir': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'flats2-dir': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'bigtiff-output': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'input_ROI': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'clip_hist': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'preprocess': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'preprocess-command': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'output-ROI': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'output-x': {
+        'default': 0, 
+        'type': int, 
+        'help': "TODO"},
+    'output-width': {
+        'default': 0, 
+        'type': int, 
+        'help': "TODO"},
+    'output-y': {
+        'default': 0, 
+        'type': int, 
+        'help': "TODO"},
+    'output-height': {
+        'default': 0, 
+        'type': int, 
+        'help': "TODO"},
+    'dryrun': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'save-params': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'keep-tmp': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'open-viewer': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'shared-flatsdarks': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'path2-shared-darks': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'path2-shared-flats': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'shared-flats-after': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'path2-shared-flats-after': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
 }
 
 EZVARS['COR'] = {
-    'search-method': None,
-    'search-interval': None,
-    'patch-size': None,
-    'search-row': None,
-    'user-defined-ax': None,
-    'user-defined-dax': None,
+    'search-method': {
+        'default': 0, 
+        'type': int, 
+        'help': "TODO"},
+    'search-interval': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'patch-size': {
+        'default': 0, 
+        'type': int, 
+        'help': "TODO"},
+    'search-row': {
+        'default': 0, 
+        'type': int, 
+        'help': "TODO"},
+    'user-defined-ax': {
+        'default': 0.0, 
+        'type': float, 
+        'help': "TODO"},
+    'user-defined-dax': {
+        'default': 0.0, 
+        'type': float, 
+        'help': "TODO"},
 }
 
-EZVARS['filters'] = {'rm_spots': None}
+EZVARS['filters'] = {'rm_spots': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"}}
 
 EZVARS['RR'] = {
-    'enable': None,
-    'use-ufo': None,
-    'ufo-2d': None,
-    'sx': None,
-    'sy': None,
-    'spy-narrow-window': None,
-    'spy-rm-wide': None,
-    'spy-wide-window': None,
-    'spy-wide-SNR': None,
+    'enable': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'use-ufo': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'ufo-2d': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'sx': {
+        'default': 0, 
+        'type': int, 
+        'help': "TODO"},
+    'sy': {
+        'default': 0, 
+        'type': int, 
+        'help': "TODO"},
+    'spy-narrow-window': {
+        'default': 0, 
+        'type': int, 
+        'help': "TODO"},
+    'spy-rm-wide': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'spy-wide-window': {
+        'default': 0, 
+        'type': int, 
+        'help': "TODO"},
+    'spy-wide-SNR': {
+        'default': 0, 
+        'type': int, 
+        'help': "TODO"},
 }
 
 EZVARS['flat-correction'] = {
-    'smart-ffc': None,
-    'smart-ffc-method': None,
-    'eigen-pco-reps': None,
-    'eigen-pco-downsample': None,
-    'downsample': None,
-    'dark-scale': None,
-    'flat-scale': None,
+    'smart-ffc': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'smart-ffc-method': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'eigen-pco-reps': {
+        'default': 0, 
+        'type': int, 
+        'help': "TODO"},
+    'eigen-pco-downsample': {
+        'default': 0, 
+        'type': int, 
+        'help': "TODO"},
+    'downsample': {
+        'default': 0, 
+        'type': int, 
+        'help': "TODO"},
+    'dark-scale': {
+        'default': 0.0, 
+        'type': float, 
+        'help': "TODO"},
+    'flat-scale': {
+        'default': 0.0, 
+        'type': float, 
+        'help': "TODO"},
 }
 
 EZVARS['nlmdn'] = {
-    'do-after-reco': None,
-    'input-dir': None,
-    'input-is-1file': None,
-    'output_pattern': None,
-    'bigtiff_output': None,
-    'search-radius': None,
-    'patch-radius': None,
-    'h': None,
-    'sigma': None,
-    'window': None,
-    'fast': None,
-    'estimate-sigma': None,
-    'dryrun': None,
+    'do-after-reco': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'input-dir': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'input-is-1file': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'output_pattern': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'bigtiff_output': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'search-radius': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'patch-radius': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'h': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'sigma': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'window': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
+    'fast': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'estimate-sigma': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'dryrun': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
 }
 
 
 EZVARS['advanced'] = {
-    'more-reco-params': None,
+    'more-reco-params': {
+        'default': "", 
+        'type': str, 
+        'help': "TODO"},
 }
