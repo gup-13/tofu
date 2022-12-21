@@ -1,6 +1,7 @@
 # This file is used to share params as a global variable
 import yaml
 from collections import OrderedDict
+from tofu.util import restrict_value
 
 #TODO Make good structure to store parameters
 # similar to tofu? and
@@ -207,20 +208,20 @@ EZVARS['inout'] = {
         'help': "TODO"},
     'output-x': {
         'default': 0, 
-        'type': int, 
-        'help': "TODO"},
+        'type': restrict_value((0,None),dtype=int), 
+        'help': "Crop slices: x"},
     'output-width': {
         'default': 0, 
-        'type': int, 
-        'help': "TODO"},
+        'type': restrict_value((0,None),dtype=int), 
+        'help': "Crop slices: width"},
     'output-y': {
         'default': 0, 
-        'type': int, 
-        'help': "TODO"},
+        'type': restrict_value((0,None),dtype=int), 
+        'help': "Crop slices: y"},
     'output-height': {
         'default': 0, 
-        'type': int, 
-        'help': "TODO"},
+        'type': restrict_value((0,None),dtype=int), 
+        'help': "Crop slices: height"},
     'dryrun': {
         'default': False, 
         'type': bool, 
@@ -270,16 +271,16 @@ EZVARS['COR'] = {
         'help': "TODO"},
     'patch-size': {
         'default': 0, 
-        'type': int, 
-        'help': "TODO"},
+        'type': restrict_value((0,None),dtype=int), 
+        'help': "Size of reconstructed patch [pixel]"},
     'search-row': {
         'default': 0, 
-        'type': int, 
-        'help': "TODO"},
+        'type': restrict_value((0,None), dtype=int), 
+        'help': "Search in slice from row number"},
     'user-defined-ax': {
         'default': 0.0, 
-        'type': float, 
-        'help': "TODO"},
+        'type': restrict_value((0,None),dtype=float), 
+        'help': "Axis is in column No [pixel]"},
     'user-defined-dax': {
         'default': 0.0, 
         'type': float, 
@@ -306,30 +307,32 @@ EZVARS['RR'] = {
         'help': "TODO"},
     'sx': {
         'default': 0, 
-        'type': int, 
-        'help': "TODO"},
+        'type': restrict_value((0,None),dtype=int), 
+        'help': "ufo ring-removal sigma horizontal"},
     'sy': {
         'default': 0, 
-        'type': int, 
-        'help': "TODO"},
+        'type': restrict_value((0,None),dtype=int), 
+        'help': "ufo ring-removal sigma vertical"},
     'spy-narrow-window': {
         'default': 0, 
-        'type': int, 
-        'help': "TODO"},
+        'type': restrict_value((0,None),dtype=int), 
+        'help': "window size"},
     'spy-rm-wide': {
         'default': False, 
         'type': bool, 
         'help': "TODO"},
     'spy-wide-window': {
         'default': 0, 
-        'type': int, 
-        'help': "TODO"},
+        'type': restrict_value((0,None),dtype=int), 
+        'help': "wind"},
     'spy-wide-SNR': {
         'default': 0, 
-        'type': int, 
-        'help': "TODO"},
+        'type': restrict_value((0,None),dtype=int), 
+        'help': "SNR"},
 }
 
+#TODO ADD CHECKING NLMDN SETTINGS
+#TODO ADD CHECKING FOR ADVANCED SETTINGS
 EZVARS['flat-correction'] = {
     'smart-ffc': {
         'default': False, 
@@ -341,16 +344,16 @@ EZVARS['flat-correction'] = {
         'help': "TODO"},
     'eigen-pco-reps': {
         'default': 0, 
-        'type': int, 
-        'help': "TODO"},
+        'type': restrict_value((0,None),dtype=int), 
+        'help': "Flat Field Correction: Eigen PCO Repetitions"},
     'eigen-pco-downsample': {
         'default': 0, 
-        'type': int, 
-        'help': "TODO"},
+        'type': restrict_value((0,None),dtype=int), 
+        'help': "Flat Field Correction: Eigen PCO Downsample"},
     'downsample': {
         'default': 0, 
-        'type': int, 
-        'help': "TODO"},
+        'type': restrict_value((0,None),dtype=int), 
+        'help': "Flat Field Correction: Downsample"},
     'dark-scale': {
         'default': 0.0, 
         'type': float, 

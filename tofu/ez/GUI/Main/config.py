@@ -735,106 +735,110 @@ class ConfigGroup(QGroupBox):
         # Search rotation: main_cor_axis_search_interval
 
         # Search in slice: main_cor_search_row_start
-        if int(parameters.params['main_cor_search_row_start']) < 0:
-            raise InvalidInputError("Value out of range for: Search in slice from row number")
+        # if int(parameters.params['main_cor_search_row_start']) < 0:
+        #     raise InvalidInputError("Value out of range for: Search in slice from row number")
 
         # Size of reconstructed: main_cor_recon_patch_size
-        if int(parameters.params['main_cor_recon_patch_size']) < 0:
-            raise InvalidInputError("Value out of range for: Size of reconstructed patch [pixel]")
+        # if int(parameters.params['main_cor_recon_patch_size']) < 0:
+        #     raise InvalidInputError("Value out of range for: Size of reconstructed patch [pixel]")
 
         # Axis is in column No: main_cor_axis_column
-        if float(parameters.params['main_cor_axis_column']) < 0:
-            raise InvalidInputError("Value out of range for: Axis is in column No [pixel]")
+        # if float(parameters.params['main_cor_axis_column']) < 0:
+        #     raise InvalidInputError("Value out of range for: Axis is in column No [pixel]")
 
         # Threshold: main_filters_remove_spots_threshold
-        if int(parameters.params['main_filters_remove_spots_threshold']) < 0:
-            raise InvalidInputError("Value out of range for: Threshold (prominence of the spot) [counts]")
+        # if int(parameters.params['main_filters_remove_spots_threshold']) < 0:
+        #     raise InvalidInputError("Value out of range for: Threshold (prominence of the spot) [counts]")
 
         # Spot blur: main_filters_remove_spots_blur_sigma
-        if int(parameters.params['main_filters_remove_spots_blur_sigma']) < 0:
-            raise InvalidInputError("Value out of range for: Spot blur. sigma [pixels]")
+        # if int(parameters.params['main_filters_remove_spots_blur_sigma']) < 0:
+        #     raise InvalidInputError("Value out of range for: Spot blur. sigma [pixels]")
 
         # Sigma: e_sig_hor
-        if int(parameters.params['main_filters_ring_removal_ufo_lpf_sigma_horizontal']) < 0:
-            raise InvalidInputError("Value out of range for: ufo ring-removal sigma horizontal")
+        # if int(parameters.params['main_filters_ring_removal_ufo_lpf_sigma_horizontal']) < 0:
+        #     raise InvalidInputError("Value out of range for: ufo ring-removal sigma horizontal")
 
         # Sigma: e_sig_ver
-        if int(parameters.params['main_filters_ring_removal_ufo_lpf_sigma_vertical']) < 0:
-            raise InvalidInputError("Value out of range for: ufo ring-removal sigma vertical")
+        # if int(parameters.params['main_filters_ring_removal_ufo_lpf_sigma_vertical']) < 0:
+        #     raise InvalidInputError("Value out of range for: ufo ring-removal sigma vertical")
 
         # Window size: main_filters_ring_removal_sarepy_window_size
-        if int(parameters.params['main_filters_ring_removal_sarepy_window_size']) < 0:
-            raise InvalidInputError("Value out of range for: window size")
+        # if int(parameters.params['main_filters_ring_removal_sarepy_window_size']) < 0:
+        #     raise InvalidInputError("Value out of range for: window size")
 
         # Wind: main_filters_ring_removal_sarepy_window
-        if int(parameters.params['main_filters_ring_removal_sarepy_window']) < 0:
-            raise InvalidInputError("Value out of range for: wind")
+        # if int(parameters.params['main_filters_ring_removal_sarepy_window']) < 0:
+        #     raise InvalidInputError("Value out of range for: wind")
 
         # SNR: main_filters_ring_removal_sarepy_SNR
-        if int(parameters.params['main_filters_ring_removal_sarepy_SNR']) < 0:
-            raise InvalidInputError("Value out of range for: SNR")
+        # if int(parameters.params['main_filters_ring_removal_sarepy_SNR']) < 0:
+        #     raise InvalidInputError("Value out of range for: SNR")
 
         # Photon energy: main_pr_photon_energy
-        if float(parameters.params['main_pr_photon_energy']) < 0:
-            raise InvalidInputError("Value out of range for: Photon energy [keV]")
+        # if float(parameters.params['main_pr_photon_energy']) < 0:
+        #     raise InvalidInputError("Value out of range for: Photon energy [keV]")
 
         # Pixel size: main_pr_pixel_size
-        if float(parameters.params['main_pr_pixel_size']) < 0:
-            raise InvalidInputError("Value out of range for: Pixel size [micron]")
+        # if float(parameters.params['main_pr_pixel_size']) < 0:
+        #     raise InvalidInputError("Value out of range for: Pixel size [micron]")
 
         # Sample detector distance: main_pr_detector_distance
+        # Note: Can't restrict_value for tuples -> one value becomes two values (x,y)?
         if float(parameters.params['main_pr_detector_distance']) < 0:
             raise InvalidInputError("Value out of range for: Sample-detector distance [m]")
 
-        # Delta/beta ratio: main_pr_delta_beta_ratio
-        if int(parameters.params['main_pr_delta_beta_ratio']) < 0:
-            raise InvalidInputError("Value out of range for: Delta/beta ratio: (try default if unsure)")
+        # # Delta/beta ratio: main_pr_delta_beta_ratio
+        # Note: Has diff comment?
+        # if int(parameters.params['main_pr_delta_beta_ratio']) < 0:
+        #     raise InvalidInputError("Value out of range for: Delta/beta ratio: (try default if unsure)")
 
         # First row in projections: main_region_first_row
-        if int(parameters.params['main_region_first_row']) < 0:
-            raise InvalidInputError("Value out of range for: First row in projections")
+        # Note: diff comment
+        # if int(parameters.params['main_region_first_row']) < 0:
+        #     raise InvalidInputError("Value out of range for: First row in projections")
 
         # Number of rows: main_region_number_rows
-        if int(parameters.params['main_region_number_rows']) < 0:
-            raise InvalidInputError("Value out of range for: Number of rows (ROI height)")
+        # if int(parameters.params['main_region_number_rows']) < 0:
+        #     raise InvalidInputError("Value out of range for: Number of rows (ROI height)")
 
-        # Reconstruct every Nth row: main_region_nth_row
-        if int(parameters.params['main_region_nth_row']) < 0:
-            raise InvalidInputError("Value out of range for: Reconstruct every Nth row")
+        # # Reconstruct every Nth row: main_region_nth_row
+        # if int(parameters.params['main_region_nth_row']) < 0:
+        #     raise InvalidInputError("Value out of range for: Reconstruct every Nth row")
 
         # Can be negative when 16-bit selected
         # Min value: main_region_histogram_min
         #if float(parameters.params['main_region_histogram_min']) < 0:
         #    raise InvalidInputError("Value out of range for: Min value in 32-bit histogram")
 
-        # Max value: main_region_histogram_max
-        if float(parameters.params['main_region_histogram_max']) < 0:
-            raise InvalidInputError("Value out of range for: Max value in 32-bit histogram")
+        # # Max value: main_region_histogram_max
+        # # Note: Didn't cap because it might also be negative for 16 bit
+        # if float(parameters.params['main_region_histogram_max']) < 0:
+        #     raise InvalidInputError("Value out of range for: Max value in 32-bit histogram")
 
-        # x: main_region_crop_x
-        if int(parameters.params['main_region_crop_x']) < 0:
-            raise InvalidInputError("Value out of range for: Crop slices: x")
+        # # x: main_region_crop_x
+        # if int(parameters.params['main_region_crop_x']) < 0:
+        #     raise InvalidInputError("Value out of range for: Crop slices: x")
 
-        # width: main_region_crop_width
-        if int(parameters.params['main_region_crop_width']) < 0:
-            raise InvalidInputError("Value out of range for: Crop slices: width")
+        # # width: main_region_crop_width
+        # if int(parameters.params['main_region_crop_width']) < 0:
+        #     raise InvalidInputError("Value out of range for: Crop slices: width")
 
-        # y: main_region_crop_y
-        if int(parameters.params['main_region_crop_y']) < 0:
-            raise InvalidInputError("Value out of range for: Crop slices: y")
+        # # y: main_region_crop_y
+        # if int(parameters.params['main_region_crop_y']) < 0:
+        #     raise InvalidInputError("Value out of range for: Crop slices: y")
 
-        # height: main_region_crop_height
-        if int(parameters.params['main_region_crop_height']) < 0:
-            raise InvalidInputError("Value out of range for: Crop slices: height")
+        # # height: main_region_crop_height
+        # if int(parameters.params['main_region_crop_height']) < 0:
+        #     raise InvalidInputError("Value out of range for: Crop slices: height")
 
-        if int(parameters.params['advanced_ffc_eigen_pco_reps']) < 0:
-            raise InvalidInputError("Value out of range for: Flat Field Correction: Eigen PCO Repetitions")
+        # if int(parameters.params['advanced_ffc_eigen_pco_reps']) < 0:
+        #     raise InvalidInputError("Value out of range for: Flat Field Correction: Eigen PCO Repetitions")
 
-        if int(parameters.params['advanced_ffc_eigen_pco_downsample']) < 0:
-            raise InvalidInputError("Value out of range for: Flat Field Correction: Eigen PCO Downsample")
+        # if int(parameters.params['advanced_ffc_eigen_pco_downsample']) < 0:
+        #     raise InvalidInputError("Value out of range for: Flat Field Correction: Eigen PCO Downsample")
 
-        if int(parameters.params['advanced_ffc_downsample']) < 0:
-            raise InvalidInputError("Value out of range for: Flat Field Correction: Downsample")
+        # if int(parameters.params['advanced_ffc_downsample']) < 0:
+        #     raise InvalidInputError("Value out of range for: Flat Field Correction: Downsample")
 
         # Can be negative value
         # Optional: rotate volume: main_region_rotate_volume_clock
@@ -842,16 +846,16 @@ class ConfigGroup(QGroupBox):
         #    raise InvalidInputError("Value out of range for: Optional: rotate volume clock by [deg]")
         #TODO ADD CHECKING NLMDN SETTINGS
         #TODO ADD CHECKING FOR ADVANCED SETTINGS
-        '''
-        if int(parameters.params['e_adv_rotation_range']) < 0:
-            raise InvalidInputError("Advanced: Rotation range must be greater than or equal to zero")
+        # '''
+        # if int(parameters.params['e_adv_rotation_range']) < 0:
+        #     raise InvalidInputError("Advanced: Rotation range must be greater than or equal to zero")
 
-        if float(parameters.params['advanced_advtofu_lamino_angle']) < 0 or float(parameters.params['advanced_advtofu_lamino_angle']) > 90:
-            raise InvalidInputError("Advanced: Lamino angle must be a float between 0 and 90")
+        # if float(parameters.params['advanced_advtofu_lamino_angle']) < 0 or float(parameters.params['advanced_advtofu_lamino_angle']) > 90:
+        #     raise InvalidInputError("Advanced: Lamino angle must be a float between 0 and 90")
 
-        if float(parameters.params['advanced_optimize_slice_mem_coeff']) < 0 or float(parameters.params['advanced_optimize_slice_mem_coeff']) > 1:
-            raise InvalidInputError("Advanced: Slice memory coefficient must be between 0 and 1")
-        '''
+        # if float(parameters.params['advanced_optimize_slice_mem_coeff']) < 0 or float(parameters.params['advanced_optimize_slice_mem_coeff']) > 1:
+        #     raise InvalidInputError("Advanced: Slice memory coefficient must be between 0 and 1")
+        # '''
 
     def get_fdt_names(self):
         DIRTYP = []
