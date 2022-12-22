@@ -33,7 +33,7 @@ def save_parameters(params, file_path):
 # Mapping table: [param name, dictionary name, key1, key2] -> dictionary[key1][key2]
 # Note: The ordering of parameters should match the ordering of parameters in ".yaml" parameter file
 
-mapTable = [
+MAP_TABLE = [
     # Format: [param name, dict name, key1 in dict, key2 in dict[key1]]
     # i.e. param <-> dict[key1][key2]
     # PATHS

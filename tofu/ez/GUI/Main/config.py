@@ -22,6 +22,8 @@ from tofu.ez.yaml_in_out import Yaml_IO
 from tofu.ez.GUI.message_dialog import warning_message
 
 import tofu.ez.params as parameters
+from tofu.config import SECTIONS
+from tofu.ez.params import EZVARS, MAP_TABLE
 
 
 #TODO Get rid of the old args structure and store all parameters
@@ -623,6 +625,41 @@ class ConfigGroup(QGroupBox):
         run_reco = partial(self.run_reconstruction, parameters.params, batch_run=False)
         QTimer.singleShot(100, run_reco)
         #self.run_reconstruction(parameters.params, batch_run=False)
+        
+    def createMapFromParamsToDict():
+        """
+        Creates a map from parameters to dictionary entry 
+        (e.g. result['<parameter name>'] -> dictionary value
+        """
+        result = {}
+        for key in MAP_TABLE:
+            if(len(key) == 4):
+                #Note: Dictionary entries are automatically updated in the map as the program runs
+                if(key[1] == 'ezvars' and key[2] in EZVARS and key[3] in EZVARS[key[2]]):
+                    result[key[0]] = EZVARS[key[2]][key[3]]     #Updates as dictionary updates
+                elif(key[1] == 'sections' and key[2] in SECTIONS and key[3] in SECTIONS[key[2]]):
+                    result[key[0]] = SECTIONS[key[2]][key[3]] #Updates as dictionary updates
+                else:
+                    LOG.debug("Can't create dictionary entry: "+ key[1]+ "["+key[2]+"]"+"["+key[3]+"]"+": "+ key[0]
+                              +". Does the dictinary entry exist in code?")
+            else:
+                LOG.debug("Key" + key + "in MAP_TABLE does not have exactly 4 elements.")
+        return result
+    
+    def createMapFromDictToParams():
+        """
+        Creates a map from parameters to dictionary entry 
+        (e.g. result['<dict_name>'][dict_key1][dict_key2] -> parameter name
+        """
+        result = {}
+        for key in MAP_TABLE:
+            if(len(key) == 4):
+                if(key[1] not in result):            
+                    result[key[1]] = {}  #create new dictionary entry
+                if(key[2] not in result[key[1]]):
+                    result[key[1]][key[2]] = {}  #create new dictionary entry
+                result[key[1]][key[2]][key[3]] = key[0]   # assign param to dictionary entry
+        return result
 
     def run_reconstruction(self, params, batch_run):
         try:
