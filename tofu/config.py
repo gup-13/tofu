@@ -3,7 +3,7 @@ import sys
 import logging
 import configparser as configparser
 from collections import OrderedDict
-from tofu.util import convert_filesize, restrict_value, tupleize, range_list
+from tofu.util import convert_filesize, restrict_value, tupleize, restrict_tupleize, range_list
 
 
 LOG = logging.getLogger(__name__)
@@ -158,7 +158,7 @@ SECTIONS['retrieve-phase'] = {
         'help': "Photon energy [keV]"},
     'propagation-distance': {
         'default': "0",
-        'type': tupleize(),
+        'type': restrict_tupleize((0,None)),
         'help': ("Sample <-> detector distance (if one value, then use the same for x and y "
                  "direction, otherwise first specifies x and second y direction) [m]")},
     'pixel-size': {

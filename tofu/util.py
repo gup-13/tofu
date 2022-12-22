@@ -133,6 +133,17 @@ def tupleize(num_items=None, conv=float, dtype=tuple):
 
     return split_values
 
+def restrict_tupleize(limits, num_items=None, conv=float, dtype=tuple):
+    """Convert a string of numbers separated by commas to tuple with *dtype* and make sure it is within *limits* (included) specified as tuple
+    (min, max). If one of the limits values is None it is ignored."""
+    
+    def check(value):
+        results = tupleize(num_items, conv, dtype)(value)
+        for v in results:
+            restrict_value(limits, dtype=conv)(v)
+        return results
+    return check
+
 
 def next_power_of_two(number):
     """Compute the next power of two of the *number*."""
