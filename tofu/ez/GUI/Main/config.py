@@ -626,10 +626,10 @@ class ConfigGroup(QGroupBox):
         QTimer.singleShot(100, run_reco)
         #self.run_reconstruction(parameters.params, batch_run=False)
         
-    def createMapFromParamsToDict():
+    def createMapFromParamsToDictEntry(self):
         """
         Creates a map from parameters to dictionary entry 
-        (e.g. result['<parameter name>'] -> dictionary value
+        (e.g. result['<parameter name>'] -> dictionary entry
         """
         result = {}
         for key in MAP_TABLE:
@@ -641,25 +641,72 @@ class ConfigGroup(QGroupBox):
                     result[key[0]] = SECTIONS[key[2]][key[3]] #Updates as dictionary updates
                 else:
                     LOG.debug("Can't create dictionary entry: "+ key[1]+ "["+key[2]+"]"+"["+key[3]+"]"+": "+ key[0]
-                              +". Does the dictinary entry exist in code?")
+                              +".\n  Is the parameter spelled correctly?")
             else:
                 LOG.debug("Key" + key + "in MAP_TABLE does not have exactly 4 elements.")
         return result
     
-    def createMapFromDictToParams():
+    def createMapFromParamsToDictKeys(self):
         """
         Creates a map from parameters to dictionary entry 
-        (e.g. result['<dict_name>'][dict_key1][dict_key2] -> parameter name
+        (e.g. result['<parameter name>'] -> {dict name, key1 in dict, key2 in dict[key1]}
         """
         result = {}
         for key in MAP_TABLE:
             if(len(key) == 4):
-                if(key[1] not in result):            
-                    result[key[1]] = {}  #create new dictionary entry
-                if(key[2] not in result[key[1]]):
-                    result[key[1]][key[2]] = {}  #create new dictionary entry
-                result[key[1]][key[2]][key[3]] = key[0]   # assign param to dictionary entry
+                result[key[0]] = [key[1],[key[2],key[3]]]
+            else:
+                LOG.debug("Key" + key + "in MAP_TABLE does not have exactly 4 elements.")
         return result
+        
+    
+    def reset_values_dicts(self):
+        """
+        Set all the values of dictionary entries to its default
+        """
+        ## TODO: Add to "import_settings_button_pressed"
+        for key1 in EZVARS:
+            for key2 in EZVARS[key1]:
+                m = EZVARS[key1][key2]
+                m['value'] = m['default']
+                
+        for key1 in SECTIONS:
+            for key2 in SECTIONS[key1]:
+                m = SECTIONS[key1][key2]
+                m['value'] = m['default']
+    
+    def import_params_to_dicts(self, params):
+        """
+        Import parameter values into their corresponding dictionary entries
+        """
+        
+        ## TODO: Add to "import_settings_button_pressed"
+        # Note: This is a brute-force method to find a key, which should be acceptable for a 
+        #   small number of parameters that is only updated when a file is imported
+        mapToDictEntry = self.createMapFromParamsToDictEntry()
+        for key in params.keys():
+            m = mapToDictEntry[key]
+            if(key in m):
+                try:
+                    m['value'] = m['type'](params[key])
+                except:
+                    raise InvalidInputError("Parameter \"" + params[key] + "\" cannot be converted to the type: " + m['type'])
+            else:
+                LOG.debug("No mapping to import parameter \'" + key + "\'.")
+                
+    def update_params(self):
+        """
+        Update parameter values from their corresponding dictionary entries
+        """
+        # ##TODO: Add to "export_settings_button_pressed"
+        # ##TODO: Consider updating the tuples to their string forms
+        # mapToDictEntry = self.createMapFromParamsToDictEntry()
+        # for key in params.keys():
+        #     m = mapToDictEntry[key]
+        #     if(key in m):
+        #         params[key] =
+        #         m['value'] = m['type'](params[key])
+    
 
     def run_reconstruction(self, params, batch_run):
         try:
