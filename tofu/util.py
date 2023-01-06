@@ -144,6 +144,26 @@ def restrict_tupleize(limits, num_items=None, conv=float, dtype=tuple):
         return results
     return check
 
+def reverse_tupleize(num_items=None, conv=float):
+    """Convert a tuple into a comma-separted string of *value*"""
+    def combine_to_string(value):
+        """Combine a tuple of numbers into a comma-separated string"""
+        result = ""
+        
+        if num_items and len(result) != num_items:
+            # A certain number of output is expected
+            raise argparse.ArgumentTypeError('Expected {} items'.format(num_items))
+        
+        if(len(value) == 0):
+            # No tuple to convert into string
+            return result
+        
+        # Tuple with non-zero length
+        for v in value:
+            result = result + "," + str(conv(v))
+        result = result[1:] # Remove the erroneous first period
+        return result
+    return combine_to_string
 
 def next_power_of_two(number):
     """Compute the next power of two of the *number*."""
@@ -164,6 +184,7 @@ def read_image(filename):
         return edf.data
     else:
         raise ValueError('Unsupported image format')
+    
 
 
 def get_image_shape(filename):

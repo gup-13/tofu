@@ -35,7 +35,7 @@ def save_parameters(params, file_path):
 
 MAP_TABLE = [
     # Format: [param name, dict name, key1 in dict, key2 in dict[key1]]
-    # i.e. param <-> dict[key1][key2]
+    # i.e. param name <-> dict[key1][key2]
     # PATHS
     ['main_config_input_dir','ezvars','inout','input-dir'],          # EZVARS['inout']['input-dir'] str
     ['main_config_temp_dir','ezvars','inout','tmp-dir'],             # EZVARS['inout']['tmp-dir']  str
