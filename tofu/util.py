@@ -121,6 +121,10 @@ def tupleize(num_items=None, conv=float, dtype=tuple):
     """
     def split_values(value):
         """Convert comma-separated string *value* to a tuple of numbers."""
+        if isinstance(value, float) or isinstance(value,int):
+            return dtype([value])
+        if not value:   #empty string
+            return dtype([0.0])
         try:
             result = dtype([conv(x) for x in value.split(',')])
         except:

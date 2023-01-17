@@ -148,6 +148,10 @@ SECTIONS['flat-correction'] = {
         'help': 'Do absorption correction'}}
 
 SECTIONS['retrieve-phase'] = {
+    'enable': {
+        'default': False,
+        'type': bool,
+        'help': "Enable phase retrieval"},
     'retrieval-method': {
         'default': 'tie',
         'choices': ['tie', 'ctf', 'qp', 'qp2'],
@@ -464,7 +468,7 @@ SECTIONS['cone-beam-weight'] = {
         'default': "0",
         'type': tupleize(),
         'help': "Z rotation axis position on a projection [pixels]"},
-    'axis-angle-x': {
+    'axis-angle-x': {   
         'default': "0",
         'type': tupleize(dtype=list),
         'help': "Rotation axis rotation around the x axis"

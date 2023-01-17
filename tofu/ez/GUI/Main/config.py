@@ -795,6 +795,22 @@ class ConfigGroup(QGroupBox):
                            params['advanced_optimize_num_gpus'],
                            params['advanced_optimize_slices_per_device']
                            )
+            
+            map_param_to_dict_entries = self.createMapFromParamsToDictEntry()
+            for p in params:
+                
+                #TODO Clarify whether dark-scale and flat-scale are float or strings
+                dict_entry = map_param_to_dict_entries[str(p)]
+                #print(str(p),dict_entry[str(p)],params[str(p)])
+                if params[str(p)] == '':
+                    # take default value if empty string
+                    dict_entry['value'] = dict_entry['default']
+                elif str(p) == "advanced_optimize_verbose_console":
+                    #Note: "verbose" does not allow assigning 'type' into the dictionary entry
+                    dict_entry['value'] = bool(params[str(p)])
+                else:
+                    dict_entry['value'] = dict_entry['type'](params[str(p)])
+                #print(str(p), dict_entry['value'])
 
             execute_reconstruction(args, self.get_fdt_names())
             if batch_run is False:

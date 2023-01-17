@@ -136,9 +136,9 @@ MAP_TABLE = [
     ['advanced_nlmdn_dry_run','ezvars','nlmdn','dryrun'],                       #EZVARS['nlmdn']['dryrun'] bool
     
     ## Advanced Settings
-    ['advanced_advtofu_lamino_angle','sections','general-reconstruction','axis-angle-x'],           #SECTIONS['general-reconstruction']['axis-angle-x'] str -> tupleize(dtype=list) (str?)
+    ['advanced_advtofu_lamino_angle','sections','cone-beam-weight','axis-angle-x'],           #SECTIONS['general-reconstruction']['axis-angle-x'] str -> tupleize(dtype=list) (str?)
     ['advanced_adv_tofu_z_axis_rotation','sections','general-reconstruction','overall-angle'],      #SECTIONS['general-reconstruction']['overall-angle'] str -> (N/A) (in 'z-parameter'?) 
-    ['advanced_advtofu_center_position_z','sections','general-reconstruction','center-position-z'], #SECTIONS['general-reconstruction']['center-position-z'] str -> (N/A) (in 'z-parameter'?)
+    ['advanced_advtofu_center_position_z','sections','cone-beam-weight','center-position-z'], #SECTIONS['general-reconstruction']['center-position-z'] str -> (N/A) (in 'z-parameter'?)
     ['advanced_advtofu_y_axis_rotation','sections','general-reconstruction','axis-angle-y'],        #SECTIONS['general-reconstruction']['axis-angle-y'] str -> tupleize(dtype=list) (str?)
     ['advanced_advtofu_aux_ffc_dark_scale','sections','flat-correction','dark-scale'],              #SECTIONS['flat-correction']['dark-scale'] str -> float
     ['advanced_advtofu_aux_ffc_flat_scale','sections','flat-correction','flat-scale'],              #SECTIONS['flat-correction']['flat-scale'] str -> float
@@ -148,7 +148,10 @@ MAP_TABLE = [
     ['advanced_optimize_verbose_console','sections','general','verbose'],                           #SECTIONS['general']['verbose'] bool -> None (bool)
     ['advanced_optimize_slice_mem_coeff','sections','general-reconstruction','slice-memory-coeff'], #SECTIONS['general-reconstruction']['slice-memory-coeff'] str -> None(float) [0.01, 0.95]
     ['advanced_optimize_num_gpus','sections','general-reconstruction','data-splitting-policy'],     #SECTIONS['general-reconstruction']['data-splitting-policy'] str -> str
-    ['advanced_optimize_slices_per_device','sections','general-reconstruction','num-gpu-threads']# '#SECTIONS['general-reconstruction']['num-gpu-threads'] (??) str -> int[1,inf]
+    ['advanced_optimize_slices_per_device','sections','general-reconstruction','num-gpu-threads'],# '#SECTIONS['general-reconstruction']['num-gpu-threads'] (??) str -> int[1,inf]
+    
+    #Others
+    ['parameters_type', 'ezvars', 'advanced', 'parameter-type']
 ]
 
 EZVARS = OrderedDict()
@@ -422,7 +425,11 @@ EZVARS['nlmdn'] = {
 
 EZVARS['advanced'] = {
     'more-reco-params': {
+        'default': False, 
+        'type': bool, 
+        'help': "TODO"},
+    'parameter-type': {
         'default': "", 
         'type': str, 
-        'help': "TODO"},
+        'help': "TODO"}
 }
