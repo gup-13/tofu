@@ -795,23 +795,43 @@ class ConfigGroup(QGroupBox):
                            params['advanced_optimize_num_gpus'],
                            params['advanced_optimize_slices_per_device']
                            )
-            
+        
+            #################
+            LOG.debug("Entering parameter values into dictionary entries...")
+            # Insert values of parameter files into dictionary entries
             map_param_to_dict_entries = self.createMapFromParamsToDictEntry()
             for p in params:
-                
-                #TODO Clarify whether dark-scale and flat-scale are float or strings
+                LOG.debug(str(p), params[str(p)])
                 dict_entry = map_param_to_dict_entries[str(p)]
-                #print(str(p),dict_entry[str(p)],params[str(p)])
-                if params[str(p)] == '':
-                    # take default value if empty string
-                    dict_entry['value'] = dict_entry['default']
-                elif str(p) == "advanced_optimize_verbose_console":
-                    #Note: "verbose" does not allow assigning 'type' into the dictionary entry
+                if 'action' in dict_entry:
+                    # no 'type' can be defined in these entries
                     dict_entry['value'] = bool(params[str(p)])
+                elif params[str(p)] == '':
+                    # takes default value if empty string
+                    dict_entry['value'] = dict_entry['type'](dict_entry['default'])
                 else:
                     dict_entry['value'] = dict_entry['type'](params[str(p)])
-                #print(str(p), dict_entry['value'])
-
+                #print(str(p), params[str(p)], dict_entry['value'])
+            
+            # Place default value in each setting
+            # Note: Due to "verbose" not being able to have a 'type', 
+            #   this method is more robust overwriting from default values
+            for key1 in EZVARS.keys():
+                for key2 in EZVARS[key1].keys():
+                    dict_entry = EZVARS[key1][key2]
+                    if "value" not in dict_entry:
+                        dict_entry['value'] = dict_entry['type'](dict_entry['default'])
+            
+            for key1 in SECTIONS.keys():
+                for key2 in SECTIONS[key1].keys():
+                    dict_entry = SECTIONS[key1][key2]
+                    if "value" not in dict_entry:
+                        if "action" in dict_entry:
+                            dict_entry['value'] = bool(dict_entry['default'])
+                        else:    
+                            dict_entry['value'] = dict_entry['type'](dict_entry['default'])
+            ####################
+            
             execute_reconstruction(args, self.get_fdt_names())
             if batch_run is False:
                 msg = "Done. See output in terminal for details."

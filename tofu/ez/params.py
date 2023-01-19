@@ -143,6 +143,9 @@ MAP_TABLE = [
     ['advanced_advtofu_aux_ffc_dark_scale','sections','flat-correction','dark-scale'],              #SECTIONS['flat-correction']['dark-scale'] str -> float
     ['advanced_advtofu_aux_ffc_flat_scale','sections','flat-correction','flat-scale'],              #SECTIONS['flat-correction']['flat-scale'] str -> float
     ['advanced_advtofu_extended_settings','ezvars','advanced','more-reco-params'],                  #EZVARS['advanced']['more-reco-params'] bool
+    
+    ['advanced_advtofu_aux_ffc_dark_scale','ezvars','flat-correction','dark-scale'], #(?) Same as SECTION?
+    ['advanced_advtofu_aux_ffc_flat_scale','ezvars','flat-correction','flat-scale'], #(?) Same as SECTION?
             
     ## Optimizations
     ['advanced_optimize_verbose_console','sections','general','verbose'],                           #SECTIONS['general']['verbose'] bool -> None (bool)
@@ -358,13 +361,13 @@ EZVARS['flat-correction'] = {
         'type': restrict_value((0,None),dtype=int), 
         'help': "Flat Field Correction: Downsample"},
     'dark-scale': {
-        'default': 0.0, 
+        'default': 1.0, 
         'type': float, 
-        'help': "TODO"},
+        'help': "Scaling dark"}, #(?) has the same name in SECTION
     'flat-scale': {
-        'default': 0.0, 
+        'default': 1.0, 
         'type': float, 
-        'help': "TODO"},
+        'help': "Scaling falt"}, #(?) has the same name in SECTION
 }
 
 EZVARS['nlmdn'] = {

@@ -154,6 +154,7 @@ SECTIONS['retrieve-phase'] = {
         'help': "Enable phase retrieval"},
     'retrieval-method': {
         'default': 'tie',
+        'type': str,
         'choices': ['tie', 'ctf', 'qp', 'qp2'],
         'help': "Phase retrieval method"},
     'energy': {
@@ -189,6 +190,7 @@ SECTIONS['retrieve-phase'] = {
         'help': "Padded height used for phase retrieval"},
     'retrieval-padding-mode': {
         'choices': ['none', 'clamp', 'clamp_to_edge', 'repeat', 'mirrored_repeat'],
+        'type': str,
         'default': 'clamp_to_edge',
         'help': "Padded values assignment"},
     'thresholding-rate': {
@@ -213,7 +215,7 @@ SECTIONS['reconstruction'] = {
         'help': "Location with sinograms",
         'metavar': 'PATH'},
     'angle': {
-        'default': "",
+        'default': 0.0,
         'type': float,
         'help': "Angle step between projections in radians"},
     'enable-tracing': {
@@ -236,6 +238,7 @@ SECTIONS['reconstruction'] = {
         'help': "Relative cutoff frequency"},
     'projection-padding-mode': {
         'default': 'clamp_to_edge',
+        'type': str,
         'choices': ['none', 'clamp', 'clamp_to_edge', 'repeat', 'mirrored_repeat'],
         'help': "Padded values assignment"}}
 
@@ -317,6 +320,7 @@ SECTIONS['laminographic-reconstruction'] = {
         'help': "Do only backprojection with no other processing steps"},
     'lamino-padding-mode': {
         'default': 'clamp',
+        'type': str,
         'choices': ['none', 'clamp', 'clamp_to_edge', 'repeat', 'mirrored_repeat'],
         'help': "Padded values assignment for the filtered projection"}}
 
@@ -327,6 +331,7 @@ SECTIONS['fbp'] = {
         'help': "Width of final slice"},
     'projection-crop-after': {
         'default': 'backprojection',
+        'type': str,
         'choices': ['filter', 'backprojection'],
         'help': "Whether to crop projections after filtering (can cause truncation "
                 "artifacts) or after backprojection"}}
@@ -441,10 +446,12 @@ SECTIONS['preprocess'] = {
         'help': "Multiplicative factor of the projection filter"},
     'projection-padding-mode': {
         'default': 'clamp_to_edge',
+        'type': str,
         'choices': ['none', 'clamp', 'clamp_to_edge', 'repeat', 'mirrored_repeat'],
         'help': "Padded values assignment"},
     'projection-crop-after': {
         'default': 'backprojection',
+        'type': str,
         'choices': ['filter', 'backprojection'],
         'help': "Whether to crop projections after filtering (can cause truncation "
                 "artifacts) or after backprojection"}}
@@ -622,6 +629,7 @@ SECTIONS['general-reconstruction'] = {
         'help': "The total angle over which projections were taken in degrees"},
     'genreco-padding-mode': {
         'default': 'clamp',
+        'type': str,
         'choices': ['none', 'clamp', 'clamp_to_edge', 'repeat', 'mirrored_repeat'],
         'help': "Padded values assignment for the filtered projection"},
     'slice-gray-map': {
@@ -670,6 +678,7 @@ SECTIONS['find-large-spots'] = {
         'help': "Spot growing threshold, if 0 it will be set to FWTM times noise standard deviation"},
     'find-large-spots-padding-mode': {
         'default': 'repeat',
+        'type': str,
         'choices': ['none', 'clamp', 'clamp_to_edge', 'repeat', 'mirrored_repeat'],
         'help': "Padded values assignment for the filtered input image"},
     }
