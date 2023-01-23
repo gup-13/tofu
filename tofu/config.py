@@ -32,12 +32,12 @@ SECTIONS['general'] = {
         'help': "Bit depth of output, either 8, 16 or 32",
         'metavar': 'BITDEPTH'},
     'output-minimum': {
-        'default': None,
+        'default': 0.0,
         'type': float,
         'help': "Minimum value that maps to zero",
         'metavar': 'MIN'},
     'output-maximum': {
-        'default': None,
+        'default': 0.0,
         'type': float,
         'help': "Maximum input value that maps to largest output value",
         'metavar': 'MAX'},
@@ -624,7 +624,7 @@ SECTIONS['general-reconstruction'] = {
         'help': "Data type of the output volume",
         'choices': ['half', 'float', 'double', 'uchar', 'ushort', 'uint']},
     'overall-angle': {
-        'default': None,
+        'default': 0.0,
         'type': float,
         'help': "The total angle over which projections were taken in degrees"},
     'genreco-padding-mode': {

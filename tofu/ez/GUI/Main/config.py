@@ -694,6 +694,31 @@ class ConfigGroup(QGroupBox):
             else:
                 LOG.debug("No mapping to import parameter \'" + key + "\'.")
                 
+    def add_value_to_dict_entry(self, dict_entry, param_value_str):
+        #LOG.debug(str(key), params[str(key)])
+        #print(dict_entry, param_value_str, dict_entry['default'])
+        if 'action' in dict_entry:
+            # no 'type' can be defined in action entries
+            dict_entry['value'] = bool(param_value_str)
+        elif param_value_str == '':
+            # takes default value if empty string
+            dict_entry['value'] = dict_entry['type'](dict_entry['default'])
+        else:
+            dict_entry['value'] = dict_entry['type'](param_value_str)
+        print(param_value_str, dict_entry['value'])
+        
+    def init_dict_entries(self):
+        # Place default value in each setting
+        for key1 in EZVARS.keys():
+            for key2 in EZVARS[key1].keys():
+                dict_entry = EZVARS[key1][key2]
+                self.add_value_to_dict_entry(dict_entry, '') # Add default value
+        
+        for key1 in SECTIONS.keys():
+            for key2 in SECTIONS[key1].keys():
+                dict_entry = SECTIONS[key1][key2]
+                self.add_value_to_dict_entry(dict_entry, '') # Add default value
+        
     def update_params(self):
         """
         Update parameter values from their corresponding dictionary entries
@@ -798,38 +823,15 @@ class ConfigGroup(QGroupBox):
         
             #################
             LOG.debug("Entering parameter values into dictionary entries...")
+            
+            self.init_dict_entries()
+            
             # Insert values of parameter files into dictionary entries
             map_param_to_dict_entries = self.createMapFromParamsToDictEntry()
             for p in params:
-                LOG.debug(str(p), params[str(p)])
                 dict_entry = map_param_to_dict_entries[str(p)]
-                if 'action' in dict_entry:
-                    # no 'type' can be defined in these entries
-                    dict_entry['value'] = bool(params[str(p)])
-                elif params[str(p)] == '':
-                    # takes default value if empty string
-                    dict_entry['value'] = dict_entry['type'](dict_entry['default'])
-                else:
-                    dict_entry['value'] = dict_entry['type'](params[str(p)])
-                #print(str(p), params[str(p)], dict_entry['value'])
-            
-            # Place default value in each setting
-            # Note: Due to "verbose" not being able to have a 'type', 
-            #   this method is more robust overwriting from default values
-            for key1 in EZVARS.keys():
-                for key2 in EZVARS[key1].keys():
-                    dict_entry = EZVARS[key1][key2]
-                    if "value" not in dict_entry:
-                        dict_entry['value'] = dict_entry['type'](dict_entry['default'])
-            
-            for key1 in SECTIONS.keys():
-                for key2 in SECTIONS[key1].keys():
-                    dict_entry = SECTIONS[key1][key2]
-                    if "value" not in dict_entry:
-                        if "action" in dict_entry:
-                            dict_entry['value'] = bool(dict_entry['default'])
-                        else:    
-                            dict_entry['value'] = dict_entry['type'](dict_entry['default'])
+                self.add_value_to_dict_entry(dict_entry, params[str(p)])
+        
             ####################
             
             execute_reconstruction(args, self.get_fdt_names())
