@@ -3,6 +3,8 @@ import yaml
 from collections import OrderedDict
 from tofu.util import restrict_value
 
+import os #EZVARS[inout][tmp-dir]
+
 #TODO Make good structure to store parameters
 # similar to tofu? and
 # use tofu's structure for existing reco params
@@ -169,25 +171,25 @@ EZVARS['inout'] = {
         'type': str, 
         'help': "TODO"},
     'tmp-dir' : {
-        'default': "", 
+        'default': os.path.join(os.path.expanduser('~'),"tmp-ezufo"), 
         'type': str, 
-        'help': "TODO"},
+        'help': "TODO-updated Default"},
     'darks-dir': {
-        'default': "", 
+        'default': "darks", 
         'type': str, 
-        'help': "TODO"},
+        'help': "TODO-updated Default"},
     'flats-dir': {
-        'default': "", 
+        'default': "flats", 
         'type': str, 
-        'help': "TODO"},
+        'help': "TODO-updated Default"},
     'tomo-dir': {
-        'default': "", 
+        'default': "tomo", 
         'type': str, 
-        'help': "TODO"},
+        'help': "TODOç"},
     'flats2-dir': {
-        'default': "", 
+        'default': "flats2", 
         'type': str, 
-        'help': "TODO"},
+        'help': "TODO-updated Default"},
     'bigtiff-output': {
         'default': "", 
         'type': str, 
@@ -203,11 +205,11 @@ EZVARS['inout'] = {
     'preprocess': {
         'default': False, 
         'type': bool, 
-        'help': "TODO"},
+        'help': "TODO-updated Default"},
     'preprocess-command': {
-        'default': "", 
+        'default': "remove-outliers size=3 threshold=500 sign=1", 
         'type': str, 
-        'help': "TODO"},
+        'help': "TODO-updated Default"},
     'output-ROI': {
         'default': False, 
         'type': bool, 
@@ -231,39 +233,39 @@ EZVARS['inout'] = {
     'dryrun': {
         'default': False, 
         'type': bool, 
-        'help': "TODO"},
+        'help': "TODO-updated Default"},
     'save-params': {
-        'default': False, 
+        'default': True, 
         'type': bool, 
-        'help': "TODO"},
+        'help': "TODO-updated Default"},
     'keep-tmp': {
         'default': False, 
         'type': bool, 
-        'help': "TODO"},
+        'help': "TODO-updated Default"},
     'open-viewer': {
         'default': False, 
         'type': bool, 
-        'help': "TODO"},
+        'help': "TODO-updated Default"},
     'shared-flatsdarks': {
         'default': False, 
         'type': bool, 
-        'help': "TODO"},
+        'help': "TODO-updated Default"},
     'path2-shared-darks': {
-        'default': "", 
+        'default': "Absolute path to darks", 
         'type': str, 
-        'help': "TODO"},
+        'help': "TODO-updated Default"},
     'path2-shared-flats': {
-        'default': "", 
+        'default': "Absolute path to flats", 
         'type': str, 
         'help': "TODO"},
     'shared-flats-after': {
         'default': False, 
         'type': bool, 
-        'help': "TODO"},
+        'help': "TODO-updated Default"},
     'path2-shared-flats-after': {
-        'default': "", 
+        'default': "Absolute path to flats2", 
         'type': str, 
-        'help': "TODO"},
+        'help': "TODO-updated Default"},
 }
 
 EZVARS['COR'] = {
@@ -390,7 +392,7 @@ EZVARS['nlmdn'] = {
     'bigtiff_output': {
         'default': False, 
         'type': bool, 
-        'help': "TODO"},
+        'help': "TODO-updated Default"},
     'search-radius': {
         'default': "", 
         'type': str, 

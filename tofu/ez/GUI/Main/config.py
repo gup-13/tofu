@@ -290,56 +290,77 @@ class ConfigGroup(QGroupBox):
             self.input_dir_entry.setText(indir)
             outdir = os.path.abspath(indir + "/rec")
             self.output_dir_entry.setText(outdir)
+        
+        self.init_dict_entries()
+        
         # Otherwise use this as default
-        self.save_params_checkbox.setChecked(True)
-        parameters.params['main_config_save_params'] = True
-        parameters.params['main_config_save_multipage_tiff'] = False
-        self.preproc_checkbox.setChecked(False)
-        self.set_preproc()
-        parameters.params['main_config_preprocess'] = False
-        self.preproc_entry.setText("remove-outliers size=3 threshold=500 sign=1")
-        self.darks_entry.setText("darks")
-        self.flats_entry.setText("flats")
-        self.tomo_entry.setText("tomo")
-        self.flats2_entry.setText("flats2")
-        self.use_common_flats_darks_checkbox.setChecked(False)
-        self.darks_absolute_entry.setText("Absolute path to darks")
-        self.flats_absolute_entry.setText("Absolute path to flats")
-        self.use_common_flats_darks_checkbox.setChecked(False)
-        self.flats2_absolute_entry.setText("Absolute path to flats2")
-        self.temp_dir_entry.setText(os.path.join(os.path.expanduser('~'),"tmp-ezufo"))
-        self.keep_tmp_data_checkbox.setChecked(False)
-        parameters.params['main_config_keep_temp'] = False
-        self.set_temp_dir()
-        self.dry_run_button.setChecked(False)
-        parameters.params['main_config_dry_run'] = False
-        parameters.params['main_config_open_viewer'] = False
-        self.open_image_after_reco_checkbox.setChecked(False)
+        # self.save_params_checkbox.setChecked(True)
+        # parameters.params['main_config_save_params'] = True
+        # parameters.params['main_config_save_multipage_tiff'] = False
+        # self.preproc_checkbox.setChecked(False)
+        # self.set_preproc()
+        # parameters.params['main_config_preprocess'] = False
+        # self.preproc_entry.setText("remove-outliers size=3 threshold=500 sign=1")
+        # self.darks_entry.setText("darks")
+        # self.flats_entry.setText("flats")
+        # self.tomo_entry.setText("tomo")
+        # self.flats2_entry.setText("flats2")
+        # self.use_common_flats_darks_checkbox.setChecked(False)
+        # self.darks_absolute_entry.setText("Absolute path to darks")
+        # self.flats_absolute_entry.setText("Absolute path to flats")
+        # self.flats2_absolute_entry.setText("Absolute path to flats2")
+        # self.temp_dir_entry.setText(os.path.join(os.path.expanduser('~'),"tmp-ezufo"))
+        # self.keep_tmp_data_checkbox.setChecked(False)
+        # parameters.params['main_config_keep_temp'] = False
+        # self.set_temp_dir()
+        # self.dry_run_button.setChecked(False)
+        # parameters.params['main_config_dry_run'] = False
+        # parameters.params['main_config_open_viewer'] = False
+        # self.open_image_after_reco_checkbox.setChecked(False)
 
     def set_values_from_params(self):
         """
         Updates displayed values for config group
         Called when .yaml file of params is loaded
         """
-        self.input_dir_entry.setText(parameters.params['main_config_input_dir'])
-        self.save_params_checkbox.setChecked(parameters.params['main_config_save_params'])
-        self.output_dir_entry.setText(parameters.params['main_config_output_dir'])
-        self.bigtiff_checkbox.setChecked(parameters.params['main_config_save_multipage_tiff'])
-        self.preproc_checkbox.setChecked(parameters.params['main_config_preprocess'])
-        self.preproc_entry.setText(parameters.params['main_config_preprocess_command'])
-        self.darks_entry.setText(parameters.params['main_config_darks_dir_name'])
-        self.flats_entry.setText(parameters.params['main_config_flats_dir_name'])
-        self.tomo_entry.setText(parameters.params['main_config_tomo_dir_name'])
-        self.flats2_entry.setText(parameters.params['main_config_flats2_dir_name'])
-        self.temp_dir_entry.setText(parameters.params['main_config_temp_dir'])
-        self.keep_tmp_data_checkbox.setChecked(parameters.params['main_config_keep_temp'])
-        self.dry_run_button.setChecked(parameters.params['main_config_dry_run'])
-        self.open_image_after_reco_checkbox.setChecked(parameters.params['main_config_open_viewer'])
-        self.use_common_flats_darks_checkbox.setChecked(parameters.params['main_config_common_flats_darks'])
-        self.darks_absolute_entry.setText(parameters.params['main_config_darks_path'])
-        self.flats_absolute_entry.setText(parameters.params['main_config_flats_path'])
-        self.use_flats2_checkbox.setChecked(parameters.params['main_config_flats2_checkbox'])
-        self.flats2_absolute_entry.setText(parameters.params['main_config_flats2_path'])
+        # self.input_dir_entry.setText(parameters.params['main_config_input_dir'])
+        self.input_dir_entry.setText(EZVARS['inout']['input-dir'])
+        # self.save_params_checkbox.setChecked(parameters.params['main_config_save_params'])
+        self.save_params_checkbox.setChecked(EZVARS['inout']['save-params'])
+        # self.output_dir_entry.setText(parameters.params['main_config_output_dir'])
+        self.output_dir_entry.setText(EZVARS['inout']['output-dir'])
+        # self.bigtiff_checkbox.setChecked(parameters.params['main_config_save_multipage_tiff'])
+        self.bigtiff_checkbox.setChecked(EZVARS['inout']['bigtiff-output'])
+        # self.preproc_checkbox.setChecked(parameters.params['main_config_preprocess'])
+        self.preproc_checkbox.setChecked(EZVARS['inout']['preprocess'])
+        # self.preproc_entry.setText(parameters.params['main_config_preprocess_command'])
+        self.preproc_entry.setText(EZVARS['inout']['preprocess-command'])
+        # self.darks_entry.setText(parameters.params['main_config_darks_dir_name'])
+        self.darks_entry.setText(EZVARS['inout']['darks-dir'])
+        # self.flats_entry.setText(parameters.params['main_config_flats_dir_name'])
+        self.flats_entry.setText(EZVARS['inout']['flats-dir'])
+        # self.tomo_entry.setText(parameters.params['main_config_tomo_dir_name'])
+        self.tomo_entry.setText(EZVARS['inout']['tomo-dir'])
+        # self.flats2_entry.setText(parameters.params['main_config_flats2_dir_name'])
+        self.flats2_entry.setText(EZVARS['inout']['flats2-dir'])
+        # self.temp_dir_entry.setText(parameters.params['main_config_temp_dir'])
+        self.temp_dir_entry.setText(EZVARS['inout']['tmp-dir'])
+        # self.keep_tmp_data_checkbox.setChecked(parameters.params['main_config_keep_temp'])
+        self.keep_tmp_data_checkbox.setChecked(EZVARS['inout']['keep-tmp'])
+        # self.dry_run_button.setChecked(parameters.params['main_config_dry_run'])
+        self.dry_run_button.setChecked(EZVARS['inout']['dryrun'])
+        # self.open_image_after_reco_checkbox.setChecked(parameters.params['main_config_open_viewer'])
+        self.open_image_after_reco_checkbox.setChecked(EZVARS['inout']['open-viewer'])
+        # self.use_common_flats_darks_checkbox.setChecked(parameters.params['main_config_common_flats_darks'])
+        self.use_common_flats_darks_checkbox.setChecked(EZVARS['inout']['shared-flatsdark'])
+        # self.darks_absolute_entry.setText(parameters.params['main_config_darks_path'])
+        self.darks_absolute_entry.setText(EZVARS['inout']['path2-shared-darks'])
+        # self.flats_absolute_entry.setText(parameters.params['main_config_flats_path'])
+        self.flats_absolute_entry.setText(EZVARS['inout']['path2-shared-flats'])
+        # self.use_flats2_checkbox.setChecked(parameters.params['main_config_flats2_checkbox'])
+        self.use_flats2_checkbox.setChecked(EZVARS['inout']['shared-flats-after'])
+        # self.flats2_absolute_entry.setText(parameters.params['main_config_flats2_path'])
+        self.flats2_absolute_entry.setText(EZVARS['inout']['path2-shared-flats-after'])
 
     def select_input_dir(self):
         """
@@ -824,7 +845,7 @@ class ConfigGroup(QGroupBox):
             #################
             LOG.debug("Entering parameter values into dictionary entries...")
             
-            self.init_dict_entries()
+            # self.init_dict_entries()
             
             # Insert values of parameter files into dictionary entries
             map_param_to_dict_entries = self.createMapFromParamsToDictEntry()
