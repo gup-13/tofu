@@ -18,6 +18,8 @@ import warnings
 import time
 
 import tofu.ez.params as glob_parameters
+from tofu.config import SECTIONS
+from tofu.ez.params import EZVARS
 
 def findCTdirs(root: str, tomo_name: str):
     """
@@ -402,18 +404,18 @@ def main_360_mp_depth1(indir, outdir, ax, cro):
 
 
 def main_360_mp_depth2(parameters):
-    ctdirs, lvl0 = findCTdirs(parameters['360multi_input_dir'], glob_parameters.params['main_config_tomo_dir_name'])
+    ctdirs, lvl0 = findCTdirs(parameters['360multi_input_dir'], EZVARS['inout']['tomo-dir']['value'])
     num_sets = len(ctdirs)
 
     if num_sets < 1:
         print(f"Didn't find any CT dirs in the input. Check directory structure and permissions. \n" 
               f"Program expects to see a number of subdirectories in the input each of with \n" 
               f"contains at least one directory with CT projections (currently name set to "
-              f"{glob_parameters.params['main_config_tomo_dir_name']}. \n"+
+              f"{EZVARS['inout']['tomo-dir']['value']}. \n"+
               f"The tif files in all " \
-              f" {glob_parameters.params['main_config_tomo_dir_name']}, "
-              f" {glob_parameters.params['main_config_flats_dir_name']}, "
-              f" {glob_parameters.params['main_config_darks_dir_name']} \n"
+              f" {EZVARS['inout']['tomo-dir']['value']}, "
+              f" {EZVARS['inout']['flats-dir']['value']}, "
+              f" {EZVARS['inout']['darks-dir']['value']} \n"
               f"subdirectories will be stitched to convert half-acquisition mode scans to ordinary \n"
               f"180-deg parallel-beam scans")
         return

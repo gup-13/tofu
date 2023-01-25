@@ -13,6 +13,8 @@ from tofu.ez.main import clean_tmp_dirs
 from tofu.ez.yaml_in_out import Yaml_IO
 from tofu.ez.GUI.image_viewer import ImageViewerGroup
 import tofu.ez.params as parameters
+from tofu.ez.params import EZVARS
+from tofu.config import SECTIONS
 from tofu.ez.GUI.Advanced.advanced import AdvancedGroup
 from tofu.ez.GUI.Advanced.optimization import OptimizationGroup
 from tofu.ez.GUI.Advanced.nlmdn import NLMDNGroup
@@ -208,21 +210,21 @@ class GUI(qtw.QWidget):
         if parameters.params["main_config_open_viewer"] is True:
             LOG.debug("Switch to Image Tab")
             self.tabs.setCurrentWidget(self.tab2)
-            if os.path.isdir(str(parameters.params['main_config_output_dir'] + '/sli')):
-                files = os.listdir(str(parameters.params['main_config_output_dir'] + '/sli'))
+            if os.path.isdir(str(EZVARS['inout']['output-dir']['value'] + '/sli')):
+                files = os.listdir(str(EZVARS['inout']['output-dir']['value'] + '/sli'))
                 #Start thread here to load images
 
                 ##CHECK IF ONLY SINGLE IMAGE THEN USE OPEN IMAGE -- OTHERWISE OPEN STACK
                 if len(files) == 1:
                     print("Only one file in {}: Opening single image {}".
-                          format(parameters.params['main_config_output_dir'] + '/sli', files[0]))
-                    filePath = str(parameters.params['main_config_output_dir'] + '/sli/' + str(files[0]))
+                          format(EZVARS['inout']['output-dir']['value'] + '/sli', files[0]))
+                    filePath = str(EZVARS['inout']['output-dir']['value'] + '/sli/' + str(files[0]))
                     self.image_group.open_image_from_filepath(filePath)
                 else:
                     print("Multiple files in {}: Opening stack of images".
-                          format(str(parameters.params['main_config_output_dir'] + '/sli')))
+                          format(str(EZVARS['inout']['output-dir']['value'] + '/sli')))
                     self.image_group.open_stack_from_path(
-                        str(parameters.params['main_config_output_dir'] + '/sli'))
+                        str(EZVARS['inout']['output-dir']['value'] + '/sli'))
             else:
                 print("No output directory found")
 
@@ -236,9 +238,9 @@ class GUI(qtw.QWidget):
                         qtw.QMessageBox.Yes | qtw.QMessageBox.No, qtw.QMessageBox.No)
         if reply == qtw.QMessageBox.Yes:
             # remove all directories with projections
-            clean_tmp_dirs(parameters.params['main_config_temp_dir'], self.config_group.get_fdt_names())
+            clean_tmp_dirs(EZVARS['inout']['tmp-dir']['value'], self.config_group.get_fdt_names())
             # remove axis-search dir too
-            tmp = os.path.join(parameters.params['main_config_temp_dir'], 'axis-search')
+            tmp = os.path.join(EZVARS['inout']['tmp-dir']['value'], 'axis-search')
             event.accept()
         else:
             event.ignore()

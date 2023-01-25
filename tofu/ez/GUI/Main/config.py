@@ -292,75 +292,48 @@ class ConfigGroup(QGroupBox):
             self.output_dir_entry.setText(outdir)
         
         self.init_dict_entries()
+        #TODO Set text in text boxes from the parameters
         
-        # Otherwise use this as default
-        # self.save_params_checkbox.setChecked(True)
-        # parameters.params['main_config_save_params'] = True
-        # parameters.params['main_config_save_multipage_tiff'] = False
-        # self.preproc_checkbox.setChecked(False)
-        # self.set_preproc()
-        # parameters.params['main_config_preprocess'] = False
-        # self.preproc_entry.setText("remove-outliers size=3 threshold=500 sign=1")
-        # self.darks_entry.setText("darks")
-        # self.flats_entry.setText("flats")
-        # self.tomo_entry.setText("tomo")
-        # self.flats2_entry.setText("flats2")
-        # self.use_common_flats_darks_checkbox.setChecked(False)
-        # self.darks_absolute_entry.setText("Absolute path to darks")
-        # self.flats_absolute_entry.setText("Absolute path to flats")
-        # self.flats2_absolute_entry.setText("Absolute path to flats2")
-        # self.temp_dir_entry.setText(os.path.join(os.path.expanduser('~'),"tmp-ezufo"))
-        # self.keep_tmp_data_checkbox.setChecked(False)
-        # parameters.params['main_config_keep_temp'] = False
-        # self.set_temp_dir()
-        # self.dry_run_button.setChecked(False)
-        # parameters.params['main_config_dry_run'] = False
-        # parameters.params['main_config_open_viewer'] = False
-        # self.open_image_after_reco_checkbox.setChecked(False)
+        self.preproc_checkbox.setChecked(EZVARS['inout']['preprocess']['value'])
+        self.preproc_entry.setText(EZVARS['inout']['preprocess-command']['value'])
+        self.darks_entry.setText(EZVARS['inout']['darks-dir']['value'])
+        self.flats_entry.setText(EZVARS['inout']['flats-dir']['value'])
+        self.tomo_entry.setText(EZVARS['inout']['tomo-dir']['value'])
+        self.flats2_entry.setText(EZVARS['inout']['flats2-dir']['value'])        
+        self.use_common_flats_darks_checkbox.setChecked(EZVARS['inout']['shared-flatsdarks']['value'])
+        self.darks_absolute_entry.setText(EZVARS['inout']['path2-shared-darks']['value'])
+        self.flats_absolute_entry.setText(EZVARS['inout']['path2-shared-flats']['value'])
+        self.flats2_absolute_entry.setText(EZVARS['inout']['path2-shared-flats-after']['value'])
+        self.temp_dir_entry.setText(os.path.join(os.path.expanduser('~'),"tmp-ezufo"))
+        self.keep_tmp_data_checkbox.setChecked(EZVARS['inout']['keep-tmp']['value'])
+        self.dry_run_button.setChecked(EZVARS['inout']['dryrun']['value'])
+        self.open_image_after_reco_checkbox.setChecked(EZVARS['inout']['open-viewer']['value'])
 
+        
     def set_values_from_params(self):
         """
         Updates displayed values for config group
         Called when .yaml file of params is loaded
         """
-        # self.input_dir_entry.setText(parameters.params['main_config_input_dir'])
-        self.input_dir_entry.setText(EZVARS['inout']['input-dir'])
-        # self.save_params_checkbox.setChecked(parameters.params['main_config_save_params'])
-        self.save_params_checkbox.setChecked(EZVARS['inout']['save-params'])
-        # self.output_dir_entry.setText(parameters.params['main_config_output_dir'])
-        self.output_dir_entry.setText(EZVARS['inout']['output-dir'])
-        # self.bigtiff_checkbox.setChecked(parameters.params['main_config_save_multipage_tiff'])
-        self.bigtiff_checkbox.setChecked(EZVARS['inout']['bigtiff-output'])
-        # self.preproc_checkbox.setChecked(parameters.params['main_config_preprocess'])
-        self.preproc_checkbox.setChecked(EZVARS['inout']['preprocess'])
-        # self.preproc_entry.setText(parameters.params['main_config_preprocess_command'])
-        self.preproc_entry.setText(EZVARS['inout']['preprocess-command'])
-        # self.darks_entry.setText(parameters.params['main_config_darks_dir_name'])
-        self.darks_entry.setText(EZVARS['inout']['darks-dir'])
-        # self.flats_entry.setText(parameters.params['main_config_flats_dir_name'])
-        self.flats_entry.setText(EZVARS['inout']['flats-dir'])
-        # self.tomo_entry.setText(parameters.params['main_config_tomo_dir_name'])
-        self.tomo_entry.setText(EZVARS['inout']['tomo-dir'])
-        # self.flats2_entry.setText(parameters.params['main_config_flats2_dir_name'])
-        self.flats2_entry.setText(EZVARS['inout']['flats2-dir'])
-        # self.temp_dir_entry.setText(parameters.params['main_config_temp_dir'])
-        self.temp_dir_entry.setText(EZVARS['inout']['tmp-dir'])
-        # self.keep_tmp_data_checkbox.setChecked(parameters.params['main_config_keep_temp'])
-        self.keep_tmp_data_checkbox.setChecked(EZVARS['inout']['keep-tmp'])
-        # self.dry_run_button.setChecked(parameters.params['main_config_dry_run'])
-        self.dry_run_button.setChecked(EZVARS['inout']['dryrun'])
-        # self.open_image_after_reco_checkbox.setChecked(parameters.params['main_config_open_viewer'])
-        self.open_image_after_reco_checkbox.setChecked(EZVARS['inout']['open-viewer'])
-        # self.use_common_flats_darks_checkbox.setChecked(parameters.params['main_config_common_flats_darks'])
-        self.use_common_flats_darks_checkbox.setChecked(EZVARS['inout']['shared-flatsdark'])
-        # self.darks_absolute_entry.setText(parameters.params['main_config_darks_path'])
-        self.darks_absolute_entry.setText(EZVARS['inout']['path2-shared-darks'])
-        # self.flats_absolute_entry.setText(parameters.params['main_config_flats_path'])
-        self.flats_absolute_entry.setText(EZVARS['inout']['path2-shared-flats'])
-        # self.use_flats2_checkbox.setChecked(parameters.params['main_config_flats2_checkbox'])
-        self.use_flats2_checkbox.setChecked(EZVARS['inout']['shared-flats-after'])
-        # self.flats2_absolute_entry.setText(parameters.params['main_config_flats2_path'])
-        self.flats2_absolute_entry.setText(EZVARS['inout']['path2-shared-flats-after'])
+        self.input_dir_entry.setText(EZVARS['inout']['input-dir']['value'])
+        self.save_params_checkbox.setChecked(EZVARS['inout']['save-params']['value'])
+        self.output_dir_entry.setText(EZVARS['inout']['output-dir']['value'])
+        self.bigtiff_checkbox.setChecked(EZVARS['inout']['bigtiff-output']['value'])
+        self.preproc_checkbox.setChecked(EZVARS['inout']['preprocess']['value'])
+        self.preproc_entry.setText(EZVARS['inout']['preprocess-command']['value'])
+        self.darks_entry.setText(EZVARS['inout']['darks-dir']['value'])
+        self.flats_entry.setText(EZVARS['inout']['flats-dir']['value'])
+        self.tomo_entry.setText(EZVARS['inout']['tomo-dir']['value'])
+        self.flats2_entry.setText(EZVARS['inout']['flats2-dir']['value'])
+        self.temp_dir_entry.setText(EZVARS['inout']['tmp-dir']['value'])
+        self.keep_tmp_data_checkbox.setChecked(EZVARS['inout']['keep-tmp']['value'])
+        self.dry_run_button.setChecked(EZVARS['inout']['dryrun']['value'])
+        self.open_image_after_reco_checkbox.setChecked(EZVARS['inout']['open-viewer']['value'])
+        self.use_common_flats_darks_checkbox.setChecked(EZVARS['inout']['shared-flatsdarks']['value'])
+        self.darks_absolute_entry.setText(EZVARS['inout']['path2-shared-darks']['value'])
+        self.flats_absolute_entry.setText(EZVARS['inout']['path2-shared-flats']['value'])
+        self.use_flats2_checkbox.setChecked(EZVARS['inout']['shared-flats-after']['value'])
+        self.flats2_absolute_entry.setText(EZVARS['inout']['path2-shared-flats-after']['value'])
 
     def select_input_dir(self):
         """
@@ -369,60 +342,60 @@ class ConfigGroup(QGroupBox):
         dir_explore = QFileDialog(self)
         dir = dir_explore.getExistingDirectory(directory=self.input_dir_entry.text())
         self.input_dir_entry.setText(dir)
-        parameters.params['main_config_input_dir'] = dir
+        EZVARS['inout']['input-dir']['value'] = dir
 
     def set_input_dir(self):
         LOG.debug(str(self.input_dir_entry.text()))
-        parameters.params['main_config_input_dir'] = str(self.input_dir_entry.text())
+        EZVARS['inout']['input-dir']['value'] = str(self.input_dir_entry.text())
 
     def select_output_dir(self):
         dir_explore = QFileDialog(self)
         dir = dir_explore.getExistingDirectory(directory=self.output_dir_entry.text())
         self.output_dir_entry.setText(dir)
-        parameters.params['main_config_output_dir'] = dir
+        EZVARS['inout']['output-dir']['value'] = dir
 
     def set_output_dir(self):
         LOG.debug(str(self.output_dir_entry.text()))
-        parameters.params['main_config_output_dir'] = str(self.output_dir_entry.text())
+        EZVARS['inout']['output-dir']['value'] = str(self.output_dir_entry.text())
 
     def set_big_tiff(self):
         LOG.debug("Bigtiff: " + str(self.bigtiff_checkbox.isChecked()))
-        parameters.params['main_config_save_multipage_tiff'] = bool(self.bigtiff_checkbox.isChecked())
+        EZVARS['inout']['bigtiff-output']['value'] = bool(self.bigtiff_checkbox.isChecked())
 
     def set_preproc(self):
         LOG.debug("Preproc: " + str(self.preproc_checkbox.isChecked()))
-        parameters.params['main_config_preprocess'] = bool(self.preproc_checkbox.isChecked())
+        EZVARS['inout']['preprocess']['value'] = bool(self.preproc_checkbox.isChecked())
 
     def set_preproc_entry(self):
         LOG.debug(self.preproc_entry.text())
-        parameters.params['main_config_preprocess_command'] = str(self.preproc_entry.text())
+        EZVARS['inout']['preprocess-command']['value'] = str(self.preproc_entry.text())
 
     def set_open_image_after_reco(self):
         LOG.debug(
             "Switch to Image Viewer After Reco: "
             + str(self.open_image_after_reco_checkbox.isChecked())
         )
-        parameters.params['main_config_open_viewer'] = bool(self.open_image_after_reco_checkbox.isChecked())
+        EZVARS['inout']['open-viewer']['value'] = bool(self.open_image_after_reco_checkbox.isChecked())
 
     def set_darks(self):
         LOG.debug(self.darks_entry.text())
         self.e_DIRTYP[0] = str(self.darks_entry.text())
-        parameters.params['main_config_darks_dir_name'] = str(self.darks_entry.text())
+        EZVARS['inout']['darks-dir']['value'] = str(self.darks_entry.text())
 
     def set_flats(self):
         LOG.debug(self.flats_entry.text())
         self.e_DIRTYP[1] = str(self.flats_entry.text())
-        parameters.params['main_config_flats_dir_name'] = str(self.flats_entry.text())
+        EZVARS['inout']['flats-dir']['value'] = str(self.flats_entry.text())
 
     def set_tomo(self):
         LOG.debug(self.tomo_entry.text())
         self.e_DIRTYP[2] = str(self.tomo_entry.text())
-        parameters.params['main_config_tomo_dir_name'] = str(self.tomo_entry.text())
+        EZVARS['inout']['tomo-dir']['value'] = str(self.tomo_entry.text())
 
     def set_flats2(self):
         LOG.debug(self.flats2_entry.text())
         self.e_DIRTYP[3] = str(self.flats2_entry.text())
-        parameters.params['main_config_flats2_dir_name'] = str(self.flats2_entry.text())
+        EZVARS['inout']['flats2-dir']['value'] = str(self.flats2_entry.text())
 
     def set_fdt_names(self):
         self.set_darks()
@@ -435,60 +408,60 @@ class ConfigGroup(QGroupBox):
             "Use same flats/darks across multiple experiments: "
             + str(self.use_common_flats_darks_checkbox.isChecked())
         )
-        parameters.params['main_config_common_flats_darks'] = bool(
+        EZVARS['inout']['shared-flatsdarks']['value'] = bool(
             self.use_common_flats_darks_checkbox.isChecked()
         )
 
     def select_darks_button_pressed(self):
         LOG.debug("Select path to darks pressed")
         dir_explore = QFileDialog(self)
-        directory = dir_explore.getExistingDirectory(directory=parameters.params['main_config_input_dir'])
+        directory = dir_explore.getExistingDirectory(directory=EZVARS['inout']['input-dir']['value'])
         self.darks_absolute_entry.setText(directory)
-        parameters.params['main_config_darks_path'] = directory
+        EZVARS['inout']['path2-shared-darks']['value'] = directory
 
     def select_flats_button_pressed(self):
         LOG.debug("Select path to flats pressed")
         dir_explore = QFileDialog(self)
-        directory = dir_explore.getExistingDirectory(directory=parameters.params['main_config_input_dir'])
+        directory = dir_explore.getExistingDirectory(directory=EZVARS['inout']['input-dir']['value'])
         self.flats_absolute_entry.setText(directory)
-        parameters.params['main_config_flats_path'] = directory
+        EZVARS['inout']['path2-shared-flats']['value'] = directory
 
     def select_flats2_button_pressed(self):
         LOG.debug("Select path to flats2 pressed")
         dir_explore = QFileDialog(self)
-        directory = dir_explore.getExistingDirectory(directory=parameters.params['main_config_input_dir'])
+        directory = dir_explore.getExistingDirectory(directory=EZVARS['inout']['input-dir']['value'])
         self.flats2_absolute_entry.setText(directory)
-        parameters.params['main_config_flats2_path'] = directory
+        EZVARS['inout']['path2-shared-flats-after']['value'] = directory
 
     def set_common_darks(self):
         LOG.debug("Common darks path: " + str(self.darks_absolute_entry.text()))
-        parameters.params['main_config_darks_path'] = str(self.darks_absolute_entry.text())
+        EZVARS['inout']['path2-shared-darks']['value'] = str(self.darks_absolute_entry.text())
 
     def set_common_flats(self):
         LOG.debug("Common flats path: " + str(self.flats_absolute_entry.text()))
-        parameters.params['main_config_flats_path'] = str(self.flats_absolute_entry.text())
+        EZVARS['inout']['path2-shared-flats']['value'] = str(self.flats_absolute_entry.text())
 
     def set_use_flats2(self):
         LOG.debug("Use common flats2 checkbox: " + str(self.use_flats2_checkbox.isChecked()))
-        parameters.params['main_config_flats2_checkbox'] = bool(self.use_flats2_checkbox.isChecked())
+        EZVARS['inout']['shared-flats-after']['value'] = bool(self.use_flats2_checkbox.isChecked())
 
     def set_common_flats2(self):
         LOG.debug("Common flats2 path: " + str(self.flats2_absolute_entry.text()))
-        parameters.params['main_config_flats2_path'] = str(self.flats2_absolute_entry.text())
+        EZVARS['inout']['path2-shared-flats-after']['value'] = str(self.flats2_absolute_entry.text())
 
     def select_temp_dir(self):
         dir_explore = QFileDialog(self)
         tmp_dir = dir_explore.getExistingDirectory(directory=self.temp_dir_entry.text())
         self.temp_dir_entry.setText(tmp_dir)
-        parameters.params['main_config_temp_dir'] = tmp_dir
+        EZVARS['inout']['tmp-dir']['value'] = tmp_dir
 
     def set_temp_dir(self):
         LOG.debug(str(self.temp_dir_entry.text()))
-        parameters.params['main_config_temp_dir'] = str(self.temp_dir_entry.text())
+        EZVARS['inout']['tmp-dir']['value'] = str(self.temp_dir_entry.text())
 
     def set_keep_tmp_data(self):
         LOG.debug("Keep tmp: " + str(self.keep_tmp_data_checkbox.isChecked()))
-        parameters.params['main_config_keep_temp'] = bool(self.keep_tmp_data_checkbox.isChecked())
+        EZVARS['inout']['keep-tmp']['value'] = bool(self.keep_tmp_data_checkbox.isChecked())
 
     def quit_button_pressed(self):
         """
@@ -504,9 +477,9 @@ class ConfigGroup(QGroupBox):
         )
         if reply == QMessageBox.Yes:
             # remove all directories with projections
-            clean_tmp_dirs(parameters.params['main_config_temp_dir'], self.get_fdt_names())
+            clean_tmp_dirs(EZVARS['inout']['tmp-dir']['value'], self.get_fdt_names())
             # remove axis-search dir too
-            tmp = os.path.join(parameters.params['main_config_temp_dir'], 'axis-search')
+            tmp = os.path.join(EZVARS['inout']['tmp-dir']['value'], 'axis-search')
             QCoreApplication.instance().quit()
         else:
             pass
@@ -555,13 +528,13 @@ class ConfigGroup(QGroupBox):
         )
 
         if dialog == QMessageBox.Yes:
-            if os.path.exists(str(parameters.params['main_config_output_dir'])):
+            if os.path.exists(str(EZVARS['inout']['output-dir']['value'])):
                 LOG.debug("YES")
-                if parameters.params['main_config_output_dir'] == parameters.params['main_config_input_dir']:
+                if EZVARS['inout']['output-dir']['value'] == EZVARS['inout']['input-dir']['value']:
                     LOG.debug("Cannot delete: output directory is the same as input")
                 else:
                     try:
-                        rmtree(parameters.params['main_config_output_dir'])
+                        rmtree(EZVARS['inout']['output-dir']['value'])
                     except:
                         warning_message('Error while deleting directory')
                     LOG.debug("Directory with reconstructed data was removed")
@@ -576,13 +549,13 @@ class ConfigGroup(QGroupBox):
         and calls reconstruction
         """
         LOG.debug("DRY")
-        parameters.params['main_config_dry_run'] = str(True)
+        EZVARS['inout']['dryrun']['value'] = str(True)
         self.reco_button_pressed()
 
 
     def set_save_args(self):
         LOG.debug("Save args: " + str(self.save_params_checkbox.isChecked()))
-        parameters.params['main_config_save_params'] = bool(self.save_params_checkbox.isChecked())
+        EZVARS['inout']['save-params']['value'] = bool(self.save_params_checkbox.isChecked())
 
     def export_settings_button_pressed(self):
         """
@@ -758,10 +731,10 @@ class ConfigGroup(QGroupBox):
         try:
             self.validate_input()
 
-            args = tk_args(params['main_config_input_dir'],
-                           params['main_config_temp_dir'],
-                           params['main_config_output_dir'],
-                           params['main_config_save_multipage_tiff'],
+            args = tk_args(EZVARS['inout']['input-dir']['value'],
+                           EZVARS['inout']['tmp-dir']['value'],
+                           EZVARS['inout']['output-dir']['value'],
+                           EZVARS['inout']['bigtiff-output']['value'],
                            params['main_cor_axis_search_method'],
                            params['main_cor_axis_search_interval'],
                            params['main_cor_search_row_start'],
@@ -793,27 +766,27 @@ class ConfigGroup(QGroupBox):
                            params['main_region_bit_depth'],
                            params['main_region_histogram_min'],
                            params['main_region_histogram_max'],
-                           params['main_config_preprocess'],
-                           params['main_config_preprocess_command'],
+                           EZVARS['inout']['preprocess']['value'],
+                           EZVARS['inout']['preprocess-command']['value'],
                            params['main_region_rotate_volume_clock'],
                            params['main_region_crop_slices'],
                            params['main_region_crop_x'],
                            params['main_region_crop_width'],
                            params['main_region_crop_y'],
                            params['main_region_crop_height'],
-                           params['main_config_dry_run'],
-                           params['main_config_save_params'],
-                           params['main_config_keep_temp'],
+                           EZVARS['inout']['dryrun']['value'],
+                           EZVARS['inout']['save-params']['value'],
+                           EZVARS['inout']['keep-tmp']['value'],
                            params['advanced_ffc_sinFFC'],
                            params['advanced_ffc_method'],
                            params['advanced_ffc_eigen_pco_reps'],
                            params['advanced_ffc_eigen_pco_downsample'],
                            params['advanced_ffc_downsample'],
-                           params['main_config_common_flats_darks'],
-                           params['main_config_darks_path'],
-                           params['main_config_flats_path'],
-                           params['main_config_flats2_checkbox'],
-                           params['main_config_flats2_path'],
+                           EZVARS['inout']['shared-flatsdarks']['value'],
+                           EZVARS['inout']['path2-shared-darks']['value'],
+                           EZVARS['inout']['path2-shared-flats']['value'],
+                           EZVARS['inout']['shared-flats-after']['value'],
+                           EZVARS['inout']['path2-shared-flats-after']['value'],
                            # NLMDN Parameters
                            params['advanced_nlmdn_apply_after_reco'],
                            params['advanced_nlmdn_input_dir'],
@@ -859,9 +832,9 @@ class ConfigGroup(QGroupBox):
             if batch_run is False:
                 msg = "Done. See output in terminal for details."
                 QMessageBox.information(self, "Finished", msg)
-                if not params['main_config_dry_run']:
+                if not EZVARS['inout']['dryrun']['value']:
                     self.signal_reco_done.emit(params)
-                parameters.params['main_config_dry_run'] = bool(False)
+                EZVARS['inout']['dryrun']['value'] = bool(False)
         except InvalidInputError as err:
             msg = ""
             err_arg = err.args

@@ -13,6 +13,8 @@ import tifffile
 
 from tofu.ez.image_read_write import TiffSequenceReader
 import tofu.ez.params as glob_parameters
+from tofu.config import SECTIONS
+from tofu.ez.params import EZVARS
 from tofu.ez.Helpers.stitch_funcs import findCTdirs, stitch_float32_output
 from tofu.util import get_filenames, get_image_shape
 from tofu.ez.ufo_cmd_gen import ufo_cmds
@@ -39,7 +41,7 @@ def extract_row(dir_name, row):
 def find_overlap(parameters):
     print("Finding CTDirs...")
     ctdirs, lvl0 = findCTdirs(parameters['360overlap_input_dir'],
-                              glob_parameters.params['main_config_tomo_dir_name'])
+                              EZVARS['inout']['tomo-dir']['value'])
     print(ctdirs)
 
     if parameters['360overlap_doRR']:
@@ -53,29 +55,29 @@ def find_overlap(parameters):
         # loading:
         try:
             row_flat = np.mean(extract_row(
-                os.path.join(ctset, glob_parameters.params['main_config_flats_dir_name']),
+                os.path.join(ctset, EZVARS['inout']['flats-dir']['value']),
                            parameters['360overlap_row']))
         except:
             print(f"Problem loading flats in {ctset}")
             continue
         try:
             row_dark = np.mean(extract_row(
-                os.path.join(ctset, glob_parameters.params['main_config_darks_dir_name']),
+                os.path.join(ctset, EZVARS['inout']['darks-dir']['value']),
                                        parameters['360overlap_row']))
         except:
             print(f"Problem loading darks in {ctset}")
             continue
         try:
             row_tomo = extract_row(
-                os.path.join(ctset, glob_parameters.params['main_config_tomo_dir_name']),
+                os.path.join(ctset, EZVARS['inout']['tomo-dir']['value']),
                                    parameters['360overlap_row'])
         except:
             print(f"Problem loading projections from "
-                  f"{os.path.join(ctset, glob_parameters.params['main_config_tomo_dir_name'])}")
+                  f"{os.path.join(ctset, EZVARS['inout']['tomo-dir']['value'])}")
             continue
 
         row_flat2 = None
-        tmpstr = os.path.join(ctset, glob_parameters.params['main_config_flats2_dir_name'])
+        tmpstr = os.path.join(ctset, EZVARS['inout']['flats2-dir']['value'])
         if os.path.exists(tmpstr):
             try:
                 row_flat2 = np.mean(extract_row(tmpstr, parameters['360overlap_row']))

@@ -77,7 +77,7 @@ def frmt_ufo_cmds(cmds, ctset, out_pattern, ax, args, Tofu, Ufo, FindCOR, nviews
     if args.main_filters_remove_spots:
         # copy one flat to tmpdir now as path might change if preprocess is enabled
         tsr = TiffSequenceReader(os.path.join(ctset[0],
-                                              glob_parameters.params['main_config_flats_dir_name']))
+                                              EZVARS['inout']['flats-dir']['value']))
         flat1 = tsr.read(tsr.num_images - 1)  # taking the last flat
         tsr.close()
         flat1_file = os.path.join(args.main_config_temp_dir, "flat1.tif")
