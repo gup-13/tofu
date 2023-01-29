@@ -2,6 +2,8 @@ import logging
 from PyQt5.QtWidgets import QGridLayout, QLabel, QGroupBox, QLineEdit, QCheckBox
 
 import tofu.ez.params as parameters
+from tofu.ez.params import EZVARS
+from tofu.config import SECTIONS
 
 
 LOG = logging.getLogger(__name__)
@@ -63,33 +65,33 @@ class OptimizationGroup(QGroupBox):
 
     def init_values(self):
         self.verbose_switch.setChecked(False)
-        parameters.params['advanced_optimize_verbose_console'] = False
-        parameters.params['advanced_optimize_slice_mem_coeff'] = 0.7
+        SECTIONS['general']['verbose']['value'] = False
+        SECTIONS['general-reconstruction']['slice-memory-coeff']['value'] = 0.7
         self.slice_memory_entry.setText(
-            str(parameters.params['advanced_optimize_slice_mem_coeff']))
-        self.num_GPU_entry.setText("")
-        parameters.params['advanced_optimize_num_gpus'] = ""
+            str(SECTIONS['general-reconstruction']['slice-memory-coeff']['value']))
+        self.num_GPU_entry.setText("one")
+        SECTIONS['general-reconstruction']['data-splitting-policy']['value'] = "one"
         self.slices_per_device_entry.setText("")
-        parameters.params['advanced_optimize_slices_per_device'] = ""
+        SECTIONS['general-reconstruction']['num-gpu-threads']['value'] = 1
 
     def set_values_from_params(self):
-        self.verbose_switch.setChecked(bool(parameters.params['advanced_optimize_verbose_console']))
-        self.slice_memory_entry.setText(str(parameters.params['advanced_optimize_slice_mem_coeff']))
-        self.num_GPU_entry.setText(str(parameters.params['advanced_optimize_num_gpus']))
-        self.slices_per_device_entry.setText(str(parameters.params['advanced_optimize_slices_per_device']))
+        self.verbose_switch.setChecked(bool(SECTIONS['general']['verbose']['value']))
+        self.slice_memory_entry.setText(float(SECTIONS['general-reconstruction']['slice-memory-coeff']['value']))
+        self.num_GPU_entry.setText(int(SECTIONS['general-reconstruction']['data-splitting-policy']['value']))
+        self.slices_per_device_entry.setText(int(SECTIONS['general-reconstruction']['num-gpu-threads']['value']))
 
     def set_verbose_switch(self):
         LOG.debug("Verbose: " + str(self.verbose_switch.isChecked()))
-        parameters.params['advanced_optimize_verbose_console'] = bool(self.verbose_switch.isChecked())
+        SECTIONS['general']['verbose']['value'] = bool(self.verbose_switch.isChecked())
 
     def set_slice(self):
         LOG.debug(self.slice_memory_entry.text())
-        parameters.params['advanced_optimize_slice_mem_coeff'] = str(self.slice_memory_entry.text())
+        SECTIONS['general-reconstruction']['slice-memory-coeff']['value'] = float(self.slice_memory_entry.text())
 
     def set_num_gpu(self):
         LOG.debug(self.num_GPU_entry.text())
-        parameters.params['advanced_optimize_num_gpus'] = str(self.num_GPU_entry.text())
+        SECTIONS['general-reconstruction']['data-splitting-policy']['value'] = str(self.num_GPU_entry.text())
 
     def set_slices_per_device(self):
         LOG.debug(self.slices_per_device_entry.text())
-        parameters.params['advanced_optimize_slices_per_device'] = str(self.slices_per_device_entry.text())
+        SECTIONS['general-reconstruction']['num-gpu-threads']['value'] = int(self.slices_per_device_entry.text())

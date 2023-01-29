@@ -468,16 +468,16 @@ SECTIONS['cone-beam-weight'] = {
         'help': "Y detector position (along beam direction) in global coordinates [pixels] "
                 "(multiple of detector pixel size)"},
     'center-position-x': {
-        'default': "0",
-        'type': tupleize(),
+        'default': 0.0,
+        'type': float,
         'help': "X rotation axis position on a projection [pixels]"},
     'center-position-z': {
-        'default': "0",
-        'type': tupleize(),
+        'default': 0.0,
+        'type': float,
         'help': "Z rotation axis position on a projection [pixels]"},
     'axis-angle-x': {   
-        'default': "0",
-        'type': tupleize(dtype=list),
+        'default': 0.0,
+        'type': float,
         'help': "Rotation axis rotation around the x axis"
                 "(laminographic angle, 0 = tomography) [deg]"}}
 
@@ -588,24 +588,24 @@ SECTIONS['general-reconstruction'] = {
         'type': tupleize(dtype=list),
         'help': "Detector rotation around the z axis (vertical) [deg]"},
     'axis-angle-y': {
-        'default': "0",
-        'type': tupleize(dtype=list),
+        'default': 0.0,
+        'type': float,
         'help': "Rotation axis rotation around the y axis (along beam direction) [deg]"},
     'axis-angle-z': {
-        'default': "0",
-        'type': tupleize(dtype=list),
+        'default': 0.0,
+        'type': float,
         'help': "Rotation axis rotation around the z axis (vertical) [deg]"},
     'volume-angle-x': {
-        'default': "0",
-        'type': tupleize(dtype=list),
+        'default': 0.0,
+        'type': float,
         'help': "Volume rotation around the x axis (horizontal) [deg]"},
     'volume-angle-y': {
-        'default': "0",
-        'type': tupleize(dtype=list),
+        'default': 0.0,
+        'type': float,
         'help': "Volume rotation around the y axis (along beam direction) [deg]"},
     'volume-angle-z': {
-        'default': "0",
-        'type': tupleize(dtype=list),
+        'default': 0.0,
+        'type': float,
         'help': "Volume rotation around the z axis (vertical) [deg]"},
     'compute-type': {
         'default': 'float',

@@ -144,7 +144,7 @@ class ROIandHistGroup(QGroupBox):
         self.clip_histo_checkbox.setChecked(False)
         EZVARS['inout']['clip_hist']['value'] = False
         self.eight_bit_rButton.setChecked(True)
-        parameters.params['main_region_bit_depth'] = str(8)
+        SECTIONS['general']['output-bitdepth']['value'] = 8
         self.min_val_entry.setText("0.0")
         self.max_val_entry.setText("0.0")
         self.crop_slices_checkbox.setChecked(False)
@@ -161,20 +161,20 @@ class ROIandHistGroup(QGroupBox):
         self.num_rows_entry.setText(str(SECTIONS['reading']['height']['value']))
         self.nth_row_entry.setText(str(SECTIONS['reading']['y-step']['value']))
         self.clip_histo_checkbox.setChecked(EZVARS['inout']['clip_hist']['value'])
-        if int(parameters.params['main_region_bit_depth']) == 8:
+        if int(SECTIONS['general']['output-bitdepth']['value']) == 8:
             self.eight_bit_rButton.setChecked(True)
             self.sixteen_bit_rButton.setChecked(False)
-        elif int(parameters.params['main_region_bit_depth']) == 16:
+        elif int(SECTIONS['general']['output-bitdepth']['value']) == 16:
             self.eight_bit_rButton.setChecked(False)
             self.sixteen_bit_rButton.setChecked(True)
-        self.min_val_entry.setText(str(parameters.params['main_region_histogram_min']))
-        self.max_val_entry.setText(str(parameters.params['main_region_histogram_max']))
+        self.min_val_entry.setText(str(SECTIONS['general']['output-minimum']['value']))
+        self.max_val_entry.setText(str(SECTIONS['general']['output-maximum']['value']))
         self.crop_slices_checkbox.setChecked(EZVARS['inout']['output-ROI']['value'])
         self.x_val_entry.setText(str(EZVARS['inout']['output-x']['value']))
         self.width_val_entry.setText(str(EZVARS['inout']['output-width']['value']))
         self.y_val_entry.setText(str(EZVARS['inout']['output-y']['value']))
         self.height_val_entry.setText(str(EZVARS['inout']['output-height']['value']))
-        self.rotate_vol_entry.setText(str(parameters.params['main_region_rotate_volume_clock']))
+        self.rotate_vol_entry.setText(str(SECTIONS['general-reconstruction']['volume-angle-z']['value']))
 
 
     def set_select_rows(self):
@@ -204,21 +204,21 @@ class ROIandHistGroup(QGroupBox):
     def set_bitdepth(self):
         if self.eight_bit_rButton.isChecked():
             LOG.debug("8 bit")
-            parameters.params['main_region_bit_depth'] = str(8)
+            SECTIONS['general']['output-bitdepth']['value'] = str(8)
             return '8'
         elif self.sixteen_bit_rButton.isChecked():
             LOG.debug("16 bit")
-            parameters.params['main_region_bit_depth'] = str(16)
+            SECTIONS['general']['output-bitdepth']['value'] = str(16)
             return '16'
 
 
     def set_min_val(self):
         LOG.debug(self.min_val_entry.text())
-        parameters.params['main_region_histogram_min'] = str(self.min_val_entry.text())
+        SECTIONS['general']['output-minimum']['value'] = str(self.min_val_entry.text())
 
     def set_max_val(self):
         LOG.debug(self.max_val_entry.text())
-        parameters.params['main_region_histogram_max'] = str(self.max_val_entry.text())
+        SECTIONS['general']['output-maximum']['value'] = str(self.max_val_entry.text())
 
     def set_crop_slices(self):
         LOG.debug("Crop slices: " + str(self.crop_slices_checkbox.isChecked()))

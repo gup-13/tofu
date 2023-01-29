@@ -291,8 +291,6 @@ class ConfigGroup(QGroupBox):
             outdir = os.path.abspath(indir + "/rec")
             self.output_dir_entry.setText(outdir)
         
-        self.init_dict_entries()
-        
         self.preproc_checkbox.setChecked(EZVARS['inout']['preprocess']['value'])
         self.preproc_entry.setText(EZVARS['inout']['preprocess-command']['value'])
         self.darks_entry.setText(EZVARS['inout']['darks-dir']['value'])
@@ -762,12 +760,12 @@ class ConfigGroup(QGroupBox):
                            SECTIONS['reading']['height']['value'],
                            SECTIONS['reading']['y-step']['value'],
                            EZVARS['inout']['clip_hist']['value'],
-                           params['main_region_bit_depth'],
-                           params['main_region_histogram_min'],
-                           params['main_region_histogram_max'],
+                           SECTIONS['general']['output-bitdepth']['value'],
+                           SECTIONS['general']['output-minimum']['value'],
+                           SECTIONS['general']['output-maximum']['value'],
                            EZVARS['inout']['preprocess']['value'],
                            EZVARS['inout']['preprocess-command']['value'],
-                           params['main_region_rotate_volume_clock'],
+                           SECTIONS['general-reconstruction']['volume-angle-z']['value'],   # Not updated through text box
                            EZVARS['inout']['output-ROI']['value'],
                            EZVARS['inout']['output-x']['value'],
                            EZVARS['inout']['output-width']['value'],
@@ -776,42 +774,42 @@ class ConfigGroup(QGroupBox):
                            EZVARS['inout']['dryrun']['value'],
                            EZVARS['inout']['save-params']['value'],
                            EZVARS['inout']['keep-tmp']['value'],
-                           params['advanced_ffc_sinFFC'],
-                           params['advanced_ffc_method'],
-                           params['advanced_ffc_eigen_pco_reps'],
-                           params['advanced_ffc_eigen_pco_downsample'],
-                           params['advanced_ffc_downsample'],
+                           EZVARS['flat-correction']['smart-ffc']['value'],
+                           EZVARS['flat-correction']['smart-ffc-method']['value'],
+                           EZVARS['flat-correction']['eigen-pco-reps']['value'],
+                           EZVARS['flat-correction']['eigen-pco-downsample']['value'],
+                           EZVARS['flat-correction']['downsample']['value'],
                            EZVARS['inout']['shared-flatsdarks']['value'],
                            EZVARS['inout']['path2-shared-darks']['value'],
                            EZVARS['inout']['path2-shared-flats']['value'],
                            EZVARS['inout']['shared-flats-after']['value'],
                            EZVARS['inout']['path2-shared-flats-after']['value'],
                            # NLMDN Parameters
-                           params['advanced_nlmdn_apply_after_reco'],
-                           params['advanced_nlmdn_input_dir'],
-                           params['advanced_nlmdn_input_is_file'],
-                           params['advanced_nlmdn_output_dir'],
-                           params['advanced_nlmdn_save_bigtiff'],
-                           params['advanced_nlmdn_sim_search_radius'],
-                           params['advanced_nlmdn_patch_radius'],
-                           params['advanced_nlmdn_smoothing_control'],
-                           params['advanced_nlmdn_noise_std'],
-                           params['advanced_nlmdn_window'],
-                           params['advanced_nlmdn_fast'],
-                           params['advanced_nlmdn_estimate_sigma'],
-                           params['advanced_nlmdn_dry_run'],
+                           EZVARS['nlmdn']['do-after-reco']['value'],
+                           EZVARS['nlmdn']['input-dir']['value'],
+                           EZVARS['nlmdn']['input-is-1file']['value'],
+                           EZVARS['nlmdn']['output_pattern']['value'],
+                           EZVARS['nlmdn']['bigtiff_output']['value'],
+                           EZVARS['nlmdn']['search-radius']['value'],
+                           EZVARS['nlmdn']['patch-radius']['value'],
+                           EZVARS['nlmdn']['h']['value'],
+                           EZVARS['nlmdn']['sigma']['value'],
+                           EZVARS['nlmdn']['window']['value'],
+                           EZVARS['nlmdn']['fast']['value'],
+                           EZVARS['nlmdn']['estimate-sigma']['value'],
+                           EZVARS['nlmdn']['dryrun']['value'],
                            # Advanced Parameters
-                           params['advanced_advtofu_extended_settings'],
-                           params['advanced_advtofu_lamino_angle'],
-                           params['advanced_adv_tofu_z_axis_rotation'],
-                           params['advanced_advtofu_center_position_z'],
-                           params['advanced_advtofu_y_axis_rotation'],
-                           params['advanced_advtofu_aux_ffc_dark_scale'],
-                           params['advanced_advtofu_aux_ffc_flat_scale'],
-                           params['advanced_optimize_verbose_console'],
-                           params['advanced_optimize_slice_mem_coeff'],
-                           params['advanced_optimize_num_gpus'],
-                           params['advanced_optimize_slices_per_device']
+                           EZVARS['advanced']['more-reco-params']['value'],
+                           SECTIONS['cone-beam-weight']['axis-angle-x']['value'],
+                           SECTIONS['general-reconstruction']['overall-angle']['value'],
+                           SECTIONS['cone-beam-weight']['center-position-z']['value'],
+                           SECTIONS['general-reconstruction']['axis-angle-y']['value'],
+                           EZVARS['flat-correction']['dark-scale']['value'],
+                           EZVARS['flat-correction']['flat-scale']['value'],
+                           SECTIONS['general']['verbose']['value'],
+                           SECTIONS['general-reconstruction']['slice-memory-coeff']['value'],
+                           SECTIONS['general-reconstruction']['data-splitting-policy']['value'],
+                           SECTIONS['general-reconstruction']['num-gpu-threads']['value']
                            )
         
             #################
@@ -899,12 +897,12 @@ class ConfigGroup(QGroupBox):
 
         # Can be negative when 16-bit selected
         # Min value: main_region_histogram_min
-        #if float(parameters.params['main_region_histogram_min']) < 0:
+        #if float(SECTIONS['general']['output-minimum']['value']) < 0:
         #    raise InvalidInputError("Value out of range for: Min value in 32-bit histogram")
 
         # # Max value: main_region_histogram_max
         # # Note: Didn't cap because it might also be negative for 16 bit
-        # if float(parameters.params['main_region_histogram_max']) < 0:
+        # if float(SECTIONS['general']['output-maximum']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: Max value in 32-bit histogram")
 
         # # x: main_region_crop_x
@@ -923,18 +921,18 @@ class ConfigGroup(QGroupBox):
         # if int(EZVARS['inout']['output-height']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: Crop slices: height")
 
-        # if int(parameters.params['advanced_ffc_eigen_pco_reps']) < 0:
+        # if int(EZVARS['flat-correction']['eigen-pco-reps']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: Flat Field Correction: Eigen PCO Repetitions")
 
-        # if int(parameters.params['advanced_ffc_eigen_pco_downsample']) < 0:
+        # if int(EZVARS['flat-correction']['eigen-pco-downsample']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: Flat Field Correction: Eigen PCO Downsample")
 
-        # if int(parameters.params['advanced_ffc_downsample']) < 0:
+        # if int(EZVARS['flat-correction']['downsample']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: Flat Field Correction: Downsample")
 
         # Can be negative value
         # Optional: rotate volume: main_region_rotate_volume_clock
-        #if float(parameters.params['main_region_rotate_volume_clock']) < 0:
+        #if float(SECTIONS['general-reconstruction']['volume-angle-z']['value']) < 0:
         #    raise InvalidInputError("Value out of range for: Optional: rotate volume clock by [deg]")
         #TODO ADD CHECKING NLMDN SETTINGS
         #TODO ADD CHECKING FOR ADVANCED SETTINGS
@@ -942,10 +940,10 @@ class ConfigGroup(QGroupBox):
         # if int(parameters.params['e_adv_rotation_range']) < 0:
         #     raise InvalidInputError("Advanced: Rotation range must be greater than or equal to zero")
 
-        # if float(parameters.params['advanced_advtofu_lamino_angle']) < 0 or float(parameters.params['advanced_advtofu_lamino_angle']) > 90:
+        # if float(SECTIONS['cone-beam-weight']['axis-angle-x']['value']) < 0 or float(SECTIONS['cone-beam-weight']['axis-angle-x']['value']) > 90:
         #     raise InvalidInputError("Advanced: Lamino angle must be a float between 0 and 90")
 
-        # if float(parameters.params['advanced_optimize_slice_mem_coeff']) < 0 or float(parameters.params['advanced_optimize_slice_mem_coeff']) > 1:
+        # if float(SECTIONS['general-reconstruction']['slice-memory-coeff']['value']) < 0 or float(SECTIONS['general-reconstruction']['slice-memory-coeff']['value']) > 1:
         #     raise InvalidInputError("Advanced: Slice memory coefficient must be between 0 and 1")
         # '''
 

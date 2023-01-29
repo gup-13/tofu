@@ -63,6 +63,7 @@ class GUI(qtw.QWidget):
         # Create and setup classes for each section of GUI
         # Main Tab
         self.config_group = ConfigGroup()
+        self.config_group.init_dict_entries()
         self.config_group.init_values()
         
         self.centre_of_rotation_group = CentreOfRotationGroup()

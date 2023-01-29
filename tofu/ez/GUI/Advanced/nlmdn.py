@@ -128,13 +128,13 @@ class NLMDNGroup(QGroupBox):
 
     def init_values(self):
         self.apply_to_reco_checkbox.setChecked(False)
-        parameters.params['advanced_nlmdn_apply_after_reco'] = False
+        EZVARS['nlmdn']['do-after-reco']['value'] = False
         self.input_dir_entry.setText(os.getcwd())
-        parameters.params['advanced_nlmdn_input_dir'] = os.getcwd()
+        EZVARS['nlmdn']['input-dir']['value'] = os.getcwd()
         self.output_dir_entry.setText(os.getcwd() + '-nlmfilt')
-        parameters.params['advanced_nlmdn_output_dir'] = os.getcwd() + '-nlmfilt'
+        EZVARS['nlmdn']['output_pattern']['value'] = os.getcwd() + '-nlmfilt'
         self.e_bigtif = False
-        parameters.params['advanced_nlmdn_save_bigtiff'] = False
+        EZVARS['nlmdn']['bigtiff_output']['value'] = False
         self.similarity_radius_entry.setText("10")
         self.patch_radius_entry.setText("3")
         self.smoothing_entry.setText("0.0")
@@ -147,24 +147,24 @@ class NLMDNGroup(QGroupBox):
         self.e_dryrun = False
 
     def set_values_from_params(self):
-        self.apply_to_reco_checkbox.setChecked(bool(parameters.params['advanced_nlmdn_apply_after_reco']))
-        self.input_dir_entry.setText(str(parameters.params['advanced_nlmdn_input_dir']))
-        self.output_dir_entry.setText(str(parameters.params['advanced_nlmdn_output_dir']))
-        self.save_bigtif_checkbox.setChecked(bool(parameters.params['advanced_nlmdn_save_bigtiff']))
-        self.similarity_radius_entry.setText(str(parameters.params['advanced_nlmdn_sim_search_radius']))
-        self.patch_radius_entry.setText(str(parameters.params['advanced_nlmdn_patch_radius']))
-        self.smoothing_entry.setText(str(parameters.params['advanced_nlmdn_smoothing_control']))
-        self.noise_std_entry.setText(str(parameters.params['advanced_nlmdn_noise_std']))
-        self.window_entry.setText(str(parameters.params['advanced_nlmdn_window']))
-        self.fast_checkbox.setChecked(bool(parameters.params['advanced_nlmdn_fast']))
-        self.sigma_checkbox.setChecked(bool(parameters.params['advanced_nlmdn_estimate_sigma']))
+        self.apply_to_reco_checkbox.setChecked(bool(EZVARS['nlmdn']['do-after-reco']['value']))
+        self.input_dir_entry.setText(str(EZVARS['nlmdn']['input-dir']['value']))
+        self.output_dir_entry.setText(str(EZVARS['nlmdn']['output_pattern']['value']))
+        self.save_bigtif_checkbox.setChecked(bool(EZVARS['nlmdn']['bigtiff_output']['value']))
+        self.similarity_radius_entry.setText(str(EZVARS['nlmdn']['search-radius']['value']))
+        self.patch_radius_entry.setText(str(EZVARS['nlmdn']['patch-radius']['value']))
+        self.smoothing_entry.setText(str(EZVARS['nlmdn']['h']['value']))
+        self.noise_std_entry.setText(str(EZVARS['nlmdn']['sigma']['value']))
+        self.window_entry.setText(str(EZVARS['nlmdn']['window']['value']))
+        self.fast_checkbox.setChecked(bool(EZVARS['nlmdn']['fast']['value']))
+        self.sigma_checkbox.setChecked(bool(EZVARS['nlmdn']['estimate-sigma']['value']))
 
     def set_apply_to_reco(self):
         LOG.debug(
             "Apply NLMDN to reconstructed slices checkbox: "
             + str(self.apply_to_reco_checkbox.isChecked())
         )
-        parameters.params['advanced_nlmdn_apply_after_reco'] = bool(
+        EZVARS['nlmdn']['do-after-reco']['value'] = bool(
             self.apply_to_reco_checkbox.isChecked()
         )
         if self.apply_to_reco_checkbox.isChecked():
@@ -192,14 +192,14 @@ class NLMDNGroup(QGroupBox):
         dir_explore = QFileDialog(self)
         directory = dir_explore.getExistingDirectory()
         self.input_dir_entry.setText(directory)
-        parameters.params['advanced_nlmdn_input_dir'] = directory
+        EZVARS['nlmdn']['input-dir']['value'] = directory
         self.output_dir_entry.setText(directory + "-nlmfilt")
-        parameters.params['advanced_nlmdn_output_dir'] = directory + "-nlmfilt"
-        parameters.params['advanced_nlmdn_input_is_file'] = False
+        EZVARS['nlmdn']['output_pattern']['value'] = directory + "-nlmfilt"
+        EZVARS['nlmdn']['input-is-1file']['value'] = False
 
     def set_indir_entry(self):
         LOG.debug("Indir entry: " + str(self.input_dir_entry.text()))
-        parameters.params['advanced_nlmdn_input_dir'] = str(self.input_dir_entry.text())
+        EZVARS['nlmdn']['input-dir']['value'] = str(self.input_dir_entry.text())
 
     def select_image(self):
         LOG.debug("Select one image button pressed")
@@ -212,52 +212,52 @@ class NLMDNGroup(QGroupBox):
             tmp = img_name + "-nlmfilt-%05i" + img_ext
             self.input_dir_entry.setText(file_path)
             self.output_dir_entry.setText(tmp)
-            parameters.params['advanced_nlmdn_input_dir'] = file_path
-            parameters.params['advanced_nlmdn_output_dir'] = tmp
-            parameters.params['advanced_nlmdn_input_is_file'] = True
+            EZVARS['nlmdn']['input-dir']['value'] = file_path
+            EZVARS['nlmdn']['output_pattern']['value'] = tmp
+            EZVARS['nlmdn']['input-is-1file']['value'] = True
 
     def set_outdir_button(self):
         LOG.debug("Select output directory pressed")
         dir_explore = QFileDialog(self)
         directory = dir_explore.getExistingDirectory()
         self.output_dir_entry.setText(directory)
-        parameters.params['advanced_nlmdn_output_dir'] = directory
+        EZVARS['nlmdn']['output_pattern']['value'] = directory
 
     def set_save_bigtif(self):
         LOG.debug("Save bigtif checkbox: " + str(self.save_bigtif_checkbox.isChecked()))
-        parameters.params['advanced_nlmdn_save_bigtiff'] = bool(self.save_bigtif_checkbox.isChecked())
+        EZVARS['nlmdn']['bigtiff_output']['value'] = bool(self.save_bigtif_checkbox.isChecked())
 
     def set_outdir_entry(self):
         LOG.debug("Outdir entry: " + str(self.output_dir_entry.text()))
-        parameters.params['advanced_nlmdn_output_dir'] = str(self.output_dir_entry.text())
+        EZVARS['nlmdn']['output_pattern']['value'] = str(self.output_dir_entry.text())
 
     def set_rad_sim_entry(self):
         LOG.debug("Radius for similarity: " + str(self.similarity_radius_entry.text()))
-        parameters.params['advanced_nlmdn_sim_search_radius'] = str(self.similarity_radius_entry.text())
+        EZVARS['nlmdn']['search-radius']['value'] = str(self.similarity_radius_entry.text())
 
     def set_rad_patch_entry(self):
         LOG.debug("Radius of patches: " + str(self.patch_radius_entry.text()))
-        parameters.params['advanced_nlmdn_patch_radius'] = str(self.patch_radius_entry.text())
+        EZVARS['nlmdn']['patch-radius']['value'] = str(self.patch_radius_entry.text())
 
     def set_smoothing_entry(self):
         LOG.debug("Smoothing control: " + str(self.smoothing_entry.text()))
-        parameters.params['advanced_nlmdn_smoothing_control'] = str(self.smoothing_entry.text())
+        EZVARS['nlmdn']['h']['value'] = str(self.smoothing_entry.text())
 
     def set_noise_entry(self):
         LOG.debug("Noise std: " + str(self.noise_std_entry.text()))
-        parameters.params['advanced_nlmdn_noise_std'] = str(self.noise_std_entry.text())
+        EZVARS['nlmdn']['sigma']['value'] = str(self.noise_std_entry.text())
 
     def set_window_entry(self):
         LOG.debug("Window: " + str(self.window_entry.text()))
-        parameters.params['advanced_nlmdn_window'] = str(self.window_entry.text())
+        EZVARS['nlmdn']['window']['value'] = str(self.window_entry.text())
 
     def set_fast_checkbox(self):
         LOG.debug("Fast: " + str(self.fast_checkbox.isChecked()))
-        parameters.params['advanced_nlmdn_fast'] = bool(self.fast_checkbox.isChecked())
+        EZVARS['nlmdn']['fast']['value'] = bool(self.fast_checkbox.isChecked())
 
     def set_sigma_checkbox(self):
         LOG.debug("Estimate sigma: " + str(self.sigma_checkbox.isChecked()))
-        parameters.params['advanced_nlmdn_estimate_sigma'] = bool(self.sigma_checkbox.isChecked())
+        EZVARS['nlmdn']['estimate-sigma']['value'] = bool(self.sigma_checkbox.isChecked())
 
     def help_button_pressed(self):
         LOG.debug("Help Button Pressed")
@@ -276,12 +276,12 @@ class NLMDNGroup(QGroupBox):
         dialog = QMessageBox.warning(self, "Warning: data can be lost", msg, QMessageBox.Yes | QMessageBox.No)
 
         if dialog == QMessageBox.Yes:
-            if os.path.exists(str(parameters.params['advanced_nlmdn_output_dir'])):
+            if os.path.exists(str(EZVARS['nlmdn']['output_pattern']['value'])):
                 LOG.debug("YES")
-                if parameters.params['advanced_nlmdn_output_dir'] == parameters.params['advanced_nlmdn_input_dir']:
+                if EZVARS['nlmdn']['output_pattern']['value'] == EZVARS['nlmdn']['input-dir']['value']:
                     LOG.debug("Cannot delete: output directory is the same as input")
                 else:
-                    rmtree(parameters.params['advanced_nlmdn_output_dir'])
+                    rmtree(EZVARS['nlmdn']['output_pattern']['value'])
                     LOG.debug("Directory with reconstructed data was removed")
             else:
                 LOG.debug("Directory does not exist")
@@ -290,25 +290,25 @@ class NLMDNGroup(QGroupBox):
 
     def dry_button_pressed(self):
         LOG.debug("Dry Run Button Pressed")
-        parameters.params['advanced_nlmdn_dry_run'] = True
+        EZVARS['nlmdn']['dryrun']['value'] = True
         self.apply_button_pressed()
-        parameters.params['advanced_nlmdn_dry_run'] = False
+        EZVARS['nlmdn']['dryrun']['value'] = False
 
     def apply_button_pressed(self):
         LOG.debug("Apply Filter Button Pressed")
-        args = tk_args(parameters.params['advanced_nlmdn_apply_after_reco'],
-                       parameters.params['advanced_nlmdn_input_dir'],
-                       parameters.params['advanced_nlmdn_input_is_file'],
-                       parameters.params['advanced_nlmdn_output_dir'],
-                       parameters.params['advanced_nlmdn_save_bigtiff'],
-                       parameters.params['advanced_nlmdn_sim_search_radius'],
-                       parameters.params['advanced_nlmdn_patch_radius'],
-                       parameters.params['advanced_nlmdn_smoothing_control'],
-                       parameters.params['advanced_nlmdn_noise_std'],
-                       parameters.params['advanced_nlmdn_window'],
-                       parameters.params['advanced_nlmdn_fast'],
-                       parameters.params['advanced_nlmdn_estimate_sigma'],
-                       parameters.params['advanced_nlmdn_dry_run'])
+        args = tk_args(EZVARS['nlmdn']['do-after-reco']['value'],
+                       EZVARS['nlmdn']['input-dir']['value'],
+                       EZVARS['nlmdn']['input-is-1file']['value'],
+                       EZVARS['nlmdn']['output_pattern']['value'],
+                       EZVARS['nlmdn']['bigtiff_output']['value'],
+                       EZVARS['nlmdn']['search-radius']['value'],
+                       EZVARS['nlmdn']['patch-radius']['value'],
+                       EZVARS['nlmdn']['h']['value'],
+                       EZVARS['nlmdn']['sigma']['value'],
+                       EZVARS['nlmdn']['window']['value'],
+                       EZVARS['nlmdn']['fast']['value'],
+                       EZVARS['nlmdn']['estimate-sigma']['value'],
+                       EZVARS['nlmdn']['dryrun']['value'])
         #LOG.debug(args.args)
         if os.path.exists(args.outdir) and not args.dryrun:
             title_text = "Warning: files can be overwritten"
@@ -316,7 +316,7 @@ class NLMDNGroup(QGroupBox):
             dialog = QMessageBox.warning(self, title_text, text1, QMessageBox.Yes | QMessageBox.No)
             if dialog == QMessageBox.Yes:
                 main_tk(args)#, EZVARS['inout']['clip_hist']['value'],
-                             # parameters.params['main_region_bit_depth'])
+                             # SECTIONS['general']['output-bitdepth']['value'])
                 QMessageBox.information(self, "Finished", "Finished")
         else:
             main_tk(args)
