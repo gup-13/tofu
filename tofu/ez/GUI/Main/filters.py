@@ -11,6 +11,8 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 
 import tofu.ez.params as parameters
+from tofu.ez.params import EZVARS
+from tofu.config import SECTIONS
 
 
 LOG = logging.getLogger(__name__)
@@ -171,96 +173,96 @@ class FiltersGroup(QGroupBox):
     def init_values(self):
         self.remove_wide_checkbox.setChecked(False)
         self.set_remove_spots()
-        parameters.params['main_filters_remove_spots'] = False
+        EZVARS['filters']['rm_spots']['value'] = False
         self.threshold_entry.setText(
-            str(parameters.params['main_filters_remove_spots_threshold'])
+            str(SECTIONS['find-large-spots']['spot-threshold']['value'])
         )
         self.spot_blur_entry.setText(
-            str(parameters.params['main_filters_remove_spots_blur_sigma'])
+            str(SECTIONS['find-large-spots']['gauss-sigma']['value'])
         )
         self.enable_RR_checkbox.setChecked(False)
         self.set_ring_removal()
-        parameters.params['main_filters_ring_removal'] = False
+        EZVARS['RR']['enable']['value'] = False
         self.use_LPF_rButton.setChecked(True)
         self.select_rButton()
         self.sarepy_rButton.setChecked(False)
         self.two_dimens_rButton.setChecked(True)
-        parameters.params['main_filters_ring_removal_ufo_lpf_1d_or_2d'] = False
+        EZVARS['RR']['ufo-2d']['value'] = False
         self.sigma_horizontal_entry.setText(
-            str(parameters.params['main_filters_ring_removal_ufo_lpf_sigma_horizontal'])
+            str(EZVARS['RR']['sx']['value'])
         )
         self.sigma_vertical_entry.setText(
-            str(parameters.params['main_filters_ring_removal_ufo_lpf_sigma_vertical'])
+            str(EZVARS['RR']['sy']['value'])
         )
 
         self.wind_size_entry.setText("21")
         self.remove_wide_checkbox.setChecked(False)
-        parameters.params['main_filters_ring_removal_sarepy_wide'] = False
+        EZVARS['RR']['spy-rm-wide']['value'] = False
         self.remove_wide_entry.setText("91")
         self.SNR_entry.setText("3")
 
     def set_values_from_params(self):
-        self.remove_spots_checkBox.setChecked(parameters.params['main_filters_remove_spots'])
-        self.threshold_entry.setText(str(parameters.params['main_filters_remove_spots_threshold']))
-        self.spot_blur_entry.setText(str(parameters.params['main_filters_remove_spots_blur_sigma']))
-        self.enable_RR_checkbox.setChecked(parameters.params['main_filters_ring_removal'])
-        if parameters.params['main_filters_ring_removal_ufo_lpf'] == True:
+        self.remove_spots_checkBox.setChecked(EZVARS['filters']['rm_spots']['value'])
+        self.threshold_entry.setText(SECTIONS['find-large-spots']['spot-threshold']['value'])
+        self.spot_blur_entry.setText(SECTIONS['find-large-spots']['gauss-sigma']['value'])
+        self.enable_RR_checkbox.setChecked(EZVARS['RR']['enable']['value'])
+        if EZVARS['RR']['use-ufo']['value'] == True:
             self.use_LPF_rButton.setChecked(True)
-        elif parameters.params['main_filters_ring_removal_ufo_lpf'] == False:
+        elif EZVARS['RR']['use-ufo']['value'] == False:
             self.use_LPF_rButton.setChecked(False)
-        if parameters.params['main_filters_ring_removal_ufo_lpf_1d_or_2d'] == True:
+        if EZVARS['RR']['ufo-2d']['value'] == True:
             self.one_dimens_rButton.setChecked(True)
             self.two_dimens_rButton.setChecked(False)
-        elif parameters.params['main_filters_ring_removal_ufo_lpf_1d_or_2d'] == False:
+        elif EZVARS['RR']['ufo-2d']['value'] == False:
             self.two_dimens_rButton.setChecked(True)
             self.one_dimens_rButton.setChecked(False)
-        self.sigma_horizontal_entry.setText(str(parameters.params['main_filters_ring_removal_ufo_lpf_sigma_horizontal']))
-        self.sigma_vertical_entry.setText(str(parameters.params['main_filters_ring_removal_ufo_lpf_sigma_vertical']))
-        self.wind_size_entry.setText(str(parameters.params['main_filters_ring_removal_sarepy_window_size']))
-        self.remove_wide_checkbox.setChecked(parameters.params['main_filters_ring_removal_sarepy_wide'])
-        self.remove_wide_entry.setText(str(parameters.params['main_filters_ring_removal_sarepy_window']))
-        self.SNR_entry.setText(str(parameters.params['main_filters_ring_removal_sarepy_SNR']))
+        self.sigma_horizontal_entry.setText(str(EZVARS['RR']['sx']['value']))
+        self.sigma_vertical_entry.setText(str(EZVARS['RR']['sy']['value']))
+        self.wind_size_entry.setText(str(EZVARS['RR']['spy-narrow-window']['value']))
+        self.remove_wide_checkbox.setChecked(EZVARS['RR']['spy-rm-wide']['value'])
+        self.remove_wide_entry.setText(str(EZVARS['RR']['spy-wide-window']['value']))
+        self.SNR_entry.setText(str(EZVARS['RR']['spy-wide-SNR']['value']))
 
     def set_remove_spots(self):
         LOG.debug("Remove large spots:" + str(self.remove_spots_checkBox.isChecked()))
-        parameters.params['main_filters_remove_spots'] = bool(self.remove_spots_checkBox.isChecked())
+        EZVARS['filters']['rm_spots']['value'] = bool(self.remove_spots_checkBox.isChecked())
 
     def set_threshold(self):
         LOG.debug(self.threshold_entry.text())
-        parameters.params['main_filters_remove_spots_threshold'] = str(self.threshold_entry.text())
+        SECTIONS['find-large-spots']['spot-threshold']['value'] = float(self.threshold_entry.text())
 
     def set_spot_blur(self):
         LOG.debug(self.spot_blur_entry.text())
-        parameters.params['main_filters_remove_spots_blur_sigma'] = str(self.spot_blur_entry.text())
+        SECTIONS['find-large-spots']['gauss-sigma']['value'] = float(self.spot_blur_entry.text())
 
     def set_ring_removal(self):
         LOG.debug("RR: " + str(self.enable_RR_checkbox.isChecked()))
-        parameters.params['main_filters_ring_removal'] = bool(self.enable_RR_checkbox.isChecked())
+        EZVARS['RR']['enable']['value'] = bool(self.enable_RR_checkbox.isChecked())
 
     def select_rButton(self):
         if self.use_LPF_rButton.isChecked():
             LOG.debug("Use LPF")
-            parameters.params['main_filters_ring_removal_ufo_lpf'] = bool(True)
+            EZVARS['RR']['use-ufo']['value'] = bool(True)
         elif self.sarepy_rButton.isChecked():
             LOG.debug("Use Sarepy")
-            parameters.params['main_filters_ring_removal_ufo_lpf'] = bool(False)
+            EZVARS['RR']['use-ufo']['value'] = bool(False)
 
     def select_dimens_rButton(self):
         if self.one_dimens_rButton.isChecked():
             LOG.debug("One dimension")
-            parameters.params['main_filters_ring_removal_ufo_lpf_1d_or_2d'] = bool(True)
+            EZVARS['RR']['ufo-2d']['value'] = bool(True)
         elif self.two_dimens_rButton.isChecked():
             LOG.debug("Two dimensions")
-            parameters.params['main_filters_ring_removal_ufo_lpf_1d_or_2d'] = bool(False)
+            EZVARS['RR']['ufo-2d']['value'] = bool(False)
 
     def set_sigma_horizontal(self):
         LOG.debug(self.sigma_horizontal_entry.text())
-        parameters.params['main_filters_ring_removal_ufo_lpf_sigma_horizontal'] = \
+        EZVARS['RR']['sx']['value'] = \
             str(self.sigma_horizontal_entry.text())
 
     def set_sigma_vertical(self):
         LOG.debug(self.sigma_vertical_entry.text())
-        parameters.params['main_filters_ring_removal_ufo_lpf_sigma_vertical'] = \
+        EZVARS['RR']['sy']['value'] = \
             str(self.sigma_vertical_entry.text())
 
     def set_ufoRR_params_for_360_axis_search(self):
@@ -269,16 +271,16 @@ class FiltersGroup(QGroupBox):
 
     def set_window_size(self):
         LOG.debug(self.wind_size_entry.text())
-        parameters.params['main_filters_ring_removal_sarepy_window_size'] = str(self.wind_size_entry.text())
+        EZVARS['RR']['spy-narrow-window']['value'] = str(self.wind_size_entry.text())
 
     def set_remove_wide(self):
         LOG.debug("Wide: " + str(self.remove_wide_checkbox.isChecked()))
-        parameters.params['main_filters_ring_removal_sarepy_wide'] = bool(self.remove_wide_checkbox.isChecked())
+        EZVARS['RR']['spy-rm-wide']['value'] = bool(self.remove_wide_checkbox.isChecked())
 
     def set_wind(self):
         LOG.debug(self.remove_wide_entry.text())
-        parameters.params['main_filters_ring_removal_sarepy_window'] = str(self.remove_wide_entry.text())
+        EZVARS['RR']['spy-wide-window']['value'] = str(self.remove_wide_entry.text())
 
     def set_SNR(self):
         LOG.debug(self.SNR_entry.text())
-        parameters.params['main_filters_ring_removal_sarepy_SNR'] = str(self.SNR_entry.text())
+        EZVARS['RR']['spy-wide-SNR']['value'] = str(self.SNR_entry.text())

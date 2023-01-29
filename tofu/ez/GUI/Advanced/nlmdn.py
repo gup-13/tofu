@@ -15,6 +15,9 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, pyqtSignal
 
 import tofu.ez.params as parameters
+from tofu.ez.params import EZVARS
+from tofu.config import SECTIONS
+
 from tofu.ez.main_nlm import main_tk
 
 
@@ -312,7 +315,7 @@ class NLMDNGroup(QGroupBox):
             text1 = "Output directory exists. Files can be overwritten. Proceed?"
             dialog = QMessageBox.warning(self, title_text, text1, QMessageBox.Yes | QMessageBox.No)
             if dialog == QMessageBox.Yes:
-                main_tk(args)#, parameters.params['main_region_clip_histogram'],
+                main_tk(args)#, EZVARS['inout']['clip_hist']['value'],
                              # parameters.params['main_region_bit_depth'])
                 QMessageBox.information(self, "Finished", "Finished")
         else:

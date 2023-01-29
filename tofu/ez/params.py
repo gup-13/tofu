@@ -48,7 +48,7 @@ MAP_TABLE = [
     ['main_config_flats2_dir_name','ezvars', 'inout', 'flats2-dir'],       # None str (EZVARS['inout']['flats2-dir])
     ['main_config_save_multipage_tiff','ezvars','inout','bigtiff-output'],   # EZVARS['inout']['bigtiff-output'] str
     
-    # center of rotation parameters
+    # center of rotation parameters 
     ['main_cor_axis_search_method','ezvars','COR','search-method'],           # EZVARS['COR']['search-method'] int
     ['main_cor_axis_search_interval','ezvars','COR','search-interval'],       # EZVARS['COR']['search-interval'] str
     ['main_cor_search_row_start','ezvars','COR','search-row'],                # EZVARS['COR']['search-row'] int
@@ -83,7 +83,7 @@ MAP_TABLE = [
     ['main_region_number_rows','sections','reading','height'],          #SECTIONS['reading']['height'] int -> int [0,inf]
     ['main_region_nth_row','sections','reading','y-step'],              #SECTIONS['reading']['y-step'] int -> int [0,inf]
     
-    # conv to 8 bit
+    # conv to 8 bit ##
     ['main_region_clip_histogram','ezvars','inout','clip_hist'],        #EZVARS['inout']['clip_hist'] bool
     ['main_region_bit_depth','sections','general','output-bitdepth'],   #SECTIONS['general']['output-bitdepth'] int -> int [0,inf]
     ['main_region_histogram_min','sections','general','output-minimum'],#SECTIONS['general']['output-minimum'] float -> float

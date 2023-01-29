@@ -62,6 +62,9 @@ class GUI(qtw.QWidget):
 
         # Create and setup classes for each section of GUI
         # Main Tab
+        self.config_group = ConfigGroup()
+        self.config_group.init_values()
+        
         self.centre_of_rotation_group = CentreOfRotationGroup()
         self.centre_of_rotation_group.init_values()
 
@@ -76,9 +79,6 @@ class GUI(qtw.QWidget):
 
         self.binning_group = ROIandHistGroup()  #TODO rename binning to something short and meaningful
         self.binning_group.init_values()
-
-        self.config_group = ConfigGroup()
-        self.config_group.init_values()
 
         # Image Viewer
         self.image_group = ImageViewerGroup()
@@ -184,7 +184,7 @@ class GUI(qtw.QWidget):
         # Add tabs to widget
         layout.addWidget(self.tabs)
         self.setLayout(layout)
-
+        
     def update_values_from_params(self):
         """
         Updates displayed values when loaded in from external .yaml file of parameters
@@ -227,7 +227,6 @@ class GUI(qtw.QWidget):
                         str(EZVARS['inout']['output-dir']['value'] + '/sli'))
             else:
                 print("No output directory found")
-
     def closeEvent(self, event):
         """
         Creates verification message box

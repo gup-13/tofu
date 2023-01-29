@@ -3,7 +3,8 @@ from PyQt5.QtWidgets import QGridLayout, QRadioButton, QLabel, QGroupBox, QLineE
 from PyQt5.QtCore import Qt
 
 import tofu.ez.params as parameters
-
+from tofu.ez.params import EZVARS
+from tofu.config import SECTIONS
 
 LOG = logging.getLogger(__name__)
 
@@ -136,18 +137,18 @@ class ROIandHistGroup(QGroupBox):
 
     def init_values(self):
         self.select_rows_checkbox.setChecked(False)
-        parameters.params['main_region_select_rows'] = False
+        EZVARS['inout']['input_ROI']['value'] = False
         self.first_row_entry.setText("100")
         self.num_rows_entry.setText("200")
         self.nth_row_entry.setText("20")
         self.clip_histo_checkbox.setChecked(False)
-        parameters.params['main_region_clip_histogram'] = False
+        EZVARS['inout']['clip_hist']['value'] = False
         self.eight_bit_rButton.setChecked(True)
         parameters.params['main_region_bit_depth'] = str(8)
         self.min_val_entry.setText("0.0")
         self.max_val_entry.setText("0.0")
         self.crop_slices_checkbox.setChecked(False)
-        parameters.params['main_region_crop_slices'] = False
+        EZVARS['inout']['output-ROI']['value'] = False
         self.x_val_entry.setText("0")
         self.width_val_entry.setText("0")
         self.y_val_entry.setText("0")
@@ -155,11 +156,11 @@ class ROIandHistGroup(QGroupBox):
         self.rotate_vol_entry.setText("0.0")
 
     def set_values_from_params(self):
-        self.select_rows_checkbox.setChecked(parameters.params['main_region_select_rows'])
-        self.first_row_entry.setText(str(parameters.params['main_region_first_row']))
-        self.num_rows_entry.setText(str(parameters.params['main_region_number_rows']))
-        self.nth_row_entry.setText(str(parameters.params['main_region_nth_row']))
-        self.clip_histo_checkbox.setChecked(parameters.params['main_region_clip_histogram'])
+        self.select_rows_checkbox.setChecked(EZVARS['inout']['input_ROI']['value'])
+        self.first_row_entry.setText(str(SECTIONS['reading']['y']['value']))
+        self.num_rows_entry.setText(str(SECTIONS['reading']['height']['value']))
+        self.nth_row_entry.setText(str(SECTIONS['reading']['y-step']['value']))
+        self.clip_histo_checkbox.setChecked(EZVARS['inout']['clip_hist']['value'])
         if int(parameters.params['main_region_bit_depth']) == 8:
             self.eight_bit_rButton.setChecked(True)
             self.sixteen_bit_rButton.setChecked(False)
@@ -168,34 +169,34 @@ class ROIandHistGroup(QGroupBox):
             self.sixteen_bit_rButton.setChecked(True)
         self.min_val_entry.setText(str(parameters.params['main_region_histogram_min']))
         self.max_val_entry.setText(str(parameters.params['main_region_histogram_max']))
-        self.crop_slices_checkbox.setChecked(parameters.params['main_region_crop_slices'])
-        self.x_val_entry.setText(str(parameters.params['main_region_crop_x']))
-        self.width_val_entry.setText(str(parameters.params['main_region_crop_width']))
-        self.y_val_entry.setText(str(parameters.params['main_region_crop_y']))
-        self.height_val_entry.setText(str(parameters.params['main_region_crop_height']))
+        self.crop_slices_checkbox.setChecked(EZVARS['inout']['output-ROI']['value'])
+        self.x_val_entry.setText(str(EZVARS['inout']['output-x']['value']))
+        self.width_val_entry.setText(str(EZVARS['inout']['output-width']['value']))
+        self.y_val_entry.setText(str(EZVARS['inout']['output-y']['value']))
+        self.height_val_entry.setText(str(EZVARS['inout']['output-height']['value']))
         self.rotate_vol_entry.setText(str(parameters.params['main_region_rotate_volume_clock']))
 
 
     def set_select_rows(self):
         LOG.debug("Select rows: " + str(self.select_rows_checkbox.isChecked()))
-        parameters.params['main_region_select_rows'] = bool(self.select_rows_checkbox.isChecked())
+        EZVARS['inout']['input_ROI']['value'] = bool(self.select_rows_checkbox.isChecked())
 
     def set_first_row(self):
         LOG.debug(self.first_row_entry.text())
-        parameters.params['main_region_first_row'] = str(self.first_row_entry.text())
+        SECTIONS['reading']['y']['value'] = str(self.first_row_entry.text())
 
     def set_num_rows(self):
         LOG.debug(self.num_rows_entry.text())
-        parameters.params['main_region_number_rows'] = str(self.num_rows_entry.text())
+        SECTIONS['reading']['height']['value'] = str(self.num_rows_entry.text())
 
     def set_reco_nth_rows(self):
         LOG.debug(self.nth_row_entry.text())
-        parameters.params['main_region_nth_row'] = str(self.nth_row_entry.text())
+        SECTIONS['reading']['y-step']['value'] = str(self.nth_row_entry.text())
 
     def set_clip_histo(self):
         LOG.debug("Clip histo: " + str(self.clip_histo_checkbox.isChecked()))
-        parameters.params['main_region_clip_histogram'] = bool(self.clip_histo_checkbox.isChecked())
-        if parameters.params['main_region_clip_histogram']:
+        EZVARS['inout']['clip_hist']['value'] = bool(self.clip_histo_checkbox.isChecked())
+        if EZVARS['inout']['clip_hist']['value']:
             return self.set_bitdepth()
         else:
             return '32'
@@ -221,23 +222,23 @@ class ROIandHistGroup(QGroupBox):
 
     def set_crop_slices(self):
         LOG.debug("Crop slices: " + str(self.crop_slices_checkbox.isChecked()))
-        parameters.params['main_region_crop_slices'] = bool(self.crop_slices_checkbox.isChecked())
+        EZVARS['inout']['output-ROI']['value'] = bool(self.crop_slices_checkbox.isChecked())
 
     def set_x(self):
         LOG.debug(self.x_val_entry.text())
-        parameters.params['main_region_crop_x'] = str(self.x_val_entry.text())
+        EZVARS['inout']['output-x']['value'] = str(self.x_val_entry.text())
 
     def set_width(self):
         LOG.debug(self.width_val_entry.text())
-        parameters.params['main_region_crop_width'] = str(self.width_val_entry.text())
+        EZVARS['inout']['output-width']['value'] = str(self.width_val_entry.text())
 
     def set_y(self):
         LOG.debug(self.y_val_entry.text())
-        parameters.params['main_region_crop_y'] = str(self.y_val_entry.text())
+        EZVARS['inout']['output-y']['value'] = str(self.y_val_entry.text())
 
     def set_height(self):
         LOG.debug(self.height_val_entry.text())
-        parameters.params['main_region_crop_height'] = str(self.height_val_entry.text())
+        EZVARS['inout']['output-height']['value'] = str(self.height_val_entry.text())
 
     def set_rotate_volume(self):
         LOG.debug(self.rotate_vol_entry.text())

@@ -17,6 +17,8 @@ from tofu.ez.util import *
 from tofu.ez.image_read_write import TiffSequenceReader
 from tifffile import imwrite
 import tofu.ez.params as glob_parameters
+from tofu.ez.params import EZVARS
+from tofu.config import SECTIONS
 
 LOG = logging.getLogger(__name__)
 
@@ -205,7 +207,7 @@ def fmt_nlmdn_ufo_cmd(inpath: str, outpath: str, args):  ### TODO call one funct
     cmd += ' ! write filename={}'.format(enquote(outpath))
     if not args.advanced_nlmdn_save_bigtiff:
         cmd += " bytes-per-file=0 tiff-bigtiff=False"
-    if glob_parameters.params['main_region_clip_histogram']:
+    if EZVARS['inout']['clip_hist']['value']:
         cmd += f" bits={glob_parameters.params['main_region_bit_depth']} rescale=False"
     return cmd
 

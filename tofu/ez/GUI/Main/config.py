@@ -292,7 +292,6 @@ class ConfigGroup(QGroupBox):
             self.output_dir_entry.setText(outdir)
         
         self.init_dict_entries()
-        #TODO Set text in text boxes from the parameters
         
         self.preproc_checkbox.setChecked(EZVARS['inout']['preprocess']['value'])
         self.preproc_entry.setText(EZVARS['inout']['preprocess-command']['value'])
@@ -735,45 +734,45 @@ class ConfigGroup(QGroupBox):
                            EZVARS['inout']['tmp-dir']['value'],
                            EZVARS['inout']['output-dir']['value'],
                            EZVARS['inout']['bigtiff-output']['value'],
-                           params['main_cor_axis_search_method'],
-                           params['main_cor_axis_search_interval'],
-                           params['main_cor_search_row_start'],
-                           params['main_cor_recon_patch_size'],
-                           params['main_cor_axis_column'],
-                           params['main_cor_axis_increment_step'],
-                           params['main_filters_remove_spots'],
-                           params['main_filters_remove_spots_threshold'],
-                           params['main_filters_remove_spots_blur_sigma'],
-                           params['main_filters_ring_removal'],
-                           params['main_filters_ring_removal_ufo_lpf'],
-                           params['main_filters_ring_removal_ufo_lpf_1d_or_2d'],
-                           params['main_filters_ring_removal_ufo_lpf_sigma_horizontal'],
-                           params['main_filters_ring_removal_ufo_lpf_sigma_vertical'],
-                           params['main_filters_ring_removal_sarepy_window_size'],
-                           params['main_filters_ring_removal_sarepy_wide'],
-                           params['main_filters_ring_removal_sarepy_window'],
-                           params['main_filters_ring_removal_sarepy_SNR'],
-                           params['main_pr_phase_retrieval'],
-                           params['main_pr_photon_energy'],
-                           params['main_pr_pixel_size'],
-                           params['main_pr_detector_distance'],
-                           params['main_pr_delta_beta_ratio'],
-                           params['main_region_select_rows'],
-                           params['main_region_first_row'],
-                           params['main_region_number_rows'],
-                           params['main_region_nth_row'],
-                           params['main_region_clip_histogram'],
+                           EZVARS['COR']['search-method']['value'],
+                           EZVARS['COR']['search-interval']['value'],
+                           EZVARS['COR']['search-row']['value'],
+                           EZVARS['COR']['patch-size']['value'],
+                           EZVARS['COR']['user-defined-ax']['value'],
+                           EZVARS['COR']['user-defined-dax']['value'],
+                           EZVARS['filters']['rm_spots']['value'],
+                           SECTIONS['find-large-spots']['spot-threshold']['value'],
+                           SECTIONS['find-large-spots']['gauss-sigma']['value'],
+                           EZVARS['RR']['enable']['value'],
+                           EZVARS['RR']['use-ufo']['value'],
+                           EZVARS['RR']['ufo-2d']['value'],
+                           EZVARS['RR']['sx']['value'],
+                           EZVARS['RR']['sy']['value'],
+                           EZVARS['RR']['spy-narrow-window']['value'],
+                           EZVARS['RR']['spy-rm-wide']['value'],
+                           EZVARS['RR']['spy-wide-window']['value'],
+                           EZVARS['RR']['spy-wide-SNR']['value'],
+                           SECTIONS['retrieve-phase']['enable']['value'],
+                           SECTIONS['retrieve-phase']['energy']['value'],
+                           SECTIONS['retrieve-phase']['pixel-size']['value'],
+                           SECTIONS['retrieve-phase']['propagation-distance']['value'][0],  #(?) Not sure what to do with y-direction
+                           SECTIONS['retrieve-phase']['regularization-rate']['value'],
+                           EZVARS['inout']['input_ROI']['value'],
+                           SECTIONS['reading']['y']['value'],
+                           SECTIONS['reading']['height']['value'],
+                           SECTIONS['reading']['y-step']['value'],
+                           EZVARS['inout']['clip_hist']['value'],
                            params['main_region_bit_depth'],
                            params['main_region_histogram_min'],
                            params['main_region_histogram_max'],
                            EZVARS['inout']['preprocess']['value'],
                            EZVARS['inout']['preprocess-command']['value'],
                            params['main_region_rotate_volume_clock'],
-                           params['main_region_crop_slices'],
-                           params['main_region_crop_x'],
-                           params['main_region_crop_width'],
-                           params['main_region_crop_y'],
-                           params['main_region_crop_height'],
+                           EZVARS['inout']['output-ROI']['value'],
+                           EZVARS['inout']['output-x']['value'],
+                           EZVARS['inout']['output-width']['value'],
+                           EZVARS['inout']['output-y']['value'],
+                           EZVARS['inout']['output-height']['value'],
                            EZVARS['inout']['dryrun']['value'],
                            EZVARS['inout']['save-params']['value'],
                            EZVARS['inout']['keep-tmp']['value'],
@@ -847,78 +846,55 @@ class ConfigGroup(QGroupBox):
         """
         Determines whether user-input values are valid
         """
-
-        # Search rotation: main_cor_axis_search_interval
-
-        # Search in slice: main_cor_search_row_start
-        # if int(parameters.params['main_cor_search_row_start']) < 0:
-        #     raise InvalidInputError("Value out of range for: Search in slice from row number")
-
-        # Size of reconstructed: main_cor_recon_patch_size
-        # if int(parameters.params['main_cor_recon_patch_size']) < 0:
-        #     raise InvalidInputError("Value out of range for: Size of reconstructed patch [pixel]")
-
-        # Axis is in column No: main_cor_axis_column
-        # if float(parameters.params['main_cor_axis_column']) < 0:
-        #     raise InvalidInputError("Value out of range for: Axis is in column No [pixel]")
-
-        # Threshold: main_filters_remove_spots_threshold
-        # if int(parameters.params['main_filters_remove_spots_threshold']) < 0:
-        #     raise InvalidInputError("Value out of range for: Threshold (prominence of the spot) [counts]")
-
-        # Spot blur: main_filters_remove_spots_blur_sigma
-        # if int(parameters.params['main_filters_remove_spots_blur_sigma']) < 0:
-        #     raise InvalidInputError("Value out of range for: Spot blur. sigma [pixels]")
-
         # Sigma: e_sig_hor
-        # if int(parameters.params['main_filters_ring_removal_ufo_lpf_sigma_horizontal']) < 0:
+        # if int(EZVARS['RR']['sx']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: ufo ring-removal sigma horizontal")
 
         # Sigma: e_sig_ver
-        # if int(parameters.params['main_filters_ring_removal_ufo_lpf_sigma_vertical']) < 0:
+        # if int(EZVARS['RR']['sy']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: ufo ring-removal sigma vertical")
 
         # Window size: main_filters_ring_removal_sarepy_window_size
-        # if int(parameters.params['main_filters_ring_removal_sarepy_window_size']) < 0:
+        # if int(EZVARS['RR']['spy-narrow-window']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: window size")
 
         # Wind: main_filters_ring_removal_sarepy_window
-        # if int(parameters.params['main_filters_ring_removal_sarepy_window']) < 0:
+        # if int(EZVARS['RR']['spy-wide-window']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: wind")
 
         # SNR: main_filters_ring_removal_sarepy_SNR
-        # if int(parameters.params['main_filters_ring_removal_sarepy_SNR']) < 0:
+        # if int(EZVARS['RR']['spy-wide-SNR']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: SNR")
 
         # Photon energy: main_pr_photon_energy
-        # if float(parameters.params['main_pr_photon_energy']) < 0:
+        # if float(SECTIONS['retrieve-phase']['energy']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: Photon energy [keV]")
 
         # Pixel size: main_pr_pixel_size
-        # if float(parameters.params['main_pr_pixel_size']) < 0:
+        # if float(SECTIONS['retrieve-phase']['pixel-size']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: Pixel size [micron]")
 
         # Sample detector distance: main_pr_detector_distance
         # Note: Can't restrict_value for tuples -> one value becomes two values (x,y)?
-        if float(parameters.params['main_pr_detector_distance']) < 0:
-            raise InvalidInputError("Value out of range for: Sample-detector distance [m]")
+        # if float(SECTIONS['retrieve-phase']['propagation-distance']['value']) < 0:
+        #     raise InvalidInputError("Value out of range for: Sample-detector distance [m]")
 
         # # Delta/beta ratio: main_pr_delta_beta_ratio
         # Note: Has diff comment?
-        # if int(parameters.params['main_pr_delta_beta_ratio']) < 0:
+        # if int(SECTIONS['retrieve-phase']['regularization-rate']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: Delta/beta ratio: (try default if unsure)")
 
         # First row in projections: main_region_first_row
         # Note: diff comment
-        # if int(parameters.params['main_region_first_row']) < 0:
+        # if int(SECTIONS['reading']['y']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: First row in projections")
 
         # Number of rows: main_region_number_rows
-        # if int(parameters.params['main_region_number_rows']) < 0:
+        # if int(SECTIONS['reading']['height']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: Number of rows (ROI height)")
 
         # # Reconstruct every Nth row: main_region_nth_row
-        # if int(parameters.params['main_region_nth_row']) < 0:
+        # if int(SECTIONS['reading']['y-step']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: Reconstruct every Nth row")
 
         # Can be negative when 16-bit selected
@@ -932,19 +908,19 @@ class ConfigGroup(QGroupBox):
         #     raise InvalidInputError("Value out of range for: Max value in 32-bit histogram")
 
         # # x: main_region_crop_x
-        # if int(parameters.params['main_region_crop_x']) < 0:
+        # if int(EZVARS['inout']['output-x']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: Crop slices: x")
 
         # # width: main_region_crop_width
-        # if int(parameters.params['main_region_crop_width']) < 0:
+        # if int(EZVARS['inout']['output-width']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: Crop slices: width")
 
         # # y: main_region_crop_y
-        # if int(parameters.params['main_region_crop_y']) < 0:
+        # if int(EZVARS['inout']['output-y']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: Crop slices: y")
 
         # # height: main_region_crop_height
-        # if int(parameters.params['main_region_crop_height']) < 0:
+        # if int(EZVARS['inout']['output-height']['value']) < 0:
         #     raise InvalidInputError("Value out of range for: Crop slices: height")
 
         # if int(parameters.params['advanced_ffc_eigen_pco_reps']) < 0:

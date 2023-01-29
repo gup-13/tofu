@@ -132,8 +132,8 @@ def find_overlap(parameters):
             print("Applying ring removal filter")
             tmpdir = os.path.join(parameters['360overlap_temp_dir'], index_dir)
             rrcmd = ufoRRcmdgen.get_filter2d_sinos_cmd(tmpdir,
-                                   glob_parameters.params['main_filters_ring_removal_ufo_lpf_sigma_horizontal'],
-                                   glob_parameters.params['main_filters_ring_removal_ufo_lpf_sigma_vertical'],
+                                   EZVARS['RR']['sx']['value'],
+                                   EZVARS['RR']['sy']['value'],
                                    sin_height, sin_width)
             print(rrcmd)
             os.system(rrcmd)
