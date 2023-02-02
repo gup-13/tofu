@@ -24,7 +24,7 @@ from tofu.ez.GUI.message_dialog import warning_message
 import tofu.ez.params as parameters
 from tofu.config import SECTIONS
 from tofu.ez.params import EZVARS, MAP_TABLE
-
+import argparse
 
 #TODO Get rid of the old args structure and store all parameters
 # like tofu does
@@ -35,6 +35,36 @@ from tofu.ez.params import EZVARS, MAP_TABLE
 
 LOG = logging.getLogger(__name__)
 
+
+def add_value_to_dict_entry(dict_entry, param_value_str):
+    #print(dict_entry, param_value_str, dict_entry['default'])
+    if 'action' in dict_entry:
+        # no 'type' can be defined in action entries
+        dict_entry['value'] = bool(param_value_str)
+    elif param_value_str == '':
+        # takes default value if empty string
+        dict_entry['value'] = dict_entry['type'](dict_entry['default'])
+    else:
+        try:
+            dict_entry['value'] = dict_entry['type'](param_value_str)
+        except argparse.ArgumentTypeError: 
+            dict_entry['value'] = dict_entry['type'](param_value_str, clamp=True)
+        except ValueError: #int can't convert string with decimal (e.g. "1.0" -> 1)
+            dict_entry['value'] = dict_entry['type'](float(param_value_str))
+             
+    print("Input: ", param_value_str, "; Dict value: ", dict_entry['value'])
+    
+def init_dict_entries():
+    # Place default value in each setting
+    for key1 in EZVARS.keys():
+        for key2 in EZVARS[key1].keys():
+            dict_entry = EZVARS[key1][key2]
+            add_value_to_dict_entry(dict_entry, '') # Add default value
+    
+    for key1 in SECTIONS.keys():
+        for key2 in SECTIONS[key1].keys():
+            dict_entry = SECTIONS[key1][key2]
+            add_value_to_dict_entry(dict_entry, '') # Add default value
 
 class ConfigGroup(QGroupBox):
     """
@@ -684,31 +714,6 @@ class ConfigGroup(QGroupBox):
                     raise InvalidInputError("Parameter \"" + params[key] + "\" cannot be converted to the type: " + m['type'])
             else:
                 LOG.debug("No mapping to import parameter \'" + key + "\'.")
-                
-    def add_value_to_dict_entry(self, dict_entry, param_value_str):
-        #LOG.debug(str(key), params[str(key)])
-        #print(dict_entry, param_value_str, dict_entry['default'])
-        if 'action' in dict_entry:
-            # no 'type' can be defined in action entries
-            dict_entry['value'] = bool(param_value_str)
-        elif param_value_str == '':
-            # takes default value if empty string
-            dict_entry['value'] = dict_entry['type'](dict_entry['default'])
-        else:
-            dict_entry['value'] = dict_entry['type'](param_value_str)
-        print(param_value_str, dict_entry['value'])
-        
-    def init_dict_entries(self):
-        # Place default value in each setting
-        for key1 in EZVARS.keys():
-            for key2 in EZVARS[key1].keys():
-                dict_entry = EZVARS[key1][key2]
-                self.add_value_to_dict_entry(dict_entry, '') # Add default value
-        
-        for key1 in SECTIONS.keys():
-            for key2 in SECTIONS[key1].keys():
-                dict_entry = SECTIONS[key1][key2]
-                self.add_value_to_dict_entry(dict_entry, '') # Add default value
         
     def update_params(self):
         """
@@ -812,16 +817,14 @@ class ConfigGroup(QGroupBox):
                            SECTIONS['general-reconstruction']['num-gpu-threads']['value']
                            )
         
-            #################
-            LOG.debug("Entering parameter values into dictionary entries...")
+            # #################
+            # LOG.debug("Entering parameter values into dictionary entries...")
             
-            # self.init_dict_entries()
-            
-            # Insert values of parameter files into dictionary entries
-            map_param_to_dict_entries = self.createMapFromParamsToDictEntry()
-            for p in params:
-                dict_entry = map_param_to_dict_entries[str(p)]
-                self.add_value_to_dict_entry(dict_entry, params[str(p)])
+            # # Insert values of parameter files into dictionary entries
+            # map_param_to_dict_entries = self.createMapFromParamsToDictEntry()
+            # for p in params:
+            #     dict_entry = map_param_to_dict_entries[str(p)]
+            #     add_value_to_dict_entry(dict_entry, params[str(p)])
         
             ####################
             
@@ -1157,7 +1160,6 @@ class tk_args():
 
         LOG.debug("Contents of arg dict: ")
         LOG.debug(self.args.items())
-
 
 class InvalidInputError(Exception):
     """

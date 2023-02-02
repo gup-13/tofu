@@ -9,10 +9,12 @@ from PyQt5.QtWidgets import (
     QLineEdit,
 )
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QDoubleValidator
 
-import tofu.ez.params as parameters
+
 from tofu.ez.params import EZVARS
 from tofu.config import SECTIONS
+from tofu.ez.GUI.Main.config import add_value_to_dict_entry
 
 
 LOG = logging.getLogger(__name__)
@@ -43,6 +45,7 @@ class FiltersGroup(QGroupBox):
         )
         self.threshold_entry = QLineEdit()
         self.threshold_entry.editingFinished.connect(self.set_threshold)
+        self.threshold_entry.setValidator(QDoubleValidator())
 
         self.spot_blur_label = QLabel()
         self.spot_blur_label.setText("Spot blur. sigma [pixels]")
@@ -225,45 +228,69 @@ class FiltersGroup(QGroupBox):
 
     def set_remove_spots(self):
         LOG.debug("Remove large spots:" + str(self.remove_spots_checkBox.isChecked()))
-        EZVARS['filters']['rm_spots']['value'] = bool(self.remove_spots_checkBox.isChecked())
+        dict_entry = EZVARS['filters']['rm_spots']
+        add_value_to_dict_entry(dict_entry, self.remove_spots_checkBox.isChecked())
+        #EZVARS['filters']['rm_spots']['value'] = bool(self.remove_spots_checkBox.isChecked())
 
     def set_threshold(self):
         LOG.debug(self.threshold_entry.text())
-        SECTIONS['find-large-spots']['spot-threshold']['value'] = float(self.threshold_entry.text())
+        dict_entry = SECTIONS['find-large-spots']['spot-threshold']
+        add_value_to_dict_entry(dict_entry, self.threshold_entry.text())
+        #SECTIONS['find-large-spots']['spot-threshold']['value'] = float(self.threshold_entry.text())
+        self.threshold_entry.setText(str(dict_entry['value']))
 
     def set_spot_blur(self):
         LOG.debug(self.spot_blur_entry.text())
-        SECTIONS['find-large-spots']['gauss-sigma']['value'] = float(self.spot_blur_entry.text())
+        #SECTIONS['find-large-spots']['gauss-sigma']['value'] = float(self.spot_blur_entry.text())
+        dict_entry = SECTIONS['find-large-spots']['gauss-sigma']
+        add_value_to_dict_entry(dict_entry, self.spot_blur_entry.text())
+        self.spot_blur_entry.setText(str(dict_entry['value']))
 
     def set_ring_removal(self):
         LOG.debug("RR: " + str(self.enable_RR_checkbox.isChecked()))
-        EZVARS['RR']['enable']['value'] = bool(self.enable_RR_checkbox.isChecked())
+        #EZVARS['RR']['enable']['value'] = bool(self.enable_RR_checkbox.isChecked())
+        
+        dict_entry = EZVARS['RR']['enable']
+        add_value_to_dict_entry(dict_entry, self.enable_RR_checkbox.isChecked())
 
     def select_rButton(self):
+        dict_entry = EZVARS['RR']['use-ufo']
         if self.use_LPF_rButton.isChecked():
             LOG.debug("Use LPF")
-            EZVARS['RR']['use-ufo']['value'] = bool(True)
+            #EZVARS['RR']['use-ufo']['value'] = bool(True)
+            add_value_to_dict_entry(dict_entry, True)
         elif self.sarepy_rButton.isChecked():
             LOG.debug("Use Sarepy")
-            EZVARS['RR']['use-ufo']['value'] = bool(False)
+            #EZVARS['RR']['use-ufo']['value'] = bool(False)
+            add_value_to_dict_entry(dict_entry, False)
 
     def select_dimens_rButton(self):
+        dict_entry = EZVARS['RR']['ufo-2d']
         if self.one_dimens_rButton.isChecked():
             LOG.debug("One dimension")
-            EZVARS['RR']['ufo-2d']['value'] = bool(True)
+            #EZVARS['RR']['ufo-2d']['value'] = bool(True)
+            add_value_to_dict_entry(dict_entry, True)
         elif self.two_dimens_rButton.isChecked():
             LOG.debug("Two dimensions")
-            EZVARS['RR']['ufo-2d']['value'] = bool(False)
+            #EZVARS['RR']['ufo-2d']['value'] = bool(False)
+            add_value_to_dict_entry(dict_entry, False)
 
     def set_sigma_horizontal(self):
         LOG.debug(self.sigma_horizontal_entry.text())
-        EZVARS['RR']['sx']['value'] = \
-            str(self.sigma_horizontal_entry.text())
+        # EZVARS['RR']['sx']['value'] = \
+        #     str(self.sigma_horizontal_entry.text())
+        dict_entry = EZVARS['RR']['sx']
+        add_value_to_dict_entry(dict_entry, self.sigma_horizontal_entry.text())
+        self.sigma_horizontal_entry.setText(str(dict_entry['value']))
+
 
     def set_sigma_vertical(self):
         LOG.debug(self.sigma_vertical_entry.text())
-        EZVARS['RR']['sy']['value'] = \
-            str(self.sigma_vertical_entry.text())
+        # EZVARS['RR']['sy']['value'] = \
+        #     str(self.sigma_vertical_entry.text())
+        dict_entry = EZVARS['RR']['sy']
+        add_value_to_dict_entry(dict_entry, self.sigma_vertical_entry.text())
+        self.sigma_vertical_entry.setText(str(dict_entry['value']))
 
     def set_ufoRR_params_for_360_axis_search(self):
         self.set_sigma_vertical()
@@ -271,16 +298,34 @@ class FiltersGroup(QGroupBox):
 
     def set_window_size(self):
         LOG.debug(self.wind_size_entry.text())
-        EZVARS['RR']['spy-narrow-window']['value'] = str(self.wind_size_entry.text())
+        # EZVARS['RR']['spy-narrow-window']['value'] = str(self.wind_size_entry.text())
+        
+        dict_entry = EZVARS['RR']['spy-narrow-window']
+        add_value_to_dict_entry(dict_entry, self.wind_size_entry.text())
+        self.wind_size_entry.setText(str(dict_entry['value']))
+
 
     def set_remove_wide(self):
         LOG.debug("Wide: " + str(self.remove_wide_checkbox.isChecked()))
-        EZVARS['RR']['spy-rm-wide']['value'] = bool(self.remove_wide_checkbox.isChecked())
+        # EZVARS['RR']['spy-rm-wide']['value'] = bool(self.remove_wide_checkbox.isChecked())
+        
+        dict_entry = EZVARS['RR']['spy-rm-wide']
+        add_value_to_dict_entry(dict_entry, self.remove_wide_checkbox.text())
+
 
     def set_wind(self):
         LOG.debug(self.remove_wide_entry.text())
-        EZVARS['RR']['spy-wide-window']['value'] = str(self.remove_wide_entry.text())
+        # EZVARS['RR']['spy-wide-window']['value'] = str(self.remove_wide_entry.text())
+        
+        dict_entry = EZVARS['RR']['spy-wide-window']
+        add_value_to_dict_entry(dict_entry, self.remove_wide_entry.text())
+        self.remove_wide_entry.setText(str(dict_entry['value']))
+
 
     def set_SNR(self):
         LOG.debug(self.SNR_entry.text())
-        EZVARS['RR']['spy-wide-SNR']['value'] = str(self.SNR_entry.text())
+        # EZVARS['RR']['spy-wide-SNR']['value'] = str(self.SNR_entry.text())
+        
+        dict_entry = EZVARS['RR']['spy-wide-SNR']
+        add_value_to_dict_entry(dict_entry, self.SNR_entry.text())
+        self.SNR_entry.setText(str(dict_entry['value']))

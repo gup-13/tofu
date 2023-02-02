@@ -81,13 +81,19 @@ def setup_read_task(task, path, args):
 def restrict_value(limits, dtype=float):
     """Convert value to *dtype* and make sure it is within *limits* (included) specified as tuple
     (min, max). If one of the tuple values is None it is ignored."""
-    def check(value):
+
+    def check(value, clamp=False):
         result = dtype(value)
         if limits[0] is not None and result < limits[0]:
-            raise argparse.ArgumentTypeError('Value cannot be less than {}'.format(limits[0]))
+            if clamp:
+                result = dtype(limits[0])
+            else:
+                raise argparse.ArgumentTypeError('Value cannot be less than {}'.format(limits[0]))
         if limits[1] is not None and result > limits[1]:
-            raise argparse.ArgumentTypeError('Value cannot be greater than {}'.format(limits[1]))
-
+            if clamp:
+                result = dtype(limits[1])
+            else:
+                raise argparse.ArgumentTypeError('Value cannot be greater than {}'.format(limits[1]))
         return result
 
     return check
@@ -141,10 +147,12 @@ def restrict_tupleize(limits, num_items=None, conv=float, dtype=tuple):
     """Convert a string of numbers separated by commas to tuple with *dtype* and make sure it is within *limits* (included) specified as tuple
     (min, max). If one of the limits values is None it is ignored."""
     
-    def check(value):
+    def check(value, clamp=False):
+        if value is None:
+            return limits
         results = tupleize(num_items, conv, dtype)(value)
         for v in results:
-            restrict_value(limits, dtype=conv)(v)
+            restrict_value(limits, dtype=conv)(v, clamp)
         return results
     return check
 

@@ -8,7 +8,7 @@ from tofu.ez.GUI.Main.filters import FiltersGroup
 from tofu.ez.GUI.Advanced.ffc import FFCGroup
 from tofu.ez.GUI.Main.phase_retrieval import PhaseRetrievalGroup
 from tofu.ez.GUI.Main.region_and_histogram import ROIandHistGroup
-from tofu.ez.GUI.Main.config import ConfigGroup
+from tofu.ez.GUI.Main.config import ConfigGroup, init_dict_entries
 from tofu.ez.main import clean_tmp_dirs
 from tofu.ez.yaml_in_out import Yaml_IO
 from tofu.ez.GUI.image_viewer import ImageViewerGroup
@@ -60,10 +60,12 @@ class GUI(qtw.QWidget):
         self.tab3 = qtw.QWidget()
         self.tab4 = qtw.QWidget()
 
+        # initialize dictionary entries
+        init_dict_entries()
+
         # Create and setup classes for each section of GUI
         # Main Tab
         self.config_group = ConfigGroup()
-        self.config_group.init_dict_entries()
         self.config_group.init_values()
         
         self.centre_of_rotation_group = CentreOfRotationGroup()
