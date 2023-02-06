@@ -35,37 +35,6 @@ import argparse
 
 LOG = logging.getLogger(__name__)
 
-
-def add_value_to_dict_entry(dict_entry, param_value_str):
-    #print(dict_entry, param_value_str, dict_entry['default'])
-    if 'action' in dict_entry:
-        # no 'type' can be defined in action entries
-        dict_entry['value'] = bool(param_value_str)
-    elif param_value_str == '':
-        # takes default value if empty string
-        dict_entry['value'] = dict_entry['type'](dict_entry['default'])
-    else:
-        try:
-            dict_entry['value'] = dict_entry['type'](param_value_str)
-        except argparse.ArgumentTypeError: 
-            dict_entry['value'] = dict_entry['type'](param_value_str, clamp=True)
-        except ValueError: #int can't convert string with decimal (e.g. "1.0" -> 1)
-            dict_entry['value'] = dict_entry['type'](float(param_value_str))
-             
-    print("Input: ", param_value_str, "; Dict value: ", dict_entry['value'])
-    
-def init_dict_entries():
-    # Place default value in each setting
-    for key1 in EZVARS.keys():
-        for key2 in EZVARS[key1].keys():
-            dict_entry = EZVARS[key1][key2]
-            add_value_to_dict_entry(dict_entry, '') # Add default value
-    
-    for key1 in SECTIONS.keys():
-        for key2 in SECTIONS[key1].keys():
-            dict_entry = SECTIONS[key1][key2]
-            add_value_to_dict_entry(dict_entry, '') # Add default value
-
 class ConfigGroup(QGroupBox):
     """
     Setup and configuration settings

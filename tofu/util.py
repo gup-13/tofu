@@ -177,6 +177,23 @@ def reverse_tupleize(num_items=None, conv=float):
         return result
     return combine_to_string
 
+def add_value_to_dict_entry(dict_entry, param_value_str):
+    #print(dict_entry, param_value_str, dict_entry['default'])
+    if 'action' in dict_entry:
+        # no 'type' can be defined in dictionary entries with 'action' key
+        dict_entry['value'] = bool(param_value_str)
+    elif param_value_str == '':
+        # takes default value if empty string
+        dict_entry['value'] = dict_entry['type'](dict_entry['default'])
+    else:
+        try:
+            dict_entry['value'] = dict_entry['type'](param_value_str)
+        except argparse.ArgumentTypeError: 
+            dict_entry['value'] = dict_entry['type'](param_value_str, clamp=True)
+        except ValueError: #int can't convert string with decimal (e.g. "1.0" -> 1)
+            dict_entry['value'] = dict_entry['type'](float(param_value_str))
+    print("Input: ", param_value_str, "; Dict value: ", dict_entry['value'])
+    
 def next_power_of_two(number):
     """Compute the next power of two of the *number*."""
     return 2 ** int(math.ceil(math.log(number, 2)))

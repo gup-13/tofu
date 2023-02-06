@@ -8,13 +8,14 @@ from tofu.ez.GUI.Main.filters import FiltersGroup
 from tofu.ez.GUI.Advanced.ffc import FFCGroup
 from tofu.ez.GUI.Main.phase_retrieval import PhaseRetrievalGroup
 from tofu.ez.GUI.Main.region_and_histogram import ROIandHistGroup
-from tofu.ez.GUI.Main.config import ConfigGroup, init_dict_entries
+from tofu.ez.GUI.Main.config import ConfigGroup
 from tofu.ez.main import clean_tmp_dirs
 from tofu.ez.yaml_in_out import Yaml_IO
 from tofu.ez.GUI.image_viewer import ImageViewerGroup
 import tofu.ez.params as parameters
 from tofu.ez.params import EZVARS
 from tofu.config import SECTIONS
+from tofu.util import add_value_to_dict_entry
 from tofu.ez.GUI.Advanced.advanced import AdvancedGroup
 from tofu.ez.GUI.Advanced.optimization import OptimizationGroup
 from tofu.ez.GUI.Advanced.nlmdn import NLMDNGroup
@@ -61,7 +62,7 @@ class GUI(qtw.QWidget):
         self.tab4 = qtw.QWidget()
 
         # initialize dictionary entries
-        init_dict_entries()
+        self.init_dict_entries()
 
         # Create and setup classes for each section of GUI
         # Main Tab
@@ -188,6 +189,18 @@ class GUI(qtw.QWidget):
         layout.addWidget(self.tabs)
         self.setLayout(layout)
         
+    def init_dict_entries(self):
+        # Place default value in each setting
+        for key1 in EZVARS.keys():
+            for key2 in EZVARS[key1].keys():
+                dict_entry = EZVARS[key1][key2]
+                add_value_to_dict_entry(dict_entry, '') # Add default value
+        
+        for key1 in SECTIONS.keys():
+            for key2 in SECTIONS[key1].keys():
+                dict_entry = SECTIONS[key1][key2]
+                add_value_to_dict_entry(dict_entry, '') # Add default value
+
     def update_values_from_params(self):
         """
         Updates displayed values when loaded in from external .yaml file of parameters
