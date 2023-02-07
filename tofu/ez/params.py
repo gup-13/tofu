@@ -296,21 +296,21 @@ EZVARS['COR'] = {
 }
 
 EZVARS['filters'] = {'rm_spots': {
-        'default': False, 
+        'default': False, #G
         'type': bool, 
-        'help': "TODO"}}
+        'help': "TODO-G"}}
 
 EZVARS['RR'] = {
     'enable': {
-        'default': False, 
+        'default': False, #G
         'type': bool, 
-        'help': "TODO"},
+        'help': "TODO-G"},
     'use-ufo': {
-        'default': False, 
+        'default': True, #G
         'type': bool, 
-        'help': "TODO"},
+        'help': "TODO-G"},
     'ufo-2d': {
-        'default': False, 
+        'default': False, #G 
         'type': bool, 
         'help': "TODO"},
     'sx': {
@@ -322,19 +322,19 @@ EZVARS['RR'] = {
         'type': restrict_value((0,None),dtype=int), 
         'help': "ufo ring-removal sigma vertical"},
     'spy-narrow-window': {
-        'default': 0, 
+        'default': 21, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "window size"},
     'spy-rm-wide': {
-        'default': False, 
+        'default': False, #G
         'type': bool, 
         'help': "TODO"},
     'spy-wide-window': {
-        'default': 0, 
+        'default': 91, #G 
         'type': restrict_value((0,None),dtype=int), 
         'help': "wind"},
     'spy-wide-SNR': {
-        'default': 0, 
+        'default': 3, #G 
         'type': restrict_value((0,None),dtype=int), 
         'help': "SNR"},
 }

@@ -173,41 +173,11 @@ class FiltersGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    def init_values(self):
-        self.remove_wide_checkbox.setChecked(False)
-        self.set_remove_spots()
-        EZVARS['filters']['rm_spots']['value'] = False
-        self.threshold_entry.setText(
-            str(SECTIONS['find-large-spots']['spot-threshold']['value'])
-        )
-        self.spot_blur_entry.setText(
-            str(SECTIONS['find-large-spots']['gauss-sigma']['value'])
-        )
-        self.enable_RR_checkbox.setChecked(False)
-        self.set_ring_removal()
-        EZVARS['RR']['enable']['value'] = False
-        self.use_LPF_rButton.setChecked(True)
-        self.select_rButton()
-        self.sarepy_rButton.setChecked(False)
-        self.two_dimens_rButton.setChecked(True)
-        EZVARS['RR']['ufo-2d']['value'] = False
-        self.sigma_horizontal_entry.setText(
-            str(EZVARS['RR']['sx']['value'])
-        )
-        self.sigma_vertical_entry.setText(
-            str(EZVARS['RR']['sy']['value'])
-        )
-
-        self.wind_size_entry.setText("21")
-        self.remove_wide_checkbox.setChecked(False)
-        EZVARS['RR']['spy-rm-wide']['value'] = False
-        self.remove_wide_entry.setText("91")
-        self.SNR_entry.setText("3")
-
     def set_values_from_params(self):
+        print("IN SET-VALUES-FROM-PARAMS!")
         self.remove_spots_checkBox.setChecked(EZVARS['filters']['rm_spots']['value'])
-        self.threshold_entry.setText(SECTIONS['find-large-spots']['spot-threshold']['value'])
-        self.spot_blur_entry.setText(SECTIONS['find-large-spots']['gauss-sigma']['value'])
+        self.threshold_entry.setText(str(SECTIONS['find-large-spots']['spot-threshold']['value']))
+        self.spot_blur_entry.setText(str(SECTIONS['find-large-spots']['gauss-sigma']['value']))
         self.enable_RR_checkbox.setChecked(EZVARS['RR']['enable']['value'])
         if EZVARS['RR']['use-ufo']['value'] == True:
             self.use_LPF_rButton.setChecked(True)
@@ -217,8 +187,8 @@ class FiltersGroup(QGroupBox):
             self.one_dimens_rButton.setChecked(True)
             self.two_dimens_rButton.setChecked(False)
         elif EZVARS['RR']['ufo-2d']['value'] == False:
-            self.two_dimens_rButton.setChecked(True)
             self.one_dimens_rButton.setChecked(False)
+            self.two_dimens_rButton.setChecked(True)
         self.sigma_horizontal_entry.setText(str(EZVARS['RR']['sx']['value']))
         self.sigma_vertical_entry.setText(str(EZVARS['RR']['sy']['value']))
         self.wind_size_entry.setText(str(EZVARS['RR']['spy-narrow-window']['value']))
@@ -230,13 +200,11 @@ class FiltersGroup(QGroupBox):
         LOG.debug("Remove large spots:" + str(self.remove_spots_checkBox.isChecked()))
         dict_entry = EZVARS['filters']['rm_spots']
         add_value_to_dict_entry(dict_entry, self.remove_spots_checkBox.isChecked())
-        #EZVARS['filters']['rm_spots']['value'] = bool(self.remove_spots_checkBox.isChecked())
 
     def set_threshold(self):
         LOG.debug(self.threshold_entry.text())
         dict_entry = SECTIONS['find-large-spots']['spot-threshold']
         add_value_to_dict_entry(dict_entry, self.threshold_entry.text())
-        #SECTIONS['find-large-spots']['spot-threshold']['value'] = float(self.threshold_entry.text())
         self.threshold_entry.setText(str(dict_entry['value']))
 
     def set_spot_blur(self):
