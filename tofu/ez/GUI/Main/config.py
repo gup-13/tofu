@@ -24,6 +24,7 @@ from tofu.ez.GUI.message_dialog import warning_message
 import tofu.ez.params as parameters
 from tofu.config import SECTIONS
 from tofu.ez.params import EZVARS, MAP_TABLE
+from tofu.util import add_value_to_dict_entry
 import argparse
 
 #TODO Get rid of the old args structure and store all parameters
@@ -284,32 +285,31 @@ class ConfigGroup(QGroupBox):
         Sets the initial default values of config group
         """
         # If we're on a computer with access to network
-        indir = os.path.expanduser('~')#"/beamlinedata/BMIT/projects/"
-        if os.path.isdir(indir):
-            self.input_dir_entry.setText(indir)
-            outdir = os.path.abspath(indir + "/rec")
-            self.output_dir_entry.setText(outdir)
+        # indir = os.path.expanduser('~')#"/beamlinedata/BMIT/projects/"
+        # if os.path.isdir(indir):
+        #     self.input_dir_entry.setText(indir)
+        #     outdir = os.path.abspath(indir + "/rec")
+        #     self.output_dir_entry.setText(outdir)
         
-        self.preproc_checkbox.setChecked(EZVARS['inout']['preprocess']['value'])
-        self.preproc_entry.setText(EZVARS['inout']['preprocess-command']['value'])
-        self.darks_entry.setText(EZVARS['inout']['darks-dir']['value'])
-        self.flats_entry.setText(EZVARS['inout']['flats-dir']['value'])
-        self.tomo_entry.setText(EZVARS['inout']['tomo-dir']['value'])
-        self.flats2_entry.setText(EZVARS['inout']['flats2-dir']['value'])        
-        self.use_common_flats_darks_checkbox.setChecked(EZVARS['inout']['shared-flatsdarks']['value'])
-        self.darks_absolute_entry.setText(EZVARS['inout']['path2-shared-darks']['value'])
-        self.flats_absolute_entry.setText(EZVARS['inout']['path2-shared-flats']['value'])
-        self.flats2_absolute_entry.setText(EZVARS['inout']['path2-shared-flats-after']['value'])
-        self.temp_dir_entry.setText(os.path.join(os.path.expanduser('~'),"tmp-ezufo"))
-        self.keep_tmp_data_checkbox.setChecked(EZVARS['inout']['keep-tmp']['value'])
-        self.dry_run_button.setChecked(EZVARS['inout']['dryrun']['value'])
-        self.open_image_after_reco_checkbox.setChecked(EZVARS['inout']['open-viewer']['value'])
+        # self.preproc_checkbox.setChecked(EZVARS['inout']['preprocess']['value'])
+        # self.preproc_entry.setText(EZVARS['inout']['preprocess-command']['value'])
+        # self.darks_entry.setText(EZVARS['inout']['darks-dir']['value'])
+        # self.flats_entry.setText(EZVARS['inout']['flats-dir']['value'])
+        # self.tomo_entry.setText(EZVARS['inout']['tomo-dir']['value'])
+        # self.flats2_entry.setText(EZVARS['inout']['flats2-dir']['value'])        
+        # self.use_common_flats_darks_checkbox.setChecked(EZVARS['inout']['shared-flatsdarks']['value'])
+        # self.darks_absolute_entry.setText(EZVARS['inout']['path2-shared-darks']['value'])
+        # self.flats_absolute_entry.setText(EZVARS['inout']['path2-shared-flats']['value'])
+        # self.flats2_absolute_entry.setText(EZVARS['inout']['path2-shared-flats-after']['value'])
+        # self.temp_dir_entry.setText(os.path.join(os.path.expanduser('~'),"tmp-ezufo"))
+        # self.keep_tmp_data_checkbox.setChecked(EZVARS['inout']['keep-tmp']['value'])
+        # self.dry_run_button.setChecked(EZVARS['inout']['dryrun']['value'])
+        # self.open_image_after_reco_checkbox.setChecked(EZVARS['inout']['open-viewer']['value'])
 
         
     def set_values_from_params(self):
         """
         Updates displayed values for config group
-        Called when .yaml file of params is loaded
         """
         self.input_dir_entry.setText(EZVARS['inout']['input-dir']['value'])
         self.save_params_checkbox.setChecked(EZVARS['inout']['save-params']['value'])
@@ -338,60 +338,70 @@ class ConfigGroup(QGroupBox):
         dir_explore = QFileDialog(self)
         dir = dir_explore.getExistingDirectory(directory=self.input_dir_entry.text())
         self.input_dir_entry.setText(dir)
-        EZVARS['inout']['input-dir']['value'] = dir
+        self.set_input_dir()
 
     def set_input_dir(self):
         LOG.debug(str(self.input_dir_entry.text()))
-        EZVARS['inout']['input-dir']['value'] = str(self.input_dir_entry.text())
+        dict_entry = EZVARS['inout']['input-dir']
+        add_value_to_dict_entry(dict_entry, self.input_dir_entry.text())
 
     def select_output_dir(self):
         dir_explore = QFileDialog(self)
         dir = dir_explore.getExistingDirectory(directory=self.output_dir_entry.text())
         self.output_dir_entry.setText(dir)
-        EZVARS['inout']['output-dir']['value'] = dir
+        self.set_output_dir()
 
     def set_output_dir(self):
         LOG.debug(str(self.output_dir_entry.text()))
-        EZVARS['inout']['output-dir']['value'] = str(self.output_dir_entry.text())
+        dict_entry = EZVARS['inout']['output-dir']
+        add_value_to_dict_entry(dict_entry, str(self.output_dir_entry.text()))
 
     def set_big_tiff(self):
         LOG.debug("Bigtiff: " + str(self.bigtiff_checkbox.isChecked()))
-        EZVARS['inout']['bigtiff-output']['value'] = bool(self.bigtiff_checkbox.isChecked())
+        dict_entry = EZVARS['inout']['bigtiff-output']
+        add_value_to_dict_entry(dict_entry, self.bigtiff_checkbox.isChecked())
 
     def set_preproc(self):
         LOG.debug("Preproc: " + str(self.preproc_checkbox.isChecked()))
-        EZVARS['inout']['preprocess']['value'] = bool(self.preproc_checkbox.isChecked())
+        dict_entry = EZVARS['inout']['preprocess']
+        add_value_to_dict_entry(dict_entry, self.preproc_checkbox.isChecked())
 
     def set_preproc_entry(self):
         LOG.debug(self.preproc_entry.text())
-        EZVARS['inout']['preprocess-command']['value'] = str(self.preproc_entry.text())
+        dict_entry = EZVARS['inout']['preprocess-command']
+        add_value_to_dict_entry(dict_entry, self.preproc_entry.text())
 
     def set_open_image_after_reco(self):
         LOG.debug(
             "Switch to Image Viewer After Reco: "
             + str(self.open_image_after_reco_checkbox.isChecked())
         )
-        EZVARS['inout']['open-viewer']['value'] = bool(self.open_image_after_reco_checkbox.isChecked())
+        dict_entry = EZVARS['inout']['open-viewer']
+        add_value_to_dict_entry(dict_entry, self.open_image_after_reco_checkbox.isChecked())
 
     def set_darks(self):
         LOG.debug(self.darks_entry.text())
         self.e_DIRTYP[0] = str(self.darks_entry.text())
-        EZVARS['inout']['darks-dir']['value'] = str(self.darks_entry.text())
+        dict_entry = EZVARS['inout']['darks-dir']
+        add_value_to_dict_entry(dict_entry, self.darks_entry.text())
 
     def set_flats(self):
         LOG.debug(self.flats_entry.text())
         self.e_DIRTYP[1] = str(self.flats_entry.text())
-        EZVARS['inout']['flats-dir']['value'] = str(self.flats_entry.text())
+        dict_entry = EZVARS['inout']['flats-dir']
+        add_value_to_dict_entry(dict_entry, self.flats_entry.text())
 
     def set_tomo(self):
         LOG.debug(self.tomo_entry.text())
         self.e_DIRTYP[2] = str(self.tomo_entry.text())
-        EZVARS['inout']['tomo-dir']['value'] = str(self.tomo_entry.text())
+        dict_entry = EZVARS['inout']['tomo-dir']
+        add_value_to_dict_entry(dict_entry, self.tomo_entry.text())
 
     def set_flats2(self):
         LOG.debug(self.flats2_entry.text())
         self.e_DIRTYP[3] = str(self.flats2_entry.text())
-        EZVARS['inout']['flats2-dir']['value'] = str(self.flats2_entry.text())
+        dict_entry = EZVARS['inout']['flats2-dir']
+        add_value_to_dict_entry(dict_entry, self.flats2_entry.text())
 
     def set_fdt_names(self):
         self.set_darks()
@@ -404,60 +414,65 @@ class ConfigGroup(QGroupBox):
             "Use same flats/darks across multiple experiments: "
             + str(self.use_common_flats_darks_checkbox.isChecked())
         )
-        EZVARS['inout']['shared-flatsdarks']['value'] = bool(
-            self.use_common_flats_darks_checkbox.isChecked()
-        )
+        dict_entry = EZVARS['inout']['shared-flatsdarks']
+        add_value_to_dict_entry(dict_entry, self.use_common_flats_darks_checkbox.isChecked())
 
     def select_darks_button_pressed(self):
         LOG.debug("Select path to darks pressed")
         dir_explore = QFileDialog(self)
         directory = dir_explore.getExistingDirectory(directory=EZVARS['inout']['input-dir']['value'])
         self.darks_absolute_entry.setText(directory)
-        EZVARS['inout']['path2-shared-darks']['value'] = directory
+        self.set_common_darks()
 
     def select_flats_button_pressed(self):
         LOG.debug("Select path to flats pressed")
         dir_explore = QFileDialog(self)
         directory = dir_explore.getExistingDirectory(directory=EZVARS['inout']['input-dir']['value'])
         self.flats_absolute_entry.setText(directory)
-        EZVARS['inout']['path2-shared-flats']['value'] = directory
+        self.set_common_flats()
 
     def select_flats2_button_pressed(self):
         LOG.debug("Select path to flats2 pressed")
         dir_explore = QFileDialog(self)
         directory = dir_explore.getExistingDirectory(directory=EZVARS['inout']['input-dir']['value'])
         self.flats2_absolute_entry.setText(directory)
-        EZVARS['inout']['path2-shared-flats-after']['value'] = directory
+        self.set_common_flats2()
 
     def set_common_darks(self):
         LOG.debug("Common darks path: " + str(self.darks_absolute_entry.text()))
-        EZVARS['inout']['path2-shared-darks']['value'] = str(self.darks_absolute_entry.text())
+        dict_entry = EZVARS['inout']['path2-shared-darks']
+        add_value_to_dict_entry(dict_entry, self.darks_absolute_entry.text())
 
     def set_common_flats(self):
         LOG.debug("Common flats path: " + str(self.flats_absolute_entry.text()))
-        EZVARS['inout']['path2-shared-flats']['value'] = str(self.flats_absolute_entry.text())
+        dict_entry = EZVARS['inout']['path2-shared-flats']
+        add_value_to_dict_entry(dict_entry, self.flats_absolute_entry.text())
 
     def set_use_flats2(self):
         LOG.debug("Use common flats2 checkbox: " + str(self.use_flats2_checkbox.isChecked()))
-        EZVARS['inout']['shared-flats-after']['value'] = bool(self.use_flats2_checkbox.isChecked())
+        dict_entry = EZVARS['inout']['shared-flats-after']
+        add_value_to_dict_entry(dict_entry, self.use_flats2_checkbox.isChecked())
 
     def set_common_flats2(self):
         LOG.debug("Common flats2 path: " + str(self.flats2_absolute_entry.text()))
-        EZVARS['inout']['path2-shared-flats-after']['value'] = str(self.flats2_absolute_entry.text())
+        dict_entry = EZVARS['inout']['path2-shared-flats-after']
+        add_value_to_dict_entry(dict_entry, self.flats2_absolute_entry.text())
 
     def select_temp_dir(self):
         dir_explore = QFileDialog(self)
         tmp_dir = dir_explore.getExistingDirectory(directory=self.temp_dir_entry.text())
         self.temp_dir_entry.setText(tmp_dir)
-        EZVARS['inout']['tmp-dir']['value'] = tmp_dir
+        self.set_temp_dir()
 
     def set_temp_dir(self):
         LOG.debug(str(self.temp_dir_entry.text()))
-        EZVARS['inout']['tmp-dir']['value'] = str(self.temp_dir_entry.text())
+        dict_entry = EZVARS['inout']['tmp-dir']
+        add_value_to_dict_entry(dict_entry, self.temp_dir_entry.text())
 
     def set_keep_tmp_data(self):
         LOG.debug("Keep tmp: " + str(self.keep_tmp_data_checkbox.isChecked()))
-        EZVARS['inout']['keep-tmp']['value'] = bool(self.keep_tmp_data_checkbox.isChecked())
+        dict_entry = EZVARS['inout']['keep-tmp']
+        add_value_to_dict_entry(dict_entry, self.keep_tmp_data_checkbox.isChecked())
 
     def quit_button_pressed(self):
         """

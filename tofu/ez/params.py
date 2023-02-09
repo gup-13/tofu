@@ -171,28 +171,28 @@ EZVARS['inout'] = {
         'type': str, 
         'help': "TODO"},
     'tmp-dir' : {
-        'default': os.path.join(os.path.expanduser('~'),"tmp-ezufo"), 
+        'default': os.path.join(os.path.expanduser('~'),"tmp-ezufo"), #G
         'type': str, 
         'help': "TODO-updated Default"},
     'darks-dir': {
-        'default': "darks", 
+        'default': "darks", #G
         'type': str, 
         'help': "TODO-updated Default"},
     'flats-dir': {
-        'default': "flats", 
+        'default': "flats", #G
         'type': str, 
         'help': "TODO-updated Default"},
     'tomo-dir': {
-        'default': "tomo", 
+        'default': "tomo", #G
         'type': str, 
         'help': "TODOç"},
     'flats2-dir': {
-        'default': "flats2", 
+        'default': "flats2", #G
         'type': str, 
         'help': "TODO-updated Default"},
     'bigtiff-output': {
-        'default': "", 
-        'type': str, 
+        'default': False, #G 
+        'type': bool, 
         'help': "TODO"},
     'input_ROI': {
         'default': False, 
@@ -390,7 +390,7 @@ EZVARS['nlmdn'] = {
         'type': str, 
         'help': "TODO"},
     'bigtiff_output': {
-        'default': False, 
+        'default': False, #G
         'type': bool, 
         'help': "TODO-updated Default"},
     'search-radius': {
