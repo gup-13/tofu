@@ -270,27 +270,27 @@ EZVARS['inout'] = {
 
 EZVARS['COR'] = {
     'search-method': {
-        'default': 0, 
+        'default': 1, #G
         'type': int, 
         'help': "TODO"},
     'search-interval': {
-        'default': "", 
+        'default': "1010,1030,0.5", #G
         'type': str, 
         'help': "TODO"},
     'patch-size': {
-        'default': 0, 
+        'default': 256, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "Size of reconstructed patch [pixel]"},
     'search-row': {
-        'default': 0, 
+        'default': 100, #G
         'type': restrict_value((0,None), dtype=int), 
         'help': "Search in slice from row number"},
     'user-defined-ax': {
-        'default': 0.0, 
+        'default': 0.0, #G
         'type': restrict_value((0,None),dtype=float), 
         'help': "Axis is in column No [pixel]"},
     'user-defined-dax': {
-        'default': 0.0, 
+        'default': 0.0, #G
         'type': float, 
         'help': "TODO"},
 }
@@ -343,23 +343,23 @@ EZVARS['RR'] = {
 #TODO ADD CHECKING FOR ADVANCED SETTINGS
 EZVARS['flat-correction'] = {
     'smart-ffc': {
-        'default': False, 
+        'default': False, #G
         'type': bool, 
         'help': "TODO"},
     'smart-ffc-method': {
-        'default': "", 
+        'default': "eigen", #G
         'type': str, 
         'help': "TODO"},
     'eigen-pco-reps': {
-        'default': 0, 
+        'default': 4, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "Flat Field Correction: Eigen PCO Repetitions"},
     'eigen-pco-downsample': {
-        'default': 0, 
+        'default': 2, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "Flat Field Correction: Eigen PCO Downsample"},
     'downsample': {
-        'default': 0, 
+        'default': 4, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "Flat Field Correction: Downsample"},
     'dark-scale': {

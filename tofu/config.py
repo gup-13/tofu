@@ -149,7 +149,7 @@ SECTIONS['flat-correction'] = {
 
 SECTIONS['retrieve-phase'] = {
     'enable': {
-        'default': False,
+        'default': False, #G
         'type': bool,
         'help': "Enable phase retrieval"},
     'retrieval-method': {
@@ -158,20 +158,20 @@ SECTIONS['retrieve-phase'] = {
         'choices': ['tie', 'ctf', 'qp', 'qp2'],
         'help': "Phase retrieval method"},
     'energy': {
-        'default': 0.0,
+        'default': 20, #G
         'type': restrict_value((0,None),dtype=float),
         'help': "Photon energy [keV]"},
     'propagation-distance': {
-        'default': "0",
+        'default': "0.1", #G
         'type': restrict_tupleize((0,None)),
         'help': ("Sample <-> detector distance (if one value, then use the same for x and y "
                  "direction, otherwise first specifies x and second y direction) [m]")},
     'pixel-size': {
-        'default': 1e-6,
+        'default': 3.6, #G
         'type': restrict_value((0,None),dtype=float),
         'help': "Pixel size [micron]"},
     'regularization-rate': {
-        'default': 2,
+        'default': 200, #G - (!) - mismatch from help. Orignally 2. 
         'type': restrict_value((0,None),dtype=float),
         'help': "Regularization rate (typical values between [2, 3])"},
     'delta': {

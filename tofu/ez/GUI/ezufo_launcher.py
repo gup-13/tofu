@@ -70,16 +70,16 @@ class GUI(qtw.QWidget):
         self.config_group.set_values_from_params()
         
         self.centre_of_rotation_group = CentreOfRotationGroup()
-        self.centre_of_rotation_group.init_values()
+        self.centre_of_rotation_group.set_values_from_params()
 
         self.filters_group = FiltersGroup()
         self.filters_group.set_values_from_params()
         
         self.ffc_group = FFCGroup()
-        self.ffc_group.init_values()
+        self.ffc_group.set_values_from_params()
 
         self.phase_retrieval_group = PhaseRetrievalGroup()
-        self.phase_retrieval_group.init_values()
+        self.phase_retrieval_group.set_values_from_params()
 
         self.binning_group = ROIandHistGroup()  #TODO rename binning to something short and meaningful
         self.binning_group.init_values()

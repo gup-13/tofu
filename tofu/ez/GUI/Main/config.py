@@ -280,33 +280,6 @@ class ConfigGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    def init_values(self):
-        """
-        Sets the initial default values of config group
-        """
-        # If we're on a computer with access to network
-        # indir = os.path.expanduser('~')#"/beamlinedata/BMIT/projects/"
-        # if os.path.isdir(indir):
-        #     self.input_dir_entry.setText(indir)
-        #     outdir = os.path.abspath(indir + "/rec")
-        #     self.output_dir_entry.setText(outdir)
-        
-        # self.preproc_checkbox.setChecked(EZVARS['inout']['preprocess']['value'])
-        # self.preproc_entry.setText(EZVARS['inout']['preprocess-command']['value'])
-        # self.darks_entry.setText(EZVARS['inout']['darks-dir']['value'])
-        # self.flats_entry.setText(EZVARS['inout']['flats-dir']['value'])
-        # self.tomo_entry.setText(EZVARS['inout']['tomo-dir']['value'])
-        # self.flats2_entry.setText(EZVARS['inout']['flats2-dir']['value'])        
-        # self.use_common_flats_darks_checkbox.setChecked(EZVARS['inout']['shared-flatsdarks']['value'])
-        # self.darks_absolute_entry.setText(EZVARS['inout']['path2-shared-darks']['value'])
-        # self.flats_absolute_entry.setText(EZVARS['inout']['path2-shared-flats']['value'])
-        # self.flats2_absolute_entry.setText(EZVARS['inout']['path2-shared-flats-after']['value'])
-        # self.temp_dir_entry.setText(os.path.join(os.path.expanduser('~'),"tmp-ezufo"))
-        # self.keep_tmp_data_checkbox.setChecked(EZVARS['inout']['keep-tmp']['value'])
-        # self.dry_run_button.setChecked(EZVARS['inout']['dryrun']['value'])
-        # self.open_image_after_reco_checkbox.setChecked(EZVARS['inout']['open-viewer']['value'])
-
-        
     def set_values_from_params(self):
         """
         Updates displayed values for config group

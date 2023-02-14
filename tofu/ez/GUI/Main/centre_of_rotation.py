@@ -2,7 +2,7 @@ import logging
 from PyQt5.QtWidgets import QGridLayout, QLabel, QRadioButton, QGroupBox, QLineEdit
 
 from tofu.ez.params import EZVARS
-
+from tofu.util import add_value_to_dict_entry
 
 LOG = logging.getLogger(__name__)
 
@@ -37,31 +37,26 @@ class CentreOfRotationGroup(QGroupBox):
         self.search_rotation_label.setText("Search rotation axis in [start, stop, step] interval")
         self.search_rotation_entry = QLineEdit()
         self.search_rotation_entry.editingFinished.connect(self.set_search_rotation)
-        self.search_rotation_entry.setStyleSheet("background-color:white")
 
         self.search_in_slice_label = QLabel()
         self.search_in_slice_label.setText("Search in slice from row number")
         self.search_in_slice_entry = QLineEdit()
         self.search_in_slice_entry.editingFinished.connect(self.set_search_slice)
-        self.search_in_slice_entry.setStyleSheet("background-color:white")
 
         self.size_of_recon_label = QLabel()
         self.size_of_recon_label.setText("Size of reconstructed patch [pixel]")
         self.size_of_recon_entry = QLineEdit()
         self.size_of_recon_entry.editingFinished.connect(self.set_size_of_reco)
-        self.size_of_recon_entry.setStyleSheet("background-color:white")
 
         self.axis_col_label = QLabel()
         self.axis_col_label.setText("Axis is in column No [pixel]")
         self.axis_col_entry = QLineEdit()
         self.axis_col_entry.editingFinished.connect(self.set_axis_col)
-        self.axis_col_entry.setStyleSheet("background-color:white")
 
         self.inc_axis_label = QLabel()
         self.inc_axis_label.setText("Increment axis every reconstruction")
         self.inc_axis_entry = QLineEdit()
         self.inc_axis_entry.editingFinished.connect(self.set_axis_inc)
-        self.inc_axis_entry.setStyleSheet("background-color:white")
 
         self.image_midpoint_rButton = QRadioButton()
         self.image_midpoint_rButton.setText("Use image midpoint (for half-acquisition)")
@@ -94,20 +89,6 @@ class CentreOfRotationGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    def init_values(self):
-        self.auto_correlate_rButton.setChecked(True)
-        self.auto_minimize_rButton.setChecked(False)
-        self.define_axis_rButton.setChecked(False)
-        self.image_midpoint_rButton.setChecked(False)
-        self.set_rButton()
-        self.search_rotation_entry.setText("1010,1030,0.5")
-        self.search_in_slice_entry.setText("100")
-        self.size_of_recon_entry.setText("256")
-        self.axis_col_entry.setText("0.0")
-        self.inc_axis_entry.setText("0.0")
-
-    # self.bypass_checkbox.setChecked(False)
-
     def set_values_from_params(self):
         self.set_rButton_from_params()
         self.search_rotation_entry.setText(str(EZVARS['COR']['search-interval']['value']))
@@ -117,18 +98,19 @@ class CentreOfRotationGroup(QGroupBox):
         self.inc_axis_entry.setText(str(EZVARS['COR']['user-defined-dax']['value']))
 
     def set_rButton(self):
+        dict_entry = EZVARS['COR']['search-method']
         if self.auto_correlate_rButton.isChecked():
             LOG.debug("Auto Correlate")
-            EZVARS['COR']['search-method']['value'] = 1
+            add_value_to_dict_entry(dict_entry, 1)
         elif self.auto_minimize_rButton.isChecked():
             LOG.debug("Auto Minimize")
-            EZVARS['COR']['search-method']['value'] = 2
+            add_value_to_dict_entry(dict_entry, 2)
         elif self.define_axis_rButton.isChecked():
             LOG.debug("Define axis")
-            EZVARS['COR']['search-method']['value'] = 3
+            add_value_to_dict_entry(dict_entry, 3)
         elif self.image_midpoint_rButton.isChecked():
             LOG.debug("Use image midpoint")
-            EZVARS['COR']['search-method']['value'] = 4
+            add_value_to_dict_entry(dict_entry, 4)
 
     def set_rButton_from_params(self):
         if EZVARS['COR']['search-method']['value'] == 1:
@@ -154,20 +136,30 @@ class CentreOfRotationGroup(QGroupBox):
 
     def set_search_rotation(self):
         LOG.debug(self.search_rotation_entry.text())
-        EZVARS['COR']['search-interval']['value'] = str(self.search_rotation_entry.text())
+        dict_entry = EZVARS['COR']['search-interval']
+        add_value_to_dict_entry(dict_entry, str(self.search_rotation_entry.text()))
+        self.search_rotation_entry.setText(str(dict_entry['value']))
 
     def set_search_slice(self):
         LOG.debug(self.search_in_slice_entry.text())
-        EZVARS['COR']['search-row']['value'] = str(self.search_in_slice_entry.text())
+        dict_entry = EZVARS['COR']['search-row']
+        add_value_to_dict_entry(dict_entry, str(self.search_in_slice_entry.text()))
+        self.search_in_slice_entry.setText(str(dict_entry['value']))
 
     def set_size_of_reco(self):
         LOG.debug(self.size_of_recon_entry.text())
-        EZVARS['COR']['patch-size']['value'] = str(self.size_of_recon_entry.text())
+        dict_entry = EZVARS['COR']['patch-size']
+        add_value_to_dict_entry(dict_entry, str(self.size_of_recon_entry.text()))
+        self.size_of_recon_entry.setText(str(dict_entry['value']))
 
     def set_axis_col(self):
         LOG.debug(self.axis_col_entry.text())
-        EZVARS['COR']['user-defined-ax']['value'] = str(self.axis_col_entry.text())
+        dict_entry = EZVARS['COR']['user-defined-ax']
+        add_value_to_dict_entry(dict_entry, str(self.axis_col_entry.text()))
+        self.axis_col_entry.setText(str(dict_entry['value']))
 
     def set_axis_inc(self):
         LOG.debug(self.inc_axis_entry.text())
-        EZVARS['COR']['user-defined-dax']['value'] = str(self.inc_axis_entry.text())
+        dict_entry = EZVARS['COR']['user-defined-dax']
+        add_value_to_dict_entry(dict_entry, str(self.inc_axis_entry.text()))
+        self.inc_axis_entry.setText(str(dict_entry['value']))
