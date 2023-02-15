@@ -135,25 +135,25 @@ class ROIandHistGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    def init_values(self):
-        self.select_rows_checkbox.setChecked(False)
-        EZVARS['inout']['input_ROI']['value'] = False
-        self.first_row_entry.setText("100")
-        self.num_rows_entry.setText("200")
-        self.nth_row_entry.setText("20")
-        self.clip_histo_checkbox.setChecked(False)
-        EZVARS['inout']['clip_hist']['value'] = False
-        self.eight_bit_rButton.setChecked(True)
-        SECTIONS['general']['output-bitdepth']['value'] = 8
-        self.min_val_entry.setText("0.0")
-        self.max_val_entry.setText("0.0")
-        self.crop_slices_checkbox.setChecked(False)
-        EZVARS['inout']['output-ROI']['value'] = False
-        self.x_val_entry.setText("0")
-        self.width_val_entry.setText("0")
-        self.y_val_entry.setText("0")
-        self.height_val_entry.setText("0")
-        self.rotate_vol_entry.setText("0.0")
+    # def init_values(self):
+        # self.select_rows_checkbox.setChecked(False)
+        # EZVARS['inout']['input_ROI']['value'] = False
+        # self.first_row_entry.setText("100")
+        # self.num_rows_entry.setText("200")
+        # self.nth_row_entry.setText("20")
+        # self.clip_histo_checkbox.setChecked(False)
+        # EZVARS['inout']['clip_hist']['value'] = False
+        # self.eight_bit_rButton.setChecked(True)
+        # SECTIONS['general']['output-bitdepth']['value'] = 8
+        # self.min_val_entry.setText("0.0")
+        # self.max_val_entry.setText("0.0")
+        # self.crop_slices_checkbox.setChecked(False)
+        # EZVARS['inout']['output-ROI']['value'] = False
+        # self.x_val_entry.setText("0")
+        # self.width_val_entry.setText("0")
+        # self.y_val_entry.setText("0")
+        # self.height_val_entry.setText("0")
+        # self.rotate_vol_entry.setText("0.0")
 
     def set_values_from_params(self):
         self.select_rows_checkbox.setChecked(EZVARS['inout']['input_ROI']['value'])

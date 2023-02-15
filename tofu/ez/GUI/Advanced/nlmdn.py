@@ -126,25 +126,25 @@ class NLMDNGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    def init_values(self):
-        self.apply_to_reco_checkbox.setChecked(False)
-        EZVARS['nlmdn']['do-after-reco']['value'] = False
-        self.input_dir_entry.setText(os.getcwd())
-        EZVARS['nlmdn']['input-dir']['value'] = os.getcwd()
-        self.output_dir_entry.setText(os.getcwd() + '-nlmfilt')
-        EZVARS['nlmdn']['output_pattern']['value'] = os.getcwd() + '-nlmfilt'
-        self.e_bigtif = False
-        EZVARS['nlmdn']['bigtiff_output']['value'] = False
-        self.similarity_radius_entry.setText("10")
-        self.patch_radius_entry.setText("3")
-        self.smoothing_entry.setText("0.0")
-        self.noise_std_entry.setText("0.0")
-        self.window_entry.setText("0.0")
-        self.fast_checkbox.setChecked(True)
-        self.e_fast = True
-        self.sigma_checkbox.setChecked(False)
-        self.e_sig = False
-        self.e_dryrun = False
+    # def init_values(self):
+        # self.apply_to_reco_checkbox.setChecked(False)
+        # EZVARS['nlmdn']['do-after-reco']['value'] = False
+        # self.input_dir_entry.setText(os.getcwd())
+        # EZVARS['nlmdn']['input-dir']['value'] = os.getcwd()
+        # self.output_dir_entry.setText(os.getcwd() + '-nlmfilt')
+        # EZVARS['nlmdn']['output_pattern']['value'] = os.getcwd() + '-nlmfilt'
+        # self.e_bigtif = False
+        # EZVARS['nlmdn']['bigtiff_output']['value'] = False
+        # self.similarity_radius_entry.setText("10")
+        # self.patch_radius_entry.setText("3")
+        # self.smoothing_entry.setText("0.0")
+        # self.noise_std_entry.setText("0.0")
+        # self.window_entry.setText("0.0")
+        # self.fast_checkbox.setChecked(True)
+        # self.e_fast = True
+        # self.sigma_checkbox.setChecked(False)
+        # self.e_sig = False
+        # self.e_dryrun = False
 
     def set_values_from_params(self):
         self.apply_to_reco_checkbox.setChecked(bool(EZVARS['nlmdn']['do-after-reco']['value']))

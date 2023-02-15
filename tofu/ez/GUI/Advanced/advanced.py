@@ -83,21 +83,21 @@ class AdvancedGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    def init_values(self):
-        self.lamino_group.setChecked(False)
-        EZVARS['advanced']['more-reco-params']['value'] = False
-        self.lamino_angle_entry.setText("30")
-        SECTIONS['cone-beam-weight']['axis-angle-x']['value'] = 30
-        self.overall_rotation_entry.setText("360")
-        SECTIONS['general-reconstruction']['overall-angle']['value'] = 360
-        self.center_position_z_entry.setText("")
-        SECTIONS['cone-beam-weight']['center-position-z']['value'] = 0
-        self.axis_rotation_y_entry.setText("")
-        SECTIONS['general-reconstruction']['axis-angle-y']['value'] = 0
-        self.dark_scale_entry.setText("")
-        EZVARS['flat-correction']['dark-scale']['value'] = 1
-        self.flat_scale_entry.setText("")
-        EZVARS['flat-correction']['flat-scale']['value'] = 1
+    #def init_values(self):
+        # self.lamino_group.setChecked(False)
+        # EZVARS['advanced']['more-reco-params']['value'] = False
+        # self.lamino_angle_entry.setText("30")
+        # SECTIONS['cone-beam-weight']['axis-angle-x']['value'] = 30
+        # self.overall_rotation_entry.setText("360")
+        # SECTIONS['general-reconstruction']['overall-angle']['value'] = 360
+        # self.center_position_z_entry.setText("")
+        # SECTIONS['cone-beam-weight']['center-position-z']['value'] = 0
+        # self.axis_rotation_y_entry.setText("")
+        # SECTIONS['general-reconstruction']['axis-angle-y']['value'] = 0
+        # self.dark_scale_entry.setText("")
+        # EZVARS['flat-correction']['dark-scale']['value'] = 1
+        # self.flat_scale_entry.setText("")
+        # EZVARS['flat-correction']['flat-scale']['value'] = 1
 
     def set_values_from_params(self):
         self.lamino_group.setChecked(EZVARS['advanced']['more-reco-params']['value'])

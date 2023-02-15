@@ -80,22 +80,22 @@ class GUI(qtw.QWidget):
 
         self.phase_retrieval_group = PhaseRetrievalGroup()
         self.phase_retrieval_group.set_values_from_params()
-
+        #---- End of editing slot methods ----#
         self.binning_group = ROIandHistGroup()  #TODO rename binning to something short and meaningful
-        self.binning_group.init_values()
+        self.binning_group.set_values_from_params()
 
         # Image Viewer
         self.image_group = ImageViewerGroup()
 
         # Advanced Tab
         self.advanced_group = AdvancedGroup()
-        self.advanced_group.init_values()
+        self.advanced_group.set_values_from_params()
 
         self.optimization_group = OptimizationGroup()
-        self.optimization_group.init_values()
+        self.optimization_group.set_values_from_params()
 
         self.nlmdn_group = NLMDNGroup()
-        self.nlmdn_group.init_values()
+        self.nlmdn_group.set_values_from_params()
 
         # Stitch_tools_tab Tab
         self.multi_stitch_group = MultiStitch360Group()

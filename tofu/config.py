@@ -17,7 +17,7 @@ SECTIONS['general'] = {
         'help': "File name of configuration",
         'metavar': 'FILE'},
     'verbose': {
-        'default': False,
+        'default': False, #G
         'help': 'Verbose output',
         'action': 'store_true'},
     'output': {
@@ -27,17 +27,17 @@ SECTIONS['general'] = {
                 "for storing reconstructed slices",
         'metavar': 'PATH'},
     'output-bitdepth': {
-        'default': 32,
+        'default': 8, #G - original: 32
         'type': restrict_value((0, None), dtype=int),
         'help': "Bit depth of output, either 8, 16 or 32",
         'metavar': 'BITDEPTH'},
     'output-minimum': {
-        'default': 0.0,
+        'default': 0.0, #G
         'type': float,
         'help': "Minimum value that maps to zero",
         'metavar': 'MIN'},
     'output-maximum': {
-        'default': 0.0,
+        'default': 0.0, #G
         'type': float,
         'help': "Maximum input value that maps to largest output value",
         'metavar': 'MAX'},
@@ -63,11 +63,11 @@ SECTIONS['general'] = {
 
 SECTIONS['reading'] = {
     'y': {
-        'default': 0,
+        'default': 100, #G
         'type': restrict_value((0, None), dtype=int),
         'help': 'Vertical coordinate from where to start reading the input image'},
     'height': {
-        'default': 0,
+        'default': 200, #G
         'type': restrict_value((0, None), dtype=int),
         'help': "Number of rows which will be read (ROI height)"},
     'bitdepth': {
@@ -75,7 +75,7 @@ SECTIONS['reading'] = {
         'type': restrict_value((0, None), dtype=int),
         'help': "Bit depth of raw files"},
     'y-step': {
-        'default': 1,
+        'default': 20, #G
         'type': restrict_value((0, None), dtype=int),
         'help': "Read every \"step\" row from the input"},
     'start': {
@@ -472,11 +472,11 @@ SECTIONS['cone-beam-weight'] = {
         'type': float,
         'help': "X rotation axis position on a projection [pixels]"},
     'center-position-z': {
-        'default': 0.0,
+        'default': 0, #G
         'type': float,
         'help': "Z rotation axis position on a projection [pixels]"},
     'axis-angle-x': {   
-        'default': 0.0,
+        'default': 30, #G
         'type': float,
         'help': "Rotation axis rotation around the x axis"
                 "(laminographic angle, 0 = tomography) [deg]"}}
@@ -491,14 +491,14 @@ SECTIONS['general-reconstruction'] = {
         'action': 'store_true',
         'help': "Disable cone beam weighting"},
     'slice-memory-coeff': {
-        'default': 0.8,
+        'default': 0.7, #G - original: 0.8
         'type': restrict_value((0.01, 0.95)),
         'help': "Portion of the GPU memory used for slices (from 0.01 to 0.9) [fraction]. "
                 "The total amount of consumed memory will be larger depending on the "
                 "complexity of the graph. In case of OpenCL memory allocation errors, "
                 "try reducing this value."},
     'num-gpu-threads': {
-        'default': 1,
+        'default': 1, #G
         'type': restrict_value((1, None), dtype=int),
         'help': "Number of parallel reconstruction threads on one GPU"},
     'disable-projection-crop': {
@@ -510,7 +510,7 @@ SECTIONS['general-reconstruction'] = {
         'help': "Reconstruct without reading or writing data",
         'action': 'store_true'},
     'data-splitting-policy': {
-        'default': 'one',
+        'default': 'one', #G
         'type': str,
         'help': "'one': one GPU should process as many slices as possible, "
                 "'many': slices should be spread across as many GPUs as possible",
@@ -588,7 +588,7 @@ SECTIONS['general-reconstruction'] = {
         'type': tupleize(dtype=list),
         'help': "Detector rotation around the z axis (vertical) [deg]"},
     'axis-angle-y': {
-        'default': 0.0,
+        'default': 0, #G
         'type': float,
         'help': "Rotation axis rotation around the y axis (along beam direction) [deg]"},
     'axis-angle-z': {
@@ -604,7 +604,7 @@ SECTIONS['general-reconstruction'] = {
         'type': float,
         'help': "Volume rotation around the y axis (along beam direction) [deg]"},
     'volume-angle-z': {
-        'default': 0.0,
+        'default': 0.0, #G
         'type': float,
         'help': "Volume rotation around the z axis (vertical) [deg]"},
     'compute-type': {
@@ -624,7 +624,7 @@ SECTIONS['general-reconstruction'] = {
         'help': "Data type of the output volume",
         'choices': ['half', 'float', 'double', 'uchar', 'ushort', 'uint']},
     'overall-angle': {
-        'default': 0.0,
+        'default': 360, #G
         'type': float,
         'help': "The total angle over which projections were taken in degrees"},
     'genreco-padding-mode': {

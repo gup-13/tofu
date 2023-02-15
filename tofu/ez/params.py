@@ -195,11 +195,11 @@ EZVARS['inout'] = {
         'type': bool, 
         'help': "TODO"},
     'input_ROI': {
-        'default': False, 
+        'default': False, #G
         'type': bool, 
         'help': "TODO"},
     'clip_hist': {
-        'default': False, 
+        'default': False, #G
         'type': bool, 
         'help': "TODO"},
     'preprocess': {
@@ -211,23 +211,23 @@ EZVARS['inout'] = {
         'type': str, 
         'help': "TODO-updated Default"},
     'output-ROI': {
-        'default': False, 
+        'default': False, #G
         'type': bool, 
         'help': "TODO"},
     'output-x': {
-        'default': 0, 
+        'default': 0, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "Crop slices: x"},
     'output-width': {
-        'default': 0, 
+        'default': 0, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "Crop slices: width"},
     'output-y': {
-        'default': 0, 
+        'default': 0, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "Crop slices: y"},
     'output-height': {
-        'default': 0, 
+        'default': 0, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "Crop slices: height"},
     'dryrun': {
@@ -363,22 +363,22 @@ EZVARS['flat-correction'] = {
         'type': restrict_value((0,None),dtype=int), 
         'help': "Flat Field Correction: Downsample"},
     'dark-scale': {
-        'default': 1.0, 
+        'default': 1.0, #G
         'type': float, 
         'help': "Scaling dark"}, #(?) has the same name in SECTION
     'flat-scale': {
-        'default': 1.0, 
+        'default': 1.0, #G
         'type': float, 
         'help': "Scaling falt"}, #(?) has the same name in SECTION
 }
 
 EZVARS['nlmdn'] = {
     'do-after-reco': {
-        'default': False, 
+        'default': False, #G
         'type': bool, 
         'help': "TODO"},
     'input-dir': {
-        'default': "", 
+        'default': os.getcwd(), #G
         'type': str, 
         'help': "TODO"},
     'input-is-1file': {
@@ -386,7 +386,7 @@ EZVARS['nlmdn'] = {
         'type': bool, 
         'help': "TODO"},
     'output_pattern': {
-        'default': "", 
+        'default': os.getcwd() + '-nlmfilt', #G
         'type': str, 
         'help': "TODO"},
     'bigtiff_output': {
@@ -394,35 +394,35 @@ EZVARS['nlmdn'] = {
         'type': bool, 
         'help': "TODO-updated Default"},
     'search-radius': {
-        'default': "", 
+        'default': "10", #G
         'type': str, 
         'help': "TODO"},
     'patch-radius': {
-        'default': "", 
+        'default': "3", #G
         'type': str, 
         'help': "TODO"},
     'h': {
-        'default': "", 
+        'default': "0.0", #G
         'type': str, 
         'help': "TODO"},
     'sigma': {
-        'default': "", 
+        'default': "0.0", #G
         'type': str, 
         'help': "TODO"},
     'window': {
-        'default': "", 
+        'default': "0.0", #G
         'type': str, 
         'help': "TODO"},
     'fast': {
-        'default': False, 
+        'default': True, #G
         'type': bool, 
         'help': "TODO"},
     'estimate-sigma': {
-        'default': False, 
+        'default': False, #G
         'type': bool, 
         'help': "TODO"},
     'dryrun': {
-        'default': False, 
+        'default': False, #G
         'type': bool, 
         'help': "TODO"},
 }
@@ -430,7 +430,7 @@ EZVARS['nlmdn'] = {
 
 EZVARS['advanced'] = {
     'more-reco-params': {
-        'default': False, 
+        'default': False, #G
         'type': bool, 
         'help': "TODO"},
     'parameter-type': {

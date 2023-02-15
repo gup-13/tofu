@@ -63,22 +63,22 @@ class OptimizationGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    def init_values(self):
-        self.verbose_switch.setChecked(False)
-        SECTIONS['general']['verbose']['value'] = False
-        SECTIONS['general-reconstruction']['slice-memory-coeff']['value'] = 0.7
-        self.slice_memory_entry.setText(
-            str(SECTIONS['general-reconstruction']['slice-memory-coeff']['value']))
-        self.num_GPU_entry.setText("one")
-        SECTIONS['general-reconstruction']['data-splitting-policy']['value'] = "one"
-        self.slices_per_device_entry.setText("")
-        SECTIONS['general-reconstruction']['num-gpu-threads']['value'] = 1
+    # def init_values(self):
+        # self.verbose_switch.setChecked(False)
+        # SECTIONS['general']['verbose']['value'] = False
+        # SECTIONS['general-reconstruction']['slice-memory-coeff']['value'] = 0.7
+        # self.slice_memory_entry.setText(
+        #     str(SECTIONS['general-reconstruction']['slice-memory-coeff']['value']))
+        # self.num_GPU_entry.setText("one")
+        # SECTIONS['general-reconstruction']['data-splitting-policy']['value'] = "one"
+        # self.slices_per_device_entry.setText("")
+        # SECTIONS['general-reconstruction']['num-gpu-threads']['value'] = 1
 
     def set_values_from_params(self):
         self.verbose_switch.setChecked(bool(SECTIONS['general']['verbose']['value']))
-        self.slice_memory_entry.setText(float(SECTIONS['general-reconstruction']['slice-memory-coeff']['value']))
-        self.num_GPU_entry.setText(int(SECTIONS['general-reconstruction']['data-splitting-policy']['value']))
-        self.slices_per_device_entry.setText(int(SECTIONS['general-reconstruction']['num-gpu-threads']['value']))
+        self.slice_memory_entry.setText(str(SECTIONS['general-reconstruction']['slice-memory-coeff']['value']))
+        self.num_GPU_entry.setText(str(SECTIONS['general-reconstruction']['data-splitting-policy']['value']))
+        self.slices_per_device_entry.setText(str(SECTIONS['general-reconstruction']['num-gpu-threads']['value']))
 
     def set_verbose_switch(self):
         LOG.debug("Verbose: " + str(self.verbose_switch.isChecked()))
