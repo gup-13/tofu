@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt
 import tofu.ez.params as parameters
 from tofu.ez.params import EZVARS
 from tofu.config import SECTIONS
+from tofu.util import add_value_to_dict_entry
 
 LOG = logging.getLogger(__name__)
 
@@ -135,26 +136,6 @@ class ROIandHistGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    # def init_values(self):
-        # self.select_rows_checkbox.setChecked(False)
-        # EZVARS['inout']['input_ROI']['value'] = False
-        # self.first_row_entry.setText("100")
-        # self.num_rows_entry.setText("200")
-        # self.nth_row_entry.setText("20")
-        # self.clip_histo_checkbox.setChecked(False)
-        # EZVARS['inout']['clip_hist']['value'] = False
-        # self.eight_bit_rButton.setChecked(True)
-        # SECTIONS['general']['output-bitdepth']['value'] = 8
-        # self.min_val_entry.setText("0.0")
-        # self.max_val_entry.setText("0.0")
-        # self.crop_slices_checkbox.setChecked(False)
-        # EZVARS['inout']['output-ROI']['value'] = False
-        # self.x_val_entry.setText("0")
-        # self.width_val_entry.setText("0")
-        # self.y_val_entry.setText("0")
-        # self.height_val_entry.setText("0")
-        # self.rotate_vol_entry.setText("0.0")
-
     def set_values_from_params(self):
         self.select_rows_checkbox.setChecked(EZVARS['inout']['input_ROI']['value'])
         self.first_row_entry.setText(str(SECTIONS['reading']['y']['value']))
@@ -179,67 +160,91 @@ class ROIandHistGroup(QGroupBox):
 
     def set_select_rows(self):
         LOG.debug("Select rows: " + str(self.select_rows_checkbox.isChecked()))
-        EZVARS['inout']['input_ROI']['value'] = bool(self.select_rows_checkbox.isChecked())
+        dict_entry = EZVARS['inout']['input_ROI']
+        add_value_to_dict_entry(dict_entry, str(self.select_rows_checkbox.isChecked()))
 
     def set_first_row(self):
         LOG.debug(self.first_row_entry.text())
-        SECTIONS['reading']['y']['value'] = str(self.first_row_entry.text())
+        dict_entry = SECTIONS['reading']['y']
+        add_value_to_dict_entry(dict_entry, str(self.first_row_entry.text()))
+        self.first_row_entry.setText(str(dict_entry['value']))
 
     def set_num_rows(self):
         LOG.debug(self.num_rows_entry.text())
-        SECTIONS['reading']['height']['value'] = str(self.num_rows_entry.text())
+        dict_entry = SECTIONS['reading']['height']
+        add_value_to_dict_entry(dict_entry, str(self.num_rows_entry.text()))
+        self.num_rows_entry.setText(str(dict_entry['value']))
 
     def set_reco_nth_rows(self):
         LOG.debug(self.nth_row_entry.text())
-        SECTIONS['reading']['y-step']['value'] = str(self.nth_row_entry.text())
+        dict_entry = SECTIONS['reading']['y-step']
+        add_value_to_dict_entry(dict_entry, str(self.nth_row_entry.text()))
+        self.nth_row_entry.setText(str(dict_entry['value']))
 
     def set_clip_histo(self):
         LOG.debug("Clip histo: " + str(self.clip_histo_checkbox.isChecked()))
-        EZVARS['inout']['clip_hist']['value'] = bool(self.clip_histo_checkbox.isChecked())
+        dict_entry = EZVARS['inout']['clip_hist']
+        add_value_to_dict_entry(dict_entry, str(self.clip_histo_checkbox.isChecked()))
         if EZVARS['inout']['clip_hist']['value']:
             return self.set_bitdepth()
         else:
             return '32'
 
     def set_bitdepth(self):
+        dict_entry = SECTIONS['general']['output-bitdepth']
         if self.eight_bit_rButton.isChecked():
             LOG.debug("8 bit")
-            SECTIONS['general']['output-bitdepth']['value'] = str(8)
+            add_value_to_dict_entry(dict_entry, str(8))
             return '8'
         elif self.sixteen_bit_rButton.isChecked():
             LOG.debug("16 bit")
-            SECTIONS['general']['output-bitdepth']['value'] = str(16)
+            add_value_to_dict_entry(dict_entry, str(16))
             return '16'
 
 
     def set_min_val(self):
         LOG.debug(self.min_val_entry.text())
-        SECTIONS['general']['output-minimum']['value'] = str(self.min_val_entry.text())
+        dict_entry = SECTIONS['general']['output-minimum']
+        add_value_to_dict_entry(dict_entry, str(self.min_val_entry.text()))
+        self.min_val_entry.setText(str(dict_entry['value']))
 
     def set_max_val(self):
         LOG.debug(self.max_val_entry.text())
-        SECTIONS['general']['output-maximum']['value'] = str(self.max_val_entry.text())
+        dict_entry = SECTIONS['general']['output-maximum']
+        add_value_to_dict_entry(dict_entry, str(self.max_val_entry.text()))
+        self.max_val_entry.setText(str(dict_entry['value']))
 
     def set_crop_slices(self):
         LOG.debug("Crop slices: " + str(self.crop_slices_checkbox.isChecked()))
-        EZVARS['inout']['output-ROI']['value'] = bool(self.crop_slices_checkbox.isChecked())
+        dict_entry = EZVARS['inout']['output-ROI']
+        add_value_to_dict_entry(dict_entry, str(self.crop_slices_checkbox.isChecked()))
 
     def set_x(self):
         LOG.debug(self.x_val_entry.text())
-        EZVARS['inout']['output-x']['value'] = str(self.x_val_entry.text())
+        dict_entry = EZVARS['inout']['output-x']
+        add_value_to_dict_entry(dict_entry, str(self.x_val_entry.text()))
+        self.x_val_entry.setText(str(dict_entry['value']))
 
     def set_width(self):
         LOG.debug(self.width_val_entry.text())
-        EZVARS['inout']['output-width']['value'] = str(self.width_val_entry.text())
+        dict_entry = EZVARS['inout']['output-width']
+        add_value_to_dict_entry(dict_entry, str(self.width_val_entry.text()))
+        self.width_val_entry.setText(str(dict_entry['value']))
 
     def set_y(self):
         LOG.debug(self.y_val_entry.text())
-        EZVARS['inout']['output-y']['value'] = str(self.y_val_entry.text())
+        dict_entry = EZVARS['inout']['output-y']
+        add_value_to_dict_entry(dict_entry, str(self.y_val_entry.text()))
+        self.y_val_entry.setText(str(dict_entry['value']))
 
     def set_height(self):
         LOG.debug(self.height_val_entry.text())
-        EZVARS['inout']['output-height']['value'] = str(self.height_val_entry.text())
+        dict_entry = EZVARS['inout']['output-height']
+        add_value_to_dict_entry(dict_entry, str(self.height_val_entry.text()))
+        self.height_val_entry.setText(str(dict_entry['value']))
 
     def set_rotate_volume(self):
         LOG.debug(self.rotate_vol_entry.text())
-        parameters.params["main_region_rotate_volume_clock"] = str(self.rotate_vol_entry.text())
+        dict_entry = SECTIONS['general-reconstruction']['volume-angle-z']
+        add_value_to_dict_entry(dict_entry, str(self.rotate_vol_entry.text()))
+        self.rotate_vol_entry.setText(str(dict_entry['value']))

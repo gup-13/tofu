@@ -17,6 +17,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 import tofu.ez.params as parameters
 from tofu.ez.params import EZVARS
 from tofu.config import SECTIONS
+from tofu.util import add_value_to_dict_entry
 
 from tofu.ez.main_nlm import main_tk
 
@@ -126,26 +127,6 @@ class NLMDNGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    # def init_values(self):
-        # self.apply_to_reco_checkbox.setChecked(False)
-        # EZVARS['nlmdn']['do-after-reco']['value'] = False
-        # self.input_dir_entry.setText(os.getcwd())
-        # EZVARS['nlmdn']['input-dir']['value'] = os.getcwd()
-        # self.output_dir_entry.setText(os.getcwd() + '-nlmfilt')
-        # EZVARS['nlmdn']['output_pattern']['value'] = os.getcwd() + '-nlmfilt'
-        # self.e_bigtif = False
-        # EZVARS['nlmdn']['bigtiff_output']['value'] = False
-        # self.similarity_radius_entry.setText("10")
-        # self.patch_radius_entry.setText("3")
-        # self.smoothing_entry.setText("0.0")
-        # self.noise_std_entry.setText("0.0")
-        # self.window_entry.setText("0.0")
-        # self.fast_checkbox.setChecked(True)
-        # self.e_fast = True
-        # self.sigma_checkbox.setChecked(False)
-        # self.e_sig = False
-        # self.e_dryrun = False
-
     def set_values_from_params(self):
         self.apply_to_reco_checkbox.setChecked(bool(EZVARS['nlmdn']['do-after-reco']['value']))
         self.input_dir_entry.setText(str(EZVARS['nlmdn']['input-dir']['value']))
@@ -164,9 +145,9 @@ class NLMDNGroup(QGroupBox):
             "Apply NLMDN to reconstructed slices checkbox: "
             + str(self.apply_to_reco_checkbox.isChecked())
         )
-        EZVARS['nlmdn']['do-after-reco']['value'] = bool(
-            self.apply_to_reco_checkbox.isChecked()
-        )
+        dict_entry = EZVARS['nlmdn']['do-after-reco']
+        add_value_to_dict_entry(dict_entry, str(self.apply_to_reco_checkbox.isChecked()))
+        
         if self.apply_to_reco_checkbox.isChecked():
             self.input_dir_button.setDisabled(True)
             self.select_img_button.setDisabled(True)
@@ -191,15 +172,23 @@ class NLMDNGroup(QGroupBox):
         LOG.debug("Select input directory pressed")
         dir_explore = QFileDialog(self)
         directory = dir_explore.getExistingDirectory()
-        self.input_dir_entry.setText(directory)
-        EZVARS['nlmdn']['input-dir']['value'] = directory
-        self.output_dir_entry.setText(directory + "-nlmfilt")
-        EZVARS['nlmdn']['output_pattern']['value'] = directory + "-nlmfilt"
-        EZVARS['nlmdn']['input-is-1file']['value'] = False
+        
+        dict_entry = EZVARS['nlmdn']['input-dir']
+        add_value_to_dict_entry(dict_entry, directory)
+        self.input_dir_entry.setText(str(dict_entry['value']))
+        
+        dict_entry = EZVARS['nlmdn']['output_pattern']
+        add_value_to_dict_entry(dict_entry, directory + "-nlmfilt")
+        self.output_dir_entry.setText(str(dict_entry['value']))
+        
+        dict_entry = EZVARS['nlmdn']['input-is-1file']
+        add_value_to_dict_entry(dict_entry, str(False))
 
     def set_indir_entry(self):
         LOG.debug("Indir entry: " + str(self.input_dir_entry.text()))
-        EZVARS['nlmdn']['input-dir']['value'] = str(self.input_dir_entry.text())
+        dict_entry = EZVARS['nlmdn']['input-dir']
+        add_value_to_dict_entry(dict_entry, str(self.input_dir_entry.text()))
+        self.input_dir_entry.setText(str(dict_entry['value']))
 
     def select_image(self):
         LOG.debug("Select one image button pressed")
@@ -210,54 +199,75 @@ class NLMDNGroup(QGroupBox):
         if file_path:
             img_name, img_ext = os.path.splitext(file_path)
             tmp = img_name + "-nlmfilt-%05i" + img_ext
-            self.input_dir_entry.setText(file_path)
-            self.output_dir_entry.setText(tmp)
-            EZVARS['nlmdn']['input-dir']['value'] = file_path
-            EZVARS['nlmdn']['output_pattern']['value'] = tmp
-            EZVARS['nlmdn']['input-is-1file']['value'] = True
+            dict_entry = EZVARS['nlmdn']['input-dir']
+            add_value_to_dict_entry(dict_entry, file_path)
+            self.input_dir_entry.setText(str(dict_entry['value']))
+            
+            dict_entry = EZVARS['nlmdn']['output_pattern']
+            add_value_to_dict_entry(dict_entry, tmp)
+            self.output_dir_entry.setText(str(dict_entry['value']))
+            
+            dict_entry = EZVARS['nlmdn']['input-is-1file']
+            add_value_to_dict_entry(dict_entry, str(True))
 
     def set_outdir_button(self):
         LOG.debug("Select output directory pressed")
         dir_explore = QFileDialog(self)
         directory = dir_explore.getExistingDirectory()
-        self.output_dir_entry.setText(directory)
-        EZVARS['nlmdn']['output_pattern']['value'] = directory
+        dict_entry = EZVARS['nlmdn']['output_pattern']
+        add_value_to_dict_entry(dict_entry, directory)
+        self.output_dir_entry.setText(str(dict_entry['value']))
 
     def set_save_bigtif(self):
         LOG.debug("Save bigtif checkbox: " + str(self.save_bigtif_checkbox.isChecked()))
-        EZVARS['nlmdn']['bigtiff_output']['value'] = bool(self.save_bigtif_checkbox.isChecked())
+        dict_entry = EZVARS['nlmdn']['bigtiff_output']
+        add_value_to_dict_entry(dict_entry, str(self.save_bigtif_checkbox.isChecked()))
 
     def set_outdir_entry(self):
         LOG.debug("Outdir entry: " + str(self.output_dir_entry.text()))
-        EZVARS['nlmdn']['output_pattern']['value'] = str(self.output_dir_entry.text())
+        dict_entry = EZVARS['nlmdn']['output_pattern']
+        add_value_to_dict_entry(dict_entry, str(self.output_dir_entry.text()))
+        self.output_dir_entry.setText(str(dict_entry['value']))
 
     def set_rad_sim_entry(self):
         LOG.debug("Radius for similarity: " + str(self.similarity_radius_entry.text()))
-        EZVARS['nlmdn']['search-radius']['value'] = str(self.similarity_radius_entry.text())
+        dict_entry = EZVARS['nlmdn']['search-radius']
+        add_value_to_dict_entry(dict_entry, str(self.similarity_radius_entry.text()))
+        self.similarity_radius_entry.setText(str(dict_entry['value']))
 
     def set_rad_patch_entry(self):
         LOG.debug("Radius of patches: " + str(self.patch_radius_entry.text()))
-        EZVARS['nlmdn']['patch-radius']['value'] = str(self.patch_radius_entry.text())
+        dict_entry = EZVARS['nlmdn']['patch-radius']
+        add_value_to_dict_entry(dict_entry, str(self.patch_radius_entry.text()))
+        self.patch_radius_entry.setText(str(dict_entry['value']))
 
     def set_smoothing_entry(self):
         LOG.debug("Smoothing control: " + str(self.smoothing_entry.text()))
-        EZVARS['nlmdn']['h']['value'] = str(self.smoothing_entry.text())
+        dict_entry = EZVARS['nlmdn']['h']
+        add_value_to_dict_entry(dict_entry, str(self.smoothing_entry.text()))
+        self.smoothing_entry.setText(str(dict_entry['value']))
 
     def set_noise_entry(self):
         LOG.debug("Noise std: " + str(self.noise_std_entry.text()))
-        EZVARS['nlmdn']['sigma']['value'] = str(self.noise_std_entry.text())
+        dict_entry = EZVARS['nlmdn']['sigma']
+        add_value_to_dict_entry(dict_entry, str(self.noise_std_entry.text()))
+        self.noise_std_entry.setText(str(dict_entry['value']))
 
     def set_window_entry(self):
         LOG.debug("Window: " + str(self.window_entry.text()))
-        EZVARS['nlmdn']['window']['value'] = str(self.window_entry.text())
+        dict_entry = EZVARS['nlmdn']['window']
+        add_value_to_dict_entry(dict_entry, str(self.window_entry.text()))
+        self.window_entry.setText(str(dict_entry['value']))
 
     def set_fast_checkbox(self):
         LOG.debug("Fast: " + str(self.fast_checkbox.isChecked()))
-        EZVARS['nlmdn']['fast']['value'] = bool(self.fast_checkbox.isChecked())
+        dict_entry = EZVARS['nlmdn']['fast']
+        add_value_to_dict_entry(dict_entry, str(self.fast_checkbox.isChecked()))
 
     def set_sigma_checkbox(self):
         LOG.debug("Estimate sigma: " + str(self.sigma_checkbox.isChecked()))
-        EZVARS['nlmdn']['estimate-sigma']['value'] = bool(self.sigma_checkbox.isChecked())
+        dict_entry = EZVARS['nlmdn']['estimate-sigma']
+        add_value_to_dict_entry(dict_entry, str(self.sigma_checkbox.isChecked()))
 
     def help_button_pressed(self):
         LOG.debug("Help Button Pressed")
@@ -290,9 +300,10 @@ class NLMDNGroup(QGroupBox):
 
     def dry_button_pressed(self):
         LOG.debug("Dry Run Button Pressed")
-        EZVARS['nlmdn']['dryrun']['value'] = True
+        dict_entry = EZVARS['nlmdn']['dryrun']
+        add_value_to_dict_entry(dict_entry, str(True))
         self.apply_button_pressed()
-        EZVARS['nlmdn']['dryrun']['value'] = False
+        add_value_to_dict_entry(dict_entry, str(False))
 
     def apply_button_pressed(self):
         LOG.debug("Apply Filter Button Pressed")

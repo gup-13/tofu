@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QGridLayout, QLabel, QGroupBox, QLineEdit
 import tofu.ez.params as parameters
 from tofu.config import SECTIONS
 from tofu.ez.params import EZVARS
+from tofu.util import add_value_to_dict_entry
 
 LOG = logging.getLogger(__name__)
 
@@ -83,22 +84,6 @@ class AdvancedGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    #def init_values(self):
-        # self.lamino_group.setChecked(False)
-        # EZVARS['advanced']['more-reco-params']['value'] = False
-        # self.lamino_angle_entry.setText("30")
-        # SECTIONS['cone-beam-weight']['axis-angle-x']['value'] = 30
-        # self.overall_rotation_entry.setText("360")
-        # SECTIONS['general-reconstruction']['overall-angle']['value'] = 360
-        # self.center_position_z_entry.setText("")
-        # SECTIONS['cone-beam-weight']['center-position-z']['value'] = 0
-        # self.axis_rotation_y_entry.setText("")
-        # SECTIONS['general-reconstruction']['axis-angle-y']['value'] = 0
-        # self.dark_scale_entry.setText("")
-        # EZVARS['flat-correction']['dark-scale']['value'] = 1
-        # self.flat_scale_entry.setText("")
-        # EZVARS['flat-correction']['flat-scale']['value'] = 1
-
     def set_values_from_params(self):
         self.lamino_group.setChecked(EZVARS['advanced']['more-reco-params']['value'])
         self.lamino_angle_entry.setText(str(SECTIONS['cone-beam-weight']['axis-angle-x']['value']))
@@ -110,28 +95,41 @@ class AdvancedGroup(QGroupBox):
 
     def set_lamino_group(self):
         LOG.debug("Lamino: " + str(self.lamino_group.isChecked()))
-        EZVARS['advanced']['more-reco-params']['value'] = bool(self.lamino_group.isChecked())
+        dict_entry = EZVARS['advanced']['more-reco-params']
+        add_value_to_dict_entry(dict_entry, str(self.lamino_group.isChecked()))
 
     def set_lamino_angle(self):
         LOG.debug(self.lamino_angle_entry.text())
-        SECTIONS['cone-beam-weight']['axis-angle-x']['value'] = float(self.lamino_angle_entry.text())
+        dict_entry = SECTIONS['cone-beam-weight']['axis-angle-x']
+        add_value_to_dict_entry(dict_entry, str(self.lamino_angle_entry.text()))
+        self.lamino_angle_entry.setText(str(dict_entry['value']))
 
     def set_overall_rotation(self):
         LOG.debug(self.overall_rotation_entry.text())
-        SECTIONS['general-reconstruction']['overall-angle']['value'] = float(self.overall_rotation_entry.text())
+        dict_entry = SECTIONS['general-reconstruction']['overall-angle']
+        add_value_to_dict_entry(dict_entry, str(self.overall_rotation_entry.text()))
+        self.overall_rotation_entry.setText(str(dict_entry['value']))
 
     def set_center_position_z(self):
         LOG.debug(self.center_position_z_entry.text())
-        SECTIONS['cone-beam-weight']['center-position-z']['value'] = float(self.center_position_z_entry.text())
+        dict_entry = SECTIONS['cone-beam-weight']['center-position-z']
+        add_value_to_dict_entry(dict_entry, str(self.center_position_z_entry.text()))
+        self.center_position_z_entry.setText(str(dict_entry['value']))
 
     def set_rotation_about_beam(self):
         LOG.debug(self.axis_rotation_y_entry.text())
-        SECTIONS['general-reconstruction']['axis-angle-y']['value'] = float(self.axis_rotation_y_entry.text())
+        dict_entry = SECTIONS['general-reconstruction']['axis-angle-y']
+        add_value_to_dict_entry(dict_entry, str(self.axis_rotation_y_entry.text()))
+        self.axis_rotation_y_entry.setText(str(dict_entry['value']))
 
     def set_dark_scale(self):
         LOG.debug(self.dark_scale_entry.text())
-        EZVARS['flat-correction']['dark-scale']['value'] = float(self.dark_scale_entry.text())
+        dict_entry = EZVARS['flat-correction']['dark-scale']
+        add_value_to_dict_entry(dict_entry, str(self.dark_scale_entry.text()))
+        self.dark_scale_entry.setText(str(dict_entry['value']))
 
     def set_flat_scale(self):
         LOG.debug(self.flat_scale_entry.text())
-        EZVARS['flat-correction']['flat-scale']['value'] = float(self.flat_scale_entry.text())
+        dict_entry = EZVARS['flat-correction']['flat-scale']
+        add_value_to_dict_entry(dict_entry, str(self.flat_scale_entry.text()))
+        self.flat_scale_entry.setText(str(dict_entry['value']))

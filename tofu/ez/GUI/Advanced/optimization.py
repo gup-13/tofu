@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QGridLayout, QLabel, QGroupBox, QLineEdit, QCheckBox
 import tofu.ez.params as parameters
 from tofu.ez.params import EZVARS
 from tofu.config import SECTIONS
-
+from tofu.util import add_value_to_dict_entry
 
 LOG = logging.getLogger(__name__)
 
@@ -63,17 +63,6 @@ class OptimizationGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    # def init_values(self):
-        # self.verbose_switch.setChecked(False)
-        # SECTIONS['general']['verbose']['value'] = False
-        # SECTIONS['general-reconstruction']['slice-memory-coeff']['value'] = 0.7
-        # self.slice_memory_entry.setText(
-        #     str(SECTIONS['general-reconstruction']['slice-memory-coeff']['value']))
-        # self.num_GPU_entry.setText("one")
-        # SECTIONS['general-reconstruction']['data-splitting-policy']['value'] = "one"
-        # self.slices_per_device_entry.setText("")
-        # SECTIONS['general-reconstruction']['num-gpu-threads']['value'] = 1
-
     def set_values_from_params(self):
         self.verbose_switch.setChecked(bool(SECTIONS['general']['verbose']['value']))
         self.slice_memory_entry.setText(str(SECTIONS['general-reconstruction']['slice-memory-coeff']['value']))
@@ -82,16 +71,23 @@ class OptimizationGroup(QGroupBox):
 
     def set_verbose_switch(self):
         LOG.debug("Verbose: " + str(self.verbose_switch.isChecked()))
-        SECTIONS['general']['verbose']['value'] = bool(self.verbose_switch.isChecked())
+        dict_entry = SECTIONS['general']['verbose']
+        add_value_to_dict_entry(dict_entry, str(self.verbose_switch.isChecked()))
 
     def set_slice(self):
         LOG.debug(self.slice_memory_entry.text())
-        SECTIONS['general-reconstruction']['slice-memory-coeff']['value'] = float(self.slice_memory_entry.text())
+        dict_entry = SECTIONS['general-reconstruction']['slice-memory-coeff']
+        add_value_to_dict_entry(dict_entry, str(self.slice_memory_entry.text()))
+        self.slice_memory_entry.setText(str(dict_entry['value']))
 
     def set_num_gpu(self):
         LOG.debug(self.num_GPU_entry.text())
-        SECTIONS['general-reconstruction']['data-splitting-policy']['value'] = str(self.num_GPU_entry.text())
+        dict_entry = SECTIONS['general-reconstruction']['data-splitting-policy']
+        add_value_to_dict_entry(dict_entry, str(self.num_GPU_entry.text()))
+        self.num_GPU_entry.setText(str(dict_entry['value']))
 
     def set_slices_per_device(self):
         LOG.debug(self.slices_per_device_entry.text())
-        SECTIONS['general-reconstruction']['num-gpu-threads']['value'] = int(self.slices_per_device_entry.text())
+        dict_entry = SECTIONS['general-reconstruction']['num-gpu-threads']
+        add_value_to_dict_entry(dict_entry, str(self.slices_per_device_entry.text()))
+        self.slices_per_device_entry.setText(str(dict_entry['value']))
