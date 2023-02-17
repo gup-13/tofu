@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
     QLineEdit,
 )
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QDoubleValidator
+from PyQt5.QtGui import QDoubleValidator, QIntValidator
 
 
 from tofu.ez.params import EZVARS
@@ -44,15 +44,16 @@ class FiltersGroup(QGroupBox):
             "Outliers which will be considered as the part of the large spot"
         )
         self.threshold_entry = QLineEdit()
-        self.threshold_entry.editingFinished.connect(self.set_threshold)
         self.threshold_entry.setValidator(QDoubleValidator())
-
+        self.threshold_entry.editingFinished.connect(self.set_threshold)
+        
         self.spot_blur_label = QLabel()
         self.spot_blur_label.setText("Spot blur. sigma [pixels]")
         self.spot_blur_label.setToolTip(
             "Regulates extent of the masked region around the detected outlier"
         )
         self.spot_blur_entry = QLineEdit()
+        self.spot_blur_entry.setValidator(QDoubleValidator())
         self.spot_blur_entry.editingFinished.connect(self.set_spot_blur)
 
         self.enable_RR_checkbox = QCheckBox()
@@ -100,6 +101,7 @@ class FiltersGroup(QGroupBox):
             "Width [pixels] of Gaussian-shaped low-pass filter in frequency domain"
         )
         self.sigma_horizontal_entry = QLineEdit()
+        self.sigma_horizontal_entry.setValidator(QIntValidator())
         self.sigma_horizontal_entry.editingFinished.connect(self.set_sigma_horizontal)
 
         self.sigma_vertical_label = QLabel()
@@ -108,12 +110,14 @@ class FiltersGroup(QGroupBox):
             "Width [pixels] of Gaussian-shaped high-pass filter in frequency domain"
         )
         self.sigma_vertical_entry = QLineEdit()
+        self.sigma_vertical_entry.setValidator(QIntValidator())
         self.sigma_vertical_entry.editingFinished.connect(self.set_sigma_vertical)
 
         self.wind_size_label = QLabel()
         self.wind_size_label.setText("window size")
         self.wind_size_label.setToolTip("Window size in remove_stripe_based_sorting algorithm")
         self.wind_size_entry = QLineEdit()
+        self.wind_size_entry.setValidator(QIntValidator())
         self.wind_size_entry.editingFinished.connect(self.set_window_size)
         self.wind_size_entry.setToolTip("Typically in the range 31..51 ")
 
@@ -126,12 +130,15 @@ class FiltersGroup(QGroupBox):
         self.remove_wide_label.setText("window")
         self.remove_wide_label.setToolTip("Typically in the range 51..131 ")
         self.remove_wide_entry = QLineEdit()
+        self.remove_wide_entry.setValidator(QIntValidator())
+
         self.remove_wide_entry.editingFinished.connect(self.set_wind)
 
         self.SNR_label = QLabel()
         self.SNR_label.setText("SNR")
         self.SNR_label.setToolTip("SNR param in remove_large_stripe algorithm")
         self.SNR_entry = QLineEdit()
+        self.SNR_entry.setValidator(QIntValidator())
         self.SNR_entry.editingFinished.connect(self.set_SNR)
 
         self.set_layout()
