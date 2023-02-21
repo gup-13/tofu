@@ -5,6 +5,8 @@ import logging
 import math
 import os
 from collections import OrderedDict
+from PyQt5.QtCore import QRegExp
+from PyQt5.QtGui import QRegExpValidator
 
 
 LOG = logging.getLogger(__name__)
@@ -193,7 +195,19 @@ def add_value_to_dict_entry(dict_entry, param_value_str):
         except ValueError: #int can't convert string with decimal (e.g. "1.0" -> 1)
             dict_entry['value'] = dict_entry['type'](float(param_value_str))
     print("Input: ", param_value_str, "; Dict value: ", dict_entry['value'])
-    
+
+def get_ascii_validator():
+    regexp = "[-A-Za-z0-9_]*"
+    return QRegExpValidator(QRegExp(regexp))
+
+def get_int_validator():
+    regexp = "[\-]?[0-9]*"
+    return QRegExpValidator(QRegExp(regexp))
+
+def get_tuple_validator():
+    regexp = "[-0-9,.]*"
+    return QRegExpValidator(QRegExp(regexp))
+
 def next_power_of_two(number):
     """Compute the next power of two of the *number*."""
     return 2 ** int(math.ceil(math.log(number, 2)))

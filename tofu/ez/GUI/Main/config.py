@@ -688,8 +688,6 @@ class ConfigGroup(QGroupBox):
 
     def run_reconstruction(self, params, batch_run):
         try:
-            self.validate_input()
-
             args = tk_args(EZVARS['inout']['input-dir']['value'],
                            EZVARS['inout']['tmp-dir']['value'],
                            EZVARS['inout']['output-dir']['value'],
@@ -797,115 +795,6 @@ class ConfigGroup(QGroupBox):
             err_arg = err.args
             msg += err.args[0]
             QMessageBox.information(self, "Invalid Input Error", msg)
-
-    # NEED TO DETERMINE VALID RANGES
-    # ALSO CHECK TYPES SOMEHOW
-    def validate_input(self):
-        """
-        Determines whether user-input values are valid
-        """
-        # Sigma: e_sig_hor
-        # if int(EZVARS['RR']['sx']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: ufo ring-removal sigma horizontal")
-
-        # Sigma: e_sig_ver
-        # if int(EZVARS['RR']['sy']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: ufo ring-removal sigma vertical")
-
-        # Window size: main_filters_ring_removal_sarepy_window_size
-        # if int(EZVARS['RR']['spy-narrow-window']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: window size")
-
-        # Wind: main_filters_ring_removal_sarepy_window
-        # if int(EZVARS['RR']['spy-wide-window']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: wind")
-
-        # SNR: main_filters_ring_removal_sarepy_SNR
-        # if int(EZVARS['RR']['spy-wide-SNR']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: SNR")
-
-        # Photon energy: main_pr_photon_energy
-        # if float(SECTIONS['retrieve-phase']['energy']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: Photon energy [keV]")
-
-        # Pixel size: main_pr_pixel_size
-        # if float(SECTIONS['retrieve-phase']['pixel-size']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: Pixel size [micron]")
-
-        # Sample detector distance: main_pr_detector_distance
-        # Note: Can't restrict_value for tuples -> one value becomes two values (x,y)?
-        # if float(SECTIONS['retrieve-phase']['propagation-distance']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: Sample-detector distance [m]")
-
-        # # Delta/beta ratio: main_pr_delta_beta_ratio
-        # Note: Has diff comment?
-        # if int(SECTIONS['retrieve-phase']['regularization-rate']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: Delta/beta ratio: (try default if unsure)")
-
-        # First row in projections: main_region_first_row
-        # Note: diff comment
-        # if int(SECTIONS['reading']['y']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: First row in projections")
-
-        # Number of rows: main_region_number_rows
-        # if int(SECTIONS['reading']['height']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: Number of rows (ROI height)")
-
-        # # Reconstruct every Nth row: main_region_nth_row
-        # if int(SECTIONS['reading']['y-step']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: Reconstruct every Nth row")
-
-        # Can be negative when 16-bit selected
-        # Min value: main_region_histogram_min
-        #if float(SECTIONS['general']['output-minimum']['value']) < 0:
-        #    raise InvalidInputError("Value out of range for: Min value in 32-bit histogram")
-
-        # # Max value: main_region_histogram_max
-        # # Note: Didn't cap because it might also be negative for 16 bit
-        # if float(SECTIONS['general']['output-maximum']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: Max value in 32-bit histogram")
-
-        # # x: main_region_crop_x
-        # if int(EZVARS['inout']['output-x']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: Crop slices: x")
-
-        # # width: main_region_crop_width
-        # if int(EZVARS['inout']['output-width']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: Crop slices: width")
-
-        # # y: main_region_crop_y
-        # if int(EZVARS['inout']['output-y']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: Crop slices: y")
-
-        # # height: main_region_crop_height
-        # if int(EZVARS['inout']['output-height']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: Crop slices: height")
-
-        # if int(EZVARS['flat-correction']['eigen-pco-reps']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: Flat Field Correction: Eigen PCO Repetitions")
-
-        # if int(EZVARS['flat-correction']['eigen-pco-downsample']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: Flat Field Correction: Eigen PCO Downsample")
-
-        # if int(EZVARS['flat-correction']['downsample']['value']) < 0:
-        #     raise InvalidInputError("Value out of range for: Flat Field Correction: Downsample")
-
-        # Can be negative value
-        # Optional: rotate volume: main_region_rotate_volume_clock
-        #if float(SECTIONS['general-reconstruction']['volume-angle-z']['value']) < 0:
-        #    raise InvalidInputError("Value out of range for: Optional: rotate volume clock by [deg]")
-        #TODO ADD CHECKING NLMDN SETTINGS
-        #TODO ADD CHECKING FOR ADVANCED SETTINGS
-        # '''
-        # if int(parameters.params['e_adv_rotation_range']) < 0:
-        #     raise InvalidInputError("Advanced: Rotation range must be greater than or equal to zero")
-
-        # if float(SECTIONS['cone-beam-weight']['axis-angle-x']['value']) < 0 or float(SECTIONS['cone-beam-weight']['axis-angle-x']['value']) > 90:
-        #     raise InvalidInputError("Advanced: Lamino angle must be a float between 0 and 90")
-
-        # if float(SECTIONS['general-reconstruction']['slice-memory-coeff']['value']) < 0 or float(SECTIONS['general-reconstruction']['slice-memory-coeff']['value']) > 1:
-        #     raise InvalidInputError("Advanced: Slice memory coefficient must be between 0 and 1")
-        # '''
 
     def get_fdt_names(self):
         DIRTYP = []

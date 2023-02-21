@@ -1,8 +1,10 @@
 import logging
 from PyQt5.QtWidgets import QGridLayout, QLabel, QRadioButton, QGroupBox, QLineEdit
+from PyQt5.QtGui import QDoubleValidator, QIntValidator
 
 from tofu.ez.params import EZVARS
-from tofu.util import add_value_to_dict_entry
+from tofu.util import add_value_to_dict_entry, get_int_validator, get_tuple_validator
+
 
 LOG = logging.getLogger(__name__)
 
@@ -36,26 +38,31 @@ class CentreOfRotationGroup(QGroupBox):
         self.search_rotation_label = QLabel()
         self.search_rotation_label.setText("Search rotation axis in [start, stop, step] interval")
         self.search_rotation_entry = QLineEdit()
+        self.search_rotation_entry.setValidator(get_tuple_validator())
         self.search_rotation_entry.editingFinished.connect(self.set_search_rotation)
 
         self.search_in_slice_label = QLabel()
         self.search_in_slice_label.setText("Search in slice from row number")
         self.search_in_slice_entry = QLineEdit()
+        self.search_in_slice_entry.setValidator(get_int_validator())
         self.search_in_slice_entry.editingFinished.connect(self.set_search_slice)
 
         self.size_of_recon_label = QLabel()
         self.size_of_recon_label.setText("Size of reconstructed patch [pixel]")
         self.size_of_recon_entry = QLineEdit()
+        self.size_of_recon_entry.setValidator(get_int_validator())
         self.size_of_recon_entry.editingFinished.connect(self.set_size_of_reco)
 
         self.axis_col_label = QLabel()
         self.axis_col_label.setText("Axis is in column No [pixel]")
         self.axis_col_entry = QLineEdit()
+        self.axis_col_entry.setValidator(QDoubleValidator())
         self.axis_col_entry.editingFinished.connect(self.set_axis_col)
 
         self.inc_axis_label = QLabel()
         self.inc_axis_label.setText("Increment axis every reconstruction")
         self.inc_axis_entry = QLineEdit()
+        self.inc_axis_entry.setValidator(QDoubleValidator())
         self.inc_axis_entry.editingFinished.connect(self.set_axis_inc)
 
         self.image_midpoint_rButton = QRadioButton()
