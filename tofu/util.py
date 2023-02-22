@@ -200,8 +200,18 @@ def get_ascii_validator():
     regexp = "[-A-Za-z0-9_]*"
     return QRegExpValidator(QRegExp(regexp))
 
+def get_alphabet_lowercase_validator():
+    regexp = "[a-z]*"
+    return QRegExpValidator(QRegExp(regexp))
+
 def get_int_validator():
+    # Note: QIntValidator allows commas, which is undesirable
     regexp = "[\-]?[0-9]*"
+    return QRegExpValidator(QRegExp(regexp))
+
+def get_double_validator():
+    # Note: QDoubleValidator allows commas before period, which is undesirable
+    regexp = "[\-]?[0-9]*[.]?[0-9]*"
     return QRegExpValidator(QRegExp(regexp))
 
 def get_tuple_validator():

@@ -17,7 +17,8 @@ from PyQt5.QtCore import Qt, pyqtSignal
 import tofu.ez.params as parameters
 from tofu.ez.params import EZVARS
 from tofu.config import SECTIONS
-from tofu.util import add_value_to_dict_entry
+from tofu.util import add_value_to_dict_entry, get_int_validator, get_double_validator
+
 
 from tofu.ez.main_nlm import main_tk
 
@@ -58,22 +59,27 @@ class NLMDNGroup(QGroupBox):
 
         self.similarity_radius_label = QLabel("Radius for similarity search")
         self.similarity_radius_entry = QLineEdit()
+        self.similarity_radius_entry.setValidator(get_int_validator())
         self.similarity_radius_entry.editingFinished.connect(self.set_rad_sim_entry)
 
         self.patch_radius_label = QLabel("Radius of patches")
         self.patch_radius_entry = QLineEdit()
+        self.patch_radius_entry.setValidator(get_int_validator())
         self.patch_radius_entry.editingFinished.connect(self.set_rad_patch_entry)
 
         self.smoothing_label = QLabel("Smoothing control parameter")
         self.smoothing_entry = QLineEdit()
+        self.smoothing_entry.setValidator(get_double_validator())
         self.smoothing_entry.editingFinished.connect(self.set_smoothing_entry)
 
         self.noise_std_label = QLabel("Noise standard deviation")
         self.noise_std_entry = QLineEdit()
+        self.noise_std_entry.setValidator(get_double_validator())
         self.noise_std_entry.editingFinished.connect(self.set_noise_entry)
 
         self.window_label = QLabel("Window (optional)")
         self.window_entry = QLineEdit()
+        self.window_entry.setValidator(get_double_validator())
         self.window_entry.editingFinished.connect(self.set_window_entry)
 
         self.fast_checkbox = QCheckBox("Fast")

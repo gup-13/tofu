@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QGridLayout, QLabel, QGroupBox, QLineEdit
 import tofu.ez.params as parameters
 from tofu.config import SECTIONS
 from tofu.ez.params import EZVARS
-from tofu.util import add_value_to_dict_entry
+from tofu.util import add_value_to_dict_entry, get_double_validator
 
 LOG = logging.getLogger(__name__)
 
@@ -26,14 +26,17 @@ class AdvancedGroup(QGroupBox):
 
         self.lamino_angle_label = QLabel("Laminographic angle                              ")
         self.lamino_angle_entry = QLineEdit()
+        self.lamino_angle_entry.setValidator(get_double_validator())
         self.lamino_angle_entry.editingFinished.connect(self.set_lamino_angle)
 
         self.overall_rotation_label = QLabel("Overall rotation range about CT Z-axis")
         self.overall_rotation_entry = QLineEdit()
+        self.overall_rotation_entry.setValidator(get_double_validator())
         self.overall_rotation_entry.editingFinished.connect(self.set_overall_rotation)
 
         self.center_position_z_label = QLabel("Center Position Z                              ")
         self.center_position_z_entry = QLineEdit()
+        self.center_position_z_entry.setValidator(get_double_validator())
         self.center_position_z_entry.editingFinished.connect(self.set_center_position_z)
 
         self.axis_rotation_y_label = QLabel(
@@ -45,10 +48,12 @@ class AdvancedGroup(QGroupBox):
         # AUXILIARY FFC
         self.dark_scale_label = QLabel("Dark scale                              ")
         self.dark_scale_entry = QLineEdit()
+        self.dark_scale_entry.setValidator(get_double_validator())
         self.dark_scale_entry.editingFinished.connect(self.set_dark_scale)
 
         self.flat_scale_label = QLabel("Flat scale                              ")
         self.flat_scale_entry = QLineEdit()
+        self.flat_scale_entry.setValidator(get_double_validator())
         self.flat_scale_entry.editingFinished.connect(self.set_flat_scale)
 
         self.set_layout()

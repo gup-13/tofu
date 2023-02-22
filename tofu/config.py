@@ -512,7 +512,7 @@ SECTIONS['general-reconstruction'] = {
     'data-splitting-policy': {
         'default': 'one', #G
         'type': str,
-        'help': "'one': one GPU should process as many slices as possible, "
+        'help': "'one': one GPU should process as many slices as possible,\n"
                 "'many': slices should be spread across as many GPUs as possible",
         'choices': ['one', 'many']},
     'projection-margin': {

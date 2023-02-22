@@ -394,24 +394,24 @@ EZVARS['nlmdn'] = {
         'type': bool, 
         'help': "TODO-updated Default"},
     'search-radius': {
-        'default': "10", #G
-        'type': str, 
+        'default': 10, #G
+        'type': int, 
         'help': "TODO"},
     'patch-radius': {
         'default': "3", #G
-        'type': str, 
+        'type': int, 
         'help': "TODO"},
     'h': {
-        'default': "0.0", #G
-        'type': str, 
+        'default': 0.0, #G
+        'type': float, 
         'help': "TODO"},
     'sigma': {
-        'default': "0.0", #G
-        'type': str, 
+        'default': 0.0, #G
+        'type': float, 
         'help': "TODO"},
     'window': {
-        'default': "0.0", #G
-        'type': str, 
+        'default': 0.0, #G
+        'type': float, 
         'help': "TODO"},
     'fast': {
         'default': True, #G

@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt
 import tofu.ez.params as parameters
 from tofu.ez.params import EZVARS
 from tofu.config import SECTIONS
-from tofu.util import add_value_to_dict_entry
+from tofu.util import add_value_to_dict_entry, get_int_validator, get_double_validator
 
 LOG = logging.getLogger(__name__)
 
@@ -29,16 +29,19 @@ class ROIandHistGroup(QGroupBox):
         self.first_row_label.setText("First row in projections")
         self.first_row_label.setToolTip("Counting from the top")
         self.first_row_entry = QLineEdit()
+        self.first_row_entry.setValidator(get_int_validator())
         self.first_row_entry.editingFinished.connect(self.set_first_row)
 
         self.num_rows_label = QLabel()
         self.num_rows_label.setText("Number of rows (ROI height)")
         self.num_rows_entry = QLineEdit()
+        self.num_rows_entry.setValidator(get_int_validator())
         self.num_rows_entry.editingFinished.connect(self.set_num_rows)
 
         self.nth_row_label = QLabel()
         self.nth_row_label.setText("Step (reconstruct every Nth row)")
         self.nth_row_entry = QLineEdit()
+        self.nth_row_entry.setValidator(get_int_validator())
         self.nth_row_entry.editingFinished.connect(self.set_reco_nth_rows)
 
         self.clip_histo_checkbox = QCheckBox()
@@ -57,11 +60,13 @@ class ROIandHistGroup(QGroupBox):
         self.min_val_label = QLabel()
         self.min_val_label.setText("Min value in 32-bit histogram")
         self.min_val_entry = QLineEdit()
+        self.min_val_entry.setValidator(get_double_validator())
         self.min_val_entry.editingFinished.connect(self.set_min_val)
 
         self.max_val_label = QLabel()
         self.max_val_label.setText("Max value in 32-bit histogram")
         self.max_val_entry = QLineEdit()
+        self.max_val_entry.setValidator(get_double_validator())
         self.max_val_entry.editingFinished.connect(self.set_max_val)
 
         self.crop_slices_checkbox = QCheckBox()
@@ -75,27 +80,32 @@ class ROIandHistGroup(QGroupBox):
         self.x_val_label.setText("x")
         self.x_val_label.setToolTip("First column (counting from left)")
         self.x_val_entry = QLineEdit()
+        self.x_val_entry.setValidator(get_int_validator())
         self.x_val_entry.editingFinished.connect(self.set_x)
 
         self.width_val_label = QLabel()
         self.width_val_label.setText("width")
         self.width_val_entry = QLineEdit()
+        self.width_val_entry.setValidator(get_int_validator())
         self.width_val_entry.editingFinished.connect(self.set_width)
 
         self.y_val_label = QLabel()
         self.y_val_label.setText("y")
         self.y_val_label.setToolTip("First row (counting from top)")
         self.y_val_entry = QLineEdit()
+        self.y_val_entry.setValidator(get_int_validator())
         self.y_val_entry.editingFinished.connect(self.set_y)
 
         self.height_val_label = QLabel()
         self.height_val_label.setText("height")
         self.height_val_entry = QLineEdit()
+        self.height_val_entry.setValidator(get_int_validator())
         self.height_val_entry.editingFinished.connect(self.set_height)
 
         self.rotate_vol_label = QLabel()
         self.rotate_vol_label.setText("Rotate volume counterclockwise by [deg]")
         self.rotate_vol_entry = QLineEdit()
+        self.rotate_vol_entry.setValidator(get_double_validator())
         self.rotate_vol_entry.editingFinished.connect(self.set_rotate_volume)
 
         # self.setStyleSheet('background-color:Azure')

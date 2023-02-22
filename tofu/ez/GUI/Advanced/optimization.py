@@ -4,7 +4,8 @@ from PyQt5.QtWidgets import QGridLayout, QLabel, QGroupBox, QLineEdit, QCheckBox
 import tofu.ez.params as parameters
 from tofu.ez.params import EZVARS
 from tofu.config import SECTIONS
-from tofu.util import add_value_to_dict_entry
+from tofu.util import add_value_to_dict_entry, get_int_validator, get_double_validator, get_alphabet_lowercase_validator
+
 
 LOG = logging.getLogger(__name__)
 
@@ -25,6 +26,7 @@ class OptimizationGroup(QGroupBox):
 
         self.slice_memory_label = QLabel("Slice memory coefficient")
         self.slice_memory_entry = QLineEdit()
+        self.slice_memory_entry.setValidator(get_double_validator())
         tmpstr="Fraction of VRAM which will be used to store images \n" \
                "Reserve ~2 GB of VRAM for computation \n" \
                "Decrease the coefficient if you have very large data and start getting errors"
@@ -34,10 +36,14 @@ class OptimizationGroup(QGroupBox):
 
         self.num_GPU_label = QLabel("Number of GPUs")
         self.num_GPU_entry = QLineEdit()
+        self.num_GPU_entry.setValidator(get_alphabet_lowercase_validator())
+        self.num_GPU_label.setToolTip(SECTIONS['general-reconstruction']['data-splitting-policy']['help'])
+        self.num_GPU_entry.setToolTip(SECTIONS['general-reconstruction']['data-splitting-policy']['help'])
         self.num_GPU_entry.editingFinished.connect(self.set_num_gpu)
 
         self.slices_per_device_label = QLabel("Slices per device")
         self.slices_per_device_entry = QLineEdit()
+        self.slices_per_device_entry.setValidator(get_int_validator())
         self.slices_per_device_entry.editingFinished.connect(self.set_slices_per_device)
 
         self.set_layout()

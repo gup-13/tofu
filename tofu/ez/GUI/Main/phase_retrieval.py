@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QGridLayout, QLabel, QGroupBox, QLineEdit, QCheckBox
 
 import tofu.ez.params as parameters
 from tofu.config import SECTIONS
-from tofu.util import add_value_to_dict_entry, reverse_tupleize
+from tofu.util import add_value_to_dict_entry, reverse_tupleize, get_double_validator, get_tuple_validator
 
 LOG = logging.getLogger(__name__)
 
@@ -26,21 +26,25 @@ class PhaseRetrievalGroup(QGroupBox):
         self.photon_energy_label = QLabel()
         self.photon_energy_label.setText("Photon energy [keV]")
         self.photon_energy_entry = QLineEdit()
+        self.photon_energy_entry.setValidator(get_double_validator())
         self.photon_energy_entry.editingFinished.connect(self.set_photon_energy)
 
         self.pixel_size_label = QLabel()
         self.pixel_size_label.setText("Pixel size [micron]")
         self.pixel_size_entry = QLineEdit()
+        self.pixel_size_entry.setValidator(get_double_validator())
         self.pixel_size_entry.editingFinished.connect(self.set_pixel_size)
 
         self.detector_distance_label = QLabel()
         self.detector_distance_label.setText("Sample-detector distance [m]")
         self.detector_distance_entry = QLineEdit()
+        self.detector_distance_entry.setValidator(get_tuple_validator())
         self.detector_distance_entry.editingFinished.connect(self.set_detector_distance)
 
         self.delta_beta_ratio_label = QLabel()
         self.delta_beta_ratio_label.setText("Delta/beta ratio: (try default if unsure)")
         self.delta_beta_ratio_entry = QLineEdit()
+        self.delta_beta_ratio_entry.setValidator(get_double_validator())
         self.delta_beta_ratio_entry.editingFinished.connect(self.set_delta_beta)
 
         self.set_layout()

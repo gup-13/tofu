@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (
 
 import tofu.ez.params as parameters
 from tofu.ez.params import EZVARS
-from tofu.util import add_value_to_dict_entry
+from tofu.util import add_value_to_dict_entry, get_int_validator
 
 LOG = logging.getLogger(__name__)
 
@@ -45,14 +45,17 @@ class FFCGroup(QGroupBox):
 
         self.eigen_pco_repetitions_label = QLabel("Eigen PCO Repetitions")
         self.eigen_pco_repetitions_entry = QLineEdit()
+        self.eigen_pco_repetitions_entry.setValidator(get_int_validator())
         self.eigen_pco_repetitions_entry.editingFinished.connect(self.set_pcoReps)
 
         self.eigen_pco_downsample_label = QLabel("Eigen PCO Downsample")
         self.eigen_pco_downsample_entry = QLineEdit()
+        self.eigen_pco_downsample_entry.setValidator(get_int_validator())
         self.eigen_pco_downsample_entry.editingFinished.connect(self.set_pcoDowns)
 
         self.downsample_label = QLabel("Downsample")
         self.downsample_entry = QLineEdit()
+        self.downsample_entry.setValidator(get_int_validator())
         self.downsample_entry.editingFinished.connect(self.set_downsample)
 
         self.set_layout()

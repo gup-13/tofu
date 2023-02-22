@@ -1,9 +1,8 @@
 import logging
 from PyQt5.QtWidgets import QGridLayout, QLabel, QRadioButton, QGroupBox, QLineEdit
-from PyQt5.QtGui import QDoubleValidator, QIntValidator
 
 from tofu.ez.params import EZVARS
-from tofu.util import add_value_to_dict_entry, get_int_validator, get_tuple_validator
+from tofu.util import add_value_to_dict_entry, get_int_validator, get_tuple_validator, get_double_validator
 
 
 LOG = logging.getLogger(__name__)
@@ -56,13 +55,13 @@ class CentreOfRotationGroup(QGroupBox):
         self.axis_col_label = QLabel()
         self.axis_col_label.setText("Axis is in column No [pixel]")
         self.axis_col_entry = QLineEdit()
-        self.axis_col_entry.setValidator(QDoubleValidator())
+        self.axis_col_entry.setValidator(get_double_validator())
         self.axis_col_entry.editingFinished.connect(self.set_axis_col)
 
         self.inc_axis_label = QLabel()
         self.inc_axis_label.setText("Increment axis every reconstruction")
         self.inc_axis_entry = QLineEdit()
-        self.inc_axis_entry.setValidator(QDoubleValidator())
+        self.inc_axis_entry.setValidator(get_double_validator())
         self.inc_axis_entry.editingFinished.connect(self.set_axis_inc)
 
         self.image_midpoint_rButton = QRadioButton()
