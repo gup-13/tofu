@@ -152,8 +152,8 @@ MAP_TABLE = [
     ## Optimizations
     ['advanced_optimize_verbose_console','sections','general','verbose'],                           #SECTIONS['general']['verbose'] bool -> None (bool)
     ['advanced_optimize_slice_mem_coeff','sections','general-reconstruction','slice-memory-coeff'], #SECTIONS['general-reconstruction']['slice-memory-coeff'] str -> None(float) [0.01, 0.95]
-    ['advanced_optimize_num_gpus','sections','general-reconstruction','data-splitting-policy'],     #SECTIONS['general-reconstruction']['data-splitting-policy'] str -> str
-    ['advanced_optimize_slices_per_device','sections','general-reconstruction','num-gpu-threads'],# '#SECTIONS['general-reconstruction']['num-gpu-threads'] (??) str -> int[1,inf]
+    ['advanced_optimize_slices_per_device','sections','general-reconstruction','data-splitting-policy'],     #SECTIONS['general-reconstruction']['data-splitting-policy'] str -> str
+    ['advanced_optimize_num_gpus','sections','general-reconstruction','num-gpu-threads'],# '#SECTIONS['general-reconstruction']['num-gpu-threads'] (??) str -> int[1,inf]
     
     #Others
     ['parameters_type', 'ezvars', 'advanced', 'parameter-type']

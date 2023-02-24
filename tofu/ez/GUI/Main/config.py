@@ -768,8 +768,8 @@ class ConfigGroup(QGroupBox):
                            EZVARS['flat-correction']['flat-scale']['value'],
                            SECTIONS['general']['verbose']['value'],
                            SECTIONS['general-reconstruction']['slice-memory-coeff']['value'],
-                           SECTIONS['general-reconstruction']['data-splitting-policy']['value'],
-                           SECTIONS['general-reconstruction']['num-gpu-threads']['value']
+                           SECTIONS['general-reconstruction']['num-gpu-threads']['value'],
+                           SECTIONS['general-reconstruction']['data-splitting-policy']['value']
                            )
         
             # #################

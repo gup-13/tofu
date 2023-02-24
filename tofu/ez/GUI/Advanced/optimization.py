@@ -72,8 +72,8 @@ class OptimizationGroup(QGroupBox):
     def set_values_from_params(self):
         self.verbose_switch.setChecked(bool(SECTIONS['general']['verbose']['value']))
         self.slice_memory_entry.setText(str(SECTIONS['general-reconstruction']['slice-memory-coeff']['value']))
-        self.num_GPU_entry.setText(str(SECTIONS['general-reconstruction']['data-splitting-policy']['value']))
-        self.slices_per_device_entry.setText(str(SECTIONS['general-reconstruction']['num-gpu-threads']['value']))
+        self.num_GPU_entry.setText(str(SECTIONS['general-reconstruction']['num-gpu-threads']['value']))
+        self.slices_per_device_entry.setText(str(SECTIONS['general-reconstruction']['data-splitting-policy']['value']))
 
     def set_verbose_switch(self):
         LOG.debug("Verbose: " + str(self.verbose_switch.isChecked()))
@@ -88,12 +88,12 @@ class OptimizationGroup(QGroupBox):
 
     def set_num_gpu(self):
         LOG.debug(self.num_GPU_entry.text())
-        dict_entry = SECTIONS['general-reconstruction']['data-splitting-policy']
+        dict_entry = SECTIONS['general-reconstruction']['num-gpu-threads']
         add_value_to_dict_entry(dict_entry, str(self.num_GPU_entry.text()))
         self.num_GPU_entry.setText(str(dict_entry['value']))
 
     def set_slices_per_device(self):
         LOG.debug(self.slices_per_device_entry.text())
-        dict_entry = SECTIONS['general-reconstruction']['num-gpu-threads']
+        dict_entry = SECTIONS['general-reconstruction']['data-splitting-policy']
         add_value_to_dict_entry(dict_entry, str(self.slices_per_device_entry.text()))
         self.slices_per_device_entry.setText(str(dict_entry['value']))
