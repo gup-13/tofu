@@ -179,13 +179,11 @@ class NLMDNGroup(QGroupBox):
         dir_explore = QFileDialog(self)
         directory = dir_explore.getExistingDirectory()
         
-        dict_entry = EZVARS['nlmdn']['input-dir']
-        add_value_to_dict_entry(dict_entry, directory)
-        self.input_dir_entry.setText(str(dict_entry['value']))
+        self.input_dir_entry.setText(str(directory))
+        self.set_indir_entry()
         
-        dict_entry = EZVARS['nlmdn']['output_pattern']
-        add_value_to_dict_entry(dict_entry, directory + "-nlmfilt")
-        self.output_dir_entry.setText(str(dict_entry['value']))
+        self.output_dir_entry.setText(str(directory + "-nlmfilt"))
+        self.set_outdir_entry()
         
         dict_entry = EZVARS['nlmdn']['input-is-1file']
         add_value_to_dict_entry(dict_entry, str(False))
@@ -193,7 +191,8 @@ class NLMDNGroup(QGroupBox):
     def set_indir_entry(self):
         LOG.debug("Indir entry: " + str(self.input_dir_entry.text()))
         dict_entry = EZVARS['nlmdn']['input-dir']
-        add_value_to_dict_entry(dict_entry, str(self.input_dir_entry.text()))
+        dir = self.input_dir_entry.text().strip()
+        add_value_to_dict_entry(dict_entry, str(dir))
         self.input_dir_entry.setText(str(dict_entry['value']))
 
     def select_image(self):
@@ -205,13 +204,12 @@ class NLMDNGroup(QGroupBox):
         if file_path:
             img_name, img_ext = os.path.splitext(file_path)
             tmp = img_name + "-nlmfilt-%05i" + img_ext
-            dict_entry = EZVARS['nlmdn']['input-dir']
-            add_value_to_dict_entry(dict_entry, file_path)
-            self.input_dir_entry.setText(str(dict_entry['value']))
             
-            dict_entry = EZVARS['nlmdn']['output_pattern']
-            add_value_to_dict_entry(dict_entry, tmp)
-            self.output_dir_entry.setText(str(dict_entry['value']))
+            self.input_dir_entry.setText(str(file_path))
+            self.set_indir_entry()
+            
+            self.output_dir_entry.setText(str(tmp))
+            self.set_outdir_entry()
             
             dict_entry = EZVARS['nlmdn']['input-is-1file']
             add_value_to_dict_entry(dict_entry, str(True))
@@ -220,9 +218,10 @@ class NLMDNGroup(QGroupBox):
         LOG.debug("Select output directory pressed")
         dir_explore = QFileDialog(self)
         directory = dir_explore.getExistingDirectory()
-        dict_entry = EZVARS['nlmdn']['output_pattern']
-        add_value_to_dict_entry(dict_entry, directory)
-        self.output_dir_entry.setText(str(dict_entry['value']))
+        # dict_entry = EZVARS['nlmdn']['output_pattern']
+        # add_value_to_dict_entry(dict_entry, directory)
+        self.output_dir_entry.setText(str(directory))
+        self.set_outdir_entry()
 
     def set_save_bigtif(self):
         LOG.debug("Save bigtif checkbox: " + str(self.save_bigtif_checkbox.isChecked()))
@@ -232,7 +231,8 @@ class NLMDNGroup(QGroupBox):
     def set_outdir_entry(self):
         LOG.debug("Outdir entry: " + str(self.output_dir_entry.text()))
         dict_entry = EZVARS['nlmdn']['output_pattern']
-        add_value_to_dict_entry(dict_entry, str(self.output_dir_entry.text()))
+        dir = self.output_dir_entry.text().strip()
+        add_value_to_dict_entry(dict_entry, str(dir))
         self.output_dir_entry.setText(str(dict_entry['value']))
 
     def set_rad_sim_entry(self):

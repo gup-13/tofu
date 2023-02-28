@@ -37,12 +37,12 @@ class OptimizationGroup(QGroupBox):
         self.num_GPU_label = QLabel("Number of GPUs")
         self.num_GPU_entry = QLineEdit()
         self.num_GPU_entry.setValidator(get_alphabet_lowercase_validator())
-        self.num_GPU_label.setToolTip(SECTIONS['general-reconstruction']['data-splitting-policy']['help'])
-        self.num_GPU_entry.setToolTip(SECTIONS['general-reconstruction']['data-splitting-policy']['help'])
         self.num_GPU_entry.editingFinished.connect(self.set_num_gpu)
 
         self.slices_per_device_label = QLabel("Slices per device")
         self.slices_per_device_entry = QLineEdit()
+        self.slices_per_device_label.setToolTip(SECTIONS['general-reconstruction']['data-splitting-policy']['help'])
+        self.slices_per_device_entry.setToolTip(SECTIONS['general-reconstruction']['data-splitting-policy']['help'])
         self.slices_per_device_entry.setValidator(get_int_validator())
         self.slices_per_device_entry.editingFinished.connect(self.set_slices_per_device)
 
