@@ -36,13 +36,13 @@ class OptimizationGroup(QGroupBox):
 
         self.num_GPU_label = QLabel("Number of GPUs")
         self.num_GPU_entry = QLineEdit()
-        self.num_GPU_entry.setValidator(get_alphabet_lowercase_validator())
+        self.num_GPU_entry.setValidator(get_int_validator())
         self.num_GPU_entry.editingFinished.connect(self.set_num_gpu)
 
         self.slices_per_device_label = QLabel("Slices per device")
         self.slices_per_device_entry = QLineEdit()
-        self.slices_per_device_label.setToolTip(SECTIONS['general-reconstruction']['data-splitting-policy']['help'])
-        self.slices_per_device_entry.setToolTip(SECTIONS['general-reconstruction']['data-splitting-policy']['help'])
+        self.slices_per_device_label.setToolTip(SECTIONS['general-reconstruction']['slices-per-device']['help'])
+        self.slices_per_device_entry.setToolTip(SECTIONS['general-reconstruction']['slices-per-device']['help'])
         self.slices_per_device_entry.setValidator(get_int_validator())
         self.slices_per_device_entry.editingFinished.connect(self.set_slices_per_device)
 
@@ -73,7 +73,7 @@ class OptimizationGroup(QGroupBox):
         self.verbose_switch.setChecked(bool(SECTIONS['general']['verbose']['value']))
         self.slice_memory_entry.setText(str(SECTIONS['general-reconstruction']['slice-memory-coeff']['value']))
         self.num_GPU_entry.setText(str(SECTIONS['general-reconstruction']['num-gpu-threads']['value']))
-        self.slices_per_device_entry.setText(str(SECTIONS['general-reconstruction']['data-splitting-policy']['value']))
+        self.slices_per_device_entry.setText(str(SECTIONS['general-reconstruction']['slices-per-device']['value']))
 
     def set_verbose_switch(self):
         LOG.debug("Verbose: " + str(self.verbose_switch.isChecked()))
@@ -94,6 +94,6 @@ class OptimizationGroup(QGroupBox):
 
     def set_slices_per_device(self):
         LOG.debug(self.slices_per_device_entry.text())
-        dict_entry = SECTIONS['general-reconstruction']['data-splitting-policy']
+        dict_entry = SECTIONS['general-reconstruction']['slices-per-device']
         add_value_to_dict_entry(dict_entry, str(self.slices_per_device_entry.text()))
         self.slices_per_device_entry.setText(str(dict_entry['value']))

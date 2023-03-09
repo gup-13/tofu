@@ -186,7 +186,10 @@ def add_value_to_dict_entry(dict_entry, param_value_str):
         dict_entry['value'] = bool(param_value_str)
     elif param_value_str == '':
         # takes default value if empty string
-        dict_entry['value'] = dict_entry['type'](dict_entry['default'])
+        if dict_entry['default'] is None:
+            dict_entry['value'] = dict_entry['default']
+        else:    
+            dict_entry['value'] = dict_entry['type'](dict_entry['default'])
     else:
         try:
             dict_entry['value'] = dict_entry['type'](param_value_str)

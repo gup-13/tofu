@@ -179,7 +179,6 @@ class FiltersGroup(QGroupBox):
         self.setLayout(layout)
 
     def set_values_from_params(self):
-        print("IN SET-VALUES-FROM-PARAMS!")
         self.remove_spots_checkBox.setChecked(EZVARS['filters']['rm_spots']['value'])
         self.threshold_entry.setText(str(SECTIONS['find-large-spots']['spot-threshold']['value']))
         self.spot_blur_entry.setText(str(SECTIONS['find-large-spots']['gauss-sigma']['value']))
