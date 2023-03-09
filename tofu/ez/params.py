@@ -438,3 +438,121 @@ EZVARS['advanced'] = {
         'type': str, 
         'help': "TODO"}
 }
+
+EZVARS['find-large-spots'] = {
+    'gauss-sigma': {
+        'default': 0.0,
+        'type': restrict_value((0,None), dtype=float),
+        'help': "Gaussian sigma for removing low frequencies (filter will be 1 - gauss window)"},
+    'spot-threshold': {
+        'default': 0.0,
+        'type': restrict_value((0,None), dtype=float),
+        'help': "Pixels with grey value larger than this are considered as spots"},
+}
+
+EZVARS['retrieve-phase'] = {
+    'enable': {
+        'default': False, #G
+        'type': bool,
+        'help': "Enable phase retrieval"},
+    'energy': {
+        'default': 20, #G
+        'type': restrict_value((0,None),dtype=float),
+        'help': "Photon energy [keV]"},
+    'pixel-size': {
+        'default': 3.6, #G
+        'type': restrict_value((0,None),dtype=float),
+        'help': "Pixel size [micron]"},
+    'propagation-distance': {
+        'default': "0.1", #G
+        'type': restrict_tupleize((0,None)),
+        'help': ("Sample <-> detector distance (if one value, then use the same for x and y "
+                 "direction, otherwise first specifies x and second y direction) [m]")},
+    'regularization-rate': {
+        'default': 200, #G - (!) - mismatch from help. Orignally 2. 
+        'type': restrict_value((0,None),dtype=float),
+        'help': "Regularization rate (typical values between [2, 3])"}
+}
+
+EZVARS['reading'] = {
+    'y': {
+        'default': 100, #G
+        'type': restrict_value((0, None), dtype=int),
+        'help': 'Vertical coordinate from where to start reading the input image'},
+    'height': {
+        'default': 200, #G
+        'type': restrict_value((0, None), dtype=int),
+        'help': "Number of rows which will be read (ROI height)"},
+    'y-step': {
+        'default': 20, #G
+        'type': restrict_value((0, None), dtype=int),
+        'help': "Read every \"step\" row from the input"}    
+}
+
+EZVARS['general'] = {
+    'verbose': {
+        'default': False, #G
+        'help': 'Verbose output',
+        'action': 'store_true'},
+    'output-bitdepth': {
+        'default': 8, #G - original: 32
+        'type': restrict_value((0, None), dtype=int),
+        'help': "Bit depth of output, either 8, 16 or 32",
+        'metavar': 'BITDEPTH'},
+    'output-minimum': {
+        'default': 0.0, #G
+        'type': float,
+        'help': "Minimum value that maps to zero",
+        'metavar': 'MIN'},
+    'output-maximum': {
+        'default': 0.0, #G
+        'type': float,
+        'help': "Maximum input value that maps to largest output value",
+        'metavar': 'MAX'},
+    
+}
+
+EZVARS['general-reconstruction'] = {
+    'center-position-z': {
+        'default': 0, #G
+        'type': float,
+        'help': "Z rotation axis position on a projection [pixels]"},
+    'axis-angle-x': {   
+        'default': 30, #G
+        'type': float,
+        'help': "Rotation axis rotation around the x axis"
+                "(laminographic angle, 0 = tomography) [deg]"},
+    'volume-angle-z': {
+        'default': 0.0, #G
+        'type': float,
+        'help': "Volume rotation around the z axis (vertical) [deg]"},
+    'overall-angle': {
+        'default': 360, #G
+        'type': float,
+        'help': "The total angle over which projections were taken in degrees"},
+    'axis-angle-y': {
+        'default': 0, #G
+        'type': float,
+        'help': "Rotation axis rotation around the y axis (along beam direction) [deg]"},
+    'slice-memory-coeff': {
+        'default': 0.7, #G - original: 0.8
+        'type': restrict_value((0.01, 0.95)),
+        'help': "Portion of the GPU memory used for slices (from 0.01 to 0.9) [fraction]. "
+                "The total amount of consumed memory will be larger depending on the "
+                "complexity of the graph. In case of OpenCL memory allocation errors, "
+                "try reducing this value."},
+    'num-gpu-threads': {
+        'default': 1, #G
+        'type': restrict_value((1, None), dtype=int),
+        'help': "Number of parallel reconstruction threads on one GPU"},
+    'slices-per-device': {
+        'default': 0,
+        'type': restrict_value((0, None), dtype=int),
+        'help': "Number of slices computed by one computing device"},
+    'data-splitting-policy': {
+        'default': 'one', #G
+        'type': str,
+        'help': "'one': one GPU should process as many slices as possible,\n"
+                "'many': slices should be spread across as many GPUs as possible",
+        'choices': ['one', 'many']}
+}
