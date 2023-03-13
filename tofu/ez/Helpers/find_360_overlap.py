@@ -12,8 +12,6 @@ import numpy as np
 import tifffile
 
 from tofu.ez.image_read_write import TiffSequenceReader
-import tofu.ez.params as glob_parameters
-from tofu.config import SECTIONS
 from tofu.ez.params import EZVARS
 from tofu.ez.Helpers.stitch_funcs import findCTdirs, stitch_float32_output
 from tofu.util import get_filenames, get_image_shape

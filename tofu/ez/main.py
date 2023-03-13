@@ -16,9 +16,7 @@ from tofu.ez.find_axis_cmd_gen import findCOR_cmds
 from tofu.ez.util import *
 from tofu.ez.image_read_write import TiffSequenceReader
 from tifffile import imwrite
-import tofu.ez.params as glob_parameters
 from tofu.ez.params import EZVARS
-from tofu.config import SECTIONS
 
 LOG = logging.getLogger(__name__)
 
@@ -208,7 +206,7 @@ def fmt_nlmdn_ufo_cmd(inpath: str, outpath: str, args):  ### TODO call one funct
     if not args.advanced_nlmdn_save_bigtiff:
         cmd += " bytes-per-file=0 tiff-bigtiff=False"
     if EZVARS['inout']['clip_hist']['value']:
-        cmd += f" bits={SECTIONS['general']['output-bitdepth']['value']} rescale=False"
+        cmd += f" bits={EZVARS['general']['output-bitdepth']['value']} rescale=False"
     return cmd
 
 def execute_reconstruction(args, fdt_names):

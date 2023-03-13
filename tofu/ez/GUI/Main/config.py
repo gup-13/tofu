@@ -21,8 +21,7 @@ from tofu.ez.main import execute_reconstruction, clean_tmp_dirs
 from tofu.ez.yaml_in_out import Yaml_IO
 from tofu.ez.GUI.message_dialog import warning_message
 
-import tofu.ez.params as parameters
-from tofu.config import SECTIONS
+import tofu.ez.params as parameters # NEED UPDATE
 from tofu.ez.params import EZVARS, MAP_TABLE
 from tofu.util import add_value_to_dict_entry
 import argparse
@@ -623,7 +622,7 @@ class ConfigGroup(QGroupBox):
         self.set_temp_dir()
         self.set_preproc()
         self.set_preproc_entry()
-        LOG.debug(parameters.params)
+        #LOG.debug(parameters.params)
         run_reco = partial(self.run_reconstruction, parameters.params, batch_run=False)
         QTimer.singleShot(100, run_reco)
         #self.run_reconstruction(parameters.params, batch_run=False)
@@ -639,8 +638,6 @@ class ConfigGroup(QGroupBox):
                 #Note: Dictionary entries are automatically updated in the map as the program runs
                 if(key[1] == 'ezvars' and key[2] in EZVARS and key[3] in EZVARS[key[2]]):
                     result[key[0]] = EZVARS[key[2]][key[3]]     #Updates as dictionary updates
-                elif(key[1] == 'sections' and key[2] in SECTIONS and key[3] in SECTIONS[key[2]]):
-                    result[key[0]] = SECTIONS[key[2]][key[3]] #Updates as dictionary updates
                 else:
                     LOG.debug("Can't create dictionary entry: "+ key[1]+ "["+key[2]+"]"+"["+key[3]+"]"+": "+ key[0]
                               +".\n  Is the parameter spelled correctly?")
@@ -723,8 +720,8 @@ class ConfigGroup(QGroupBox):
                            EZVARS['COR']['user-defined-ax']['value'],
                            EZVARS['COR']['user-defined-dax']['value'],
                            EZVARS['filters']['rm_spots']['value'],
-                           SECTIONS['find-large-spots']['spot-threshold']['value'],
-                           SECTIONS['find-large-spots']['gauss-sigma']['value'],
+                           EZVARS['find-large-spots']['spot-threshold']['value'],
+                           EZVARS['find-large-spots']['gauss-sigma']['value'],
                            EZVARS['RR']['enable']['value'],
                            EZVARS['RR']['use-ufo']['value'],
                            EZVARS['RR']['ufo-2d']['value'],
@@ -734,22 +731,22 @@ class ConfigGroup(QGroupBox):
                            EZVARS['RR']['spy-rm-wide']['value'],
                            EZVARS['RR']['spy-wide-window']['value'],
                            EZVARS['RR']['spy-wide-SNR']['value'],
-                           SECTIONS['retrieve-phase']['enable']['value'],
-                           SECTIONS['retrieve-phase']['energy']['value'],
-                           SECTIONS['retrieve-phase']['pixel-size']['value'],
-                           SECTIONS['retrieve-phase']['propagation-distance']['value'][0],  #(?) Not sure what to do with y-direction
-                           SECTIONS['retrieve-phase']['regularization-rate']['value'],
+                           EZVARS['retrieve-phase']['enable']['value'],
+                           EZVARS['retrieve-phase']['energy']['value'],
+                           EZVARS['retrieve-phase']['pixel-size']['value'],
+                           EZVARS['retrieve-phase']['propagation-distance']['value'][0],  #(?) Not sure what to do with y-direction
+                           EZVARS['retrieve-phase']['regularization-rate']['value'],
                            EZVARS['inout']['input_ROI']['value'],
-                           SECTIONS['reading']['y']['value'],
-                           SECTIONS['reading']['height']['value'],
-                           SECTIONS['reading']['y-step']['value'],
+                           EZVARS['reading']['y']['value'],
+                           EZVARS['reading']['height']['value'],
+                           EZVARS['reading']['y-step']['value'],
                            EZVARS['inout']['clip_hist']['value'],
-                           SECTIONS['general']['output-bitdepth']['value'],
-                           SECTIONS['general']['output-minimum']['value'],
-                           SECTIONS['general']['output-maximum']['value'],
+                           EZVARS['general']['output-bitdepth']['value'],
+                           EZVARS['general']['output-minimum']['value'],
+                           EZVARS['general']['output-maximum']['value'],
                            EZVARS['inout']['preprocess']['value'],
                            EZVARS['inout']['preprocess-command']['value'],
-                           SECTIONS['general-reconstruction']['volume-angle-z']['value'],   # Not updated through text box
+                           EZVARS['general-reconstruction']['volume-angle-z']['value'],   # Not updated through text box
                            EZVARS['inout']['output-ROI']['value'],
                            EZVARS['inout']['output-x']['value'],
                            EZVARS['inout']['output-width']['value'],
@@ -784,16 +781,16 @@ class ConfigGroup(QGroupBox):
                            EZVARS['nlmdn']['dryrun']['value'],
                            # Advanced Parameters
                            EZVARS['advanced']['more-reco-params']['value'],
-                           SECTIONS['cone-beam-weight']['axis-angle-x']['value'],
-                           SECTIONS['general-reconstruction']['overall-angle']['value'],
-                           SECTIONS['cone-beam-weight']['center-position-z']['value'],
-                           SECTIONS['general-reconstruction']['axis-angle-y']['value'],
+                           EZVARS['general-reconstruction']['axis-angle-x']['value'],
+                           EZVARS['general-reconstruction']['overall-angle']['value'],
+                           EZVARS['general-reconstruction']['center-position-z']['value'],
+                           EZVARS['general-reconstruction']['axis-angle-y']['value'],
                            EZVARS['flat-correction']['dark-scale']['value'],
                            EZVARS['flat-correction']['flat-scale']['value'],
-                           SECTIONS['general']['verbose']['value'],
-                           SECTIONS['general-reconstruction']['slice-memory-coeff']['value'],
-                           SECTIONS['general-reconstruction']['num-gpu-threads']['value'],
-                           SECTIONS['general-reconstruction']['slices-per-device']['value']
+                           EZVARS['general']['verbose']['value'],
+                           EZVARS['general-reconstruction']['slice-memory-coeff']['value'],
+                           EZVARS['general-reconstruction']['num-gpu-threads']['value'],
+                           EZVARS['general-reconstruction']['slices-per-device']['value']
                            )
         
             # #################
@@ -876,9 +873,9 @@ class tk_args():
         #ring removal
         self.args['main_filters_remove_spots']=bool(main_filters_remove_spots)          # EZVARS['filters']['rm_spots']
         setattr(self,'main_filters_remove_spots',self.args['main_filters_remove_spots'])
-        self.args['main_filters_remove_spots_threshold']=int(main_filters_remove_spots_threshold) # SECTIONS['find-large-spots']['spot-threshold']
+        self.args['main_filters_remove_spots_threshold']=int(main_filters_remove_spots_threshold) # EZVARS['find-large-spots']['spot-threshold']
         setattr(self,'main_filters_remove_spots_threshold', self.args['main_filters_remove_spots_threshold'])
-        self.args['main_filters_remove_spots_blur_sigma']=int(main_filters_remove_spots_blur_sigma) # SECTIONS['find-large-spots']['gauss-sigma']
+        self.args['main_filters_remove_spots_blur_sigma']=int(main_filters_remove_spots_blur_sigma) # EZVARS['find-large-spots']['gauss-sigma']
         setattr(self,'main_filters_remove_spots_blur_sigma',self.args['main_filters_remove_spots_blur_sigma'])
         self.args['main_filters_ring_removal']=bool(main_filters_ring_removal)                     #EZVARS['RR']['enable']
         setattr(self,'main_filters_ring_removal',self.args['main_filters_ring_removal'])
@@ -899,33 +896,33 @@ class tk_args():
         self.args['main_filters_ring_removal_sarepy_SNR'] = int(main_filters_ring_removal_sarepy_SNR) #EZVARS['RR']['spy-wide-SNR']
         setattr(self, 'main_filters_ring_removal_sarepy_SNR', self.args['main_filters_ring_removal_sarepy_SNR'])
         # phase retrieval
-        self.args['main_pr_phase_retrieval'] = bool(main_pr_phase_retrieval)       #SECTIONS['retrieve-phase']['enable']
+        self.args['main_pr_phase_retrieval'] = bool(main_pr_phase_retrieval)       #EZVARS['retrieve-phase']['enable']
         setattr(self, 'main_pr_phase_retrieval', self.args['main_pr_phase_retrieval'])
-        self.args['main_pr_photon_energy']=float(main_pr_photon_energy)             #SECTIONS['retrieve-phase']['energy']
+        self.args['main_pr_photon_energy']=float(main_pr_photon_energy)             #EZVARS['retrieve-phase']['energy']
         setattr(self,'main_pr_photon_energy',self.args['main_pr_photon_energy'])
-        self.args['main_pr_pixel_size']=float(main_pr_pixel_size)*1e-6              #SECTIONS['retrieve-phase']['pixel-size']
+        self.args['main_pr_pixel_size']=float(main_pr_pixel_size)*1e-6              #EZVARS['retrieve-phase']['pixel-size']
         setattr(self,'main_pr_pixel_size',self.args['main_pr_pixel_size'])
-        self.args['main_pr_detector_distance']=float(main_pr_detector_distance)     #SECTIONS['retrieve-phase']['propagation-distance']
+        self.args['main_pr_detector_distance']=float(main_pr_detector_distance)     #EZVARS['retrieve-phase']['propagation-distance']
         setattr(self,'main_pr_detector_distance',self.args['main_pr_detector_distance'])
-        self.args['main_pr_delta_beta_ratio']=np.log10(float(main_pr_delta_beta_ratio))  #SECTIONS['retrieve-phase']['regularization-rate']
+        self.args['main_pr_delta_beta_ratio']=np.log10(float(main_pr_delta_beta_ratio))  #EZVARS['retrieve-phase']['regularization-rate']
         setattr(self,'main_pr_delta_beta_ratio',self.args['main_pr_delta_beta_ratio'])   # apply log10 to the input which is delta/beta
         # Crop vertically
         self.args['main_region_select_rows']=bool(main_region_select_rows)              #EZVARS['inout']['input_ROI']
         setattr(self,'main_region_select_rows',self.args['main_region_select_rows'])
-        self.args['main_region_first_row']=int(main_region_first_row)                   #SECTIONS['reading']['y']
+        self.args['main_region_first_row']=int(main_region_first_row)                   #EZVARS['reading']['y']
         setattr(self,'main_region_first_row',self.args['main_region_first_row'])
-        self.args['main_region_number_rows']=int(main_region_number_rows)               #SECTIONS['reading']['height']
+        self.args['main_region_number_rows']=int(main_region_number_rows)               #EZVARS['reading']['height']
         setattr(self,'main_region_number_rows',self.args['main_region_number_rows'])
-        self.args['main_region_nth_row']=int(main_region_nth_row)                       #SECTIONS['reading']['y-step']
+        self.args['main_region_nth_row']=int(main_region_nth_row)                       #EZVARS['reading']['y-step']
         setattr(self,'main_region_nth_row',self.args['main_region_nth_row'])
         # conv to 8 bit
         self.args['main_region_clip_histogram']=bool(main_region_clip_histogram)        #EZVARS['inout']['clip_hist']
         setattr(self,'main_region_clip_histogram',self.args['main_region_clip_histogram'])
-        self.args['main_region_bit_depth']=int(main_region_bit_depth)                   #SECTIONS['general']['output-bitdepth']
+        self.args['main_region_bit_depth']=int(main_region_bit_depth)                   #EZVARS['general']['output-bitdepth']
         setattr(self,'main_region_bit_depth',self.args['main_region_bit_depth'])
-        self.args['main_region_histogram_min']=float(main_region_histogram_min)         #SECTIONS['general']['output-minimum']
+        self.args['main_region_histogram_min']=float(main_region_histogram_min)         #EZVARS['general']['output-minimum']
         setattr(self,'main_region_histogram_min',self.args['main_region_histogram_min'])
-        self.args['main_region_histogram_max']=float(main_region_histogram_max)             #SECTIONS['general']['output-maximum']
+        self.args['main_region_histogram_max']=float(main_region_histogram_max)             #EZVARS['general']['output-maximum']
         setattr(self,'main_region_histogram_max',self.args['main_region_histogram_max'])
         # preprocessing attributes
         self.args['main_config_preprocess']=bool(main_config_preprocess)             #EZVARS['inout']['preprocess']
@@ -944,7 +941,7 @@ class tk_args():
         self.args['main_region_crop_height']=int(main_region_crop_height)               #EZVARS['inout']['output-height']
         setattr(self,'main_region_crop_height',self.args['main_region_crop_height'])
         # Optional FBP params
-        self.args['main_region_rotate_volume_clock']= float(main_region_rotate_volume_clock)   #SECTIONS['general-reconstruction']['volume-angle-z']
+        self.args['main_region_rotate_volume_clock']= float(main_region_rotate_volume_clock)   #EZVARS['general-reconstruction']['volume-angle-z']
         setattr(self,'main_region_rotate_volume_clock',self.args['main_region_rotate_volume_clock'])  #
         # misc settings
         self.args['main_config_dry_run']=bool(main_config_dry_run)    #EZVARS['inout']['dryrun']
@@ -1005,25 +1002,25 @@ class tk_args():
         #Advanced Settings
         self.args['advanced_advtofu_extended_settings'] = bool(advanced_advtofu_extended_settings)  #EZVARS['advanced']['more-reco-params']
         setattr(self, 'advanced_advtofu_extended_settings', self.args['advanced_advtofu_extended_settings'])
-        self.args['advanced_advtofu_lamino_angle'] = str(advanced_advtofu_lamino_angle)    #SECTIONS['general-reconstruction']['axis-angle-x']
+        self.args['advanced_advtofu_lamino_angle'] = str(advanced_advtofu_lamino_angle)    #EZVARS['general-reconstruction']['axis-angle-x']
         setattr(self, 'advanced_advtofu_lamino_angle', self.args['advanced_advtofu_lamino_angle'])
-        self.args['advanced_adv_tofu_z_axis_rotation'] = str(advanced_adv_tofu_z_axis_rotation) #SECTIONS['general-reconstruction']['overall-angle']
+        self.args['advanced_adv_tofu_z_axis_rotation'] = str(advanced_adv_tofu_z_axis_rotation) #EZVARS['general-reconstruction']['overall-angle']
         setattr(self, 'advanced_adv_tofu_z_axis_rotation', self.args['advanced_adv_tofu_z_axis_rotation'])
-        self.args['advanced_advtofu_center_position_z'] = str(advanced_advtofu_center_position_z) #SECTIONS['general-reconstruction']['center-position-z']
+        self.args['advanced_advtofu_center_position_z'] = str(advanced_advtofu_center_position_z) #EZVARS['general-reconstruction']['center-position-z']
         setattr(self, 'advanced_advtofu_center_position_z', self.args['advanced_advtofu_center_position_z'])
-        self.args['advanced_advtofu_y_axis_rotation'] = str(advanced_advtofu_y_axis_rotation)   #SECTIONS['general-reconstruction']['axis-angle-y']
+        self.args['advanced_advtofu_y_axis_rotation'] = str(advanced_advtofu_y_axis_rotation)   #EZVARS['general-reconstruction']['axis-angle-y']
         setattr(self, 'advanced_advtofu_y_axis_rotation', self.args['advanced_advtofu_y_axis_rotation'])
-        self.args['advanced_advtofu_aux_ffc_dark_scale'] = str(advanced_advtofu_aux_ffc_dark_scale) #SECTIONS['flat-correction']['dark-scale']
+        self.args['advanced_advtofu_aux_ffc_dark_scale'] = str(advanced_advtofu_aux_ffc_dark_scale) #EZVARS['flat-correction']['dark-scale']
         setattr(self, 'advanced_advtofu_aux_ffc_dark_scale', self.args['advanced_advtofu_aux_ffc_dark_scale'])
-        self.args['advanced_advtofu_aux_ffc_flat_scale'] = str(advanced_advtofu_aux_ffc_flat_scale)   #SECTIONS['flat-correction']['flat-scale']
+        self.args['advanced_advtofu_aux_ffc_flat_scale'] = str(advanced_advtofu_aux_ffc_flat_scale)   #EZVARS['flat-correction']['flat-scale']
         setattr(self, 'advanced_advtofu_aux_ffc_flat_scale', self.args['advanced_advtofu_aux_ffc_flat_scale'])
-        # SECTIONS['sinos']['pass-size'] must be added to RR groupbox
+        # EZVARS['sinos']['pass-size'] must be added to RR groupbox
         #Optimization
-        self.args['advanced_optimize_verbose_console'] = bool(advanced_optimize_verbose_console) #SECTIONS['general']['verbose']
+        self.args['advanced_optimize_verbose_console'] = bool(advanced_optimize_verbose_console) #EZVARS['general']['verbose']
         setattr(self, 'advanced_optimize_verbose_console', self.args['advanced_optimize_verbose_console'])
-        self.args['advanced_optimize_slice_mem_coeff'] = str(advanced_optimize_slice_mem_coeff) #SECTIONS['general-reconstruction']['slice-memory-coeff']
+        self.args['advanced_optimize_slice_mem_coeff'] = str(advanced_optimize_slice_mem_coeff) #EZVARS['general-reconstruction']['slice-memory-coeff']
         setattr(self, 'advanced_optimize_slice_mem_coeff', self.args['advanced_optimize_slice_mem_coeff'])
-        self.args['advanced_optimize_num_gpus'] = str(advanced_optimize_num_gpus)  #SECTIONS['general-reconstruction']['data-splitting-policy']
+        self.args['advanced_optimize_num_gpus'] = str(advanced_optimize_num_gpus)  #EZVARS['general-reconstruction']['data-splitting-policy']
         setattr(self, 'advanced_optimize_num_gpus', self.args['advanced_optimize_num_gpus'])  # replace by 'data-splitting-policy' !!
         self.args['advanced_optimize_slices_per_device'] = str(advanced_optimize_slices_per_device)  # 'num-gpu-threads' ??
         setattr(self, 'advanced_optimize_slices_per_device', self.args['advanced_optimize_slices_per_device'])

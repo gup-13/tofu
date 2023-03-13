@@ -14,9 +14,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 
-import tofu.ez.params as parameters
 from tofu.ez.params import EZVARS
-from tofu.config import SECTIONS
 from tofu.util import add_value_to_dict_entry, get_int_validator, get_double_validator
 
 
@@ -333,7 +331,7 @@ class NLMDNGroup(QGroupBox):
             dialog = QMessageBox.warning(self, title_text, text1, QMessageBox.Yes | QMessageBox.No)
             if dialog == QMessageBox.Yes:
                 main_tk(args)#, EZVARS['inout']['clip_hist']['value'],
-                             # SECTIONS['general']['output-bitdepth']['value'])
+                             # EZVARS['general']['output-bitdepth']['value'])
                 QMessageBox.information(self, "Finished", "Finished")
         else:
             main_tk(args)

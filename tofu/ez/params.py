@@ -1,7 +1,7 @@
 # This file is used to share params as a global variable
 import yaml
 from collections import OrderedDict
-from tofu.util import restrict_value
+from tofu.util import restrict_value, tupleize, restrict_tupleize
 
 import os #EZVARS[inout][tmp-dir]
 
@@ -163,11 +163,11 @@ EZVARS = OrderedDict()
 
 EZVARS['inout'] = {
     'input-dir': {
-        'default': "", 
+        'default': "/Users/gup/Personal/Documents/Image-Data/Reduced-head-neck-nolmndn/TestCTset/z01", 
         'type': str, 
         'help': "TODO"},
     'output-dir': {
-        'default': "", 
+        'default': "/Users/gup/Personal/Documents/Image-Data/output", 
         'type': str, 
         'help': "TODO"},
     'tmp-dir' : {

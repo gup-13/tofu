@@ -2,9 +2,7 @@ import logging
 from PyQt5.QtWidgets import QGridLayout, QRadioButton, QLabel, QGroupBox, QLineEdit, QCheckBox
 from PyQt5.QtCore import Qt
 
-import tofu.ez.params as parameters
 from tofu.ez.params import EZVARS
-from tofu.config import SECTIONS
 from tofu.util import add_value_to_dict_entry, get_int_validator, get_double_validator
 
 LOG = logging.getLogger(__name__)
@@ -148,24 +146,24 @@ class ROIandHistGroup(QGroupBox):
 
     def set_values_from_params(self):
         self.select_rows_checkbox.setChecked(EZVARS['inout']['input_ROI']['value'])
-        self.first_row_entry.setText(str(SECTIONS['reading']['y']['value']))
-        self.num_rows_entry.setText(str(SECTIONS['reading']['height']['value']))
-        self.nth_row_entry.setText(str(SECTIONS['reading']['y-step']['value']))
+        self.first_row_entry.setText(str(EZVARS['reading']['y']['value']))
+        self.num_rows_entry.setText(str(EZVARS['reading']['height']['value']))
+        self.nth_row_entry.setText(str(EZVARS['reading']['y-step']['value']))
         self.clip_histo_checkbox.setChecked(EZVARS['inout']['clip_hist']['value'])
-        if int(SECTIONS['general']['output-bitdepth']['value']) == 8:
+        if int(EZVARS['general']['output-bitdepth']['value']) == 8:
             self.eight_bit_rButton.setChecked(True)
             self.sixteen_bit_rButton.setChecked(False)
-        elif int(SECTIONS['general']['output-bitdepth']['value']) == 16:
+        elif int(EZVARS['general']['output-bitdepth']['value']) == 16:
             self.eight_bit_rButton.setChecked(False)
             self.sixteen_bit_rButton.setChecked(True)
-        self.min_val_entry.setText(str(SECTIONS['general']['output-minimum']['value']))
-        self.max_val_entry.setText(str(SECTIONS['general']['output-maximum']['value']))
+        self.min_val_entry.setText(str(EZVARS['general']['output-minimum']['value']))
+        self.max_val_entry.setText(str(EZVARS['general']['output-maximum']['value']))
         self.crop_slices_checkbox.setChecked(EZVARS['inout']['output-ROI']['value'])
         self.x_val_entry.setText(str(EZVARS['inout']['output-x']['value']))
         self.width_val_entry.setText(str(EZVARS['inout']['output-width']['value']))
         self.y_val_entry.setText(str(EZVARS['inout']['output-y']['value']))
         self.height_val_entry.setText(str(EZVARS['inout']['output-height']['value']))
-        self.rotate_vol_entry.setText(str(SECTIONS['general-reconstruction']['volume-angle-z']['value']))
+        self.rotate_vol_entry.setText(str(EZVARS['general-reconstruction']['volume-angle-z']['value']))
 
 
     def set_select_rows(self):
@@ -175,19 +173,19 @@ class ROIandHistGroup(QGroupBox):
 
     def set_first_row(self):
         LOG.debug(self.first_row_entry.text())
-        dict_entry = SECTIONS['reading']['y']
+        dict_entry = EZVARS['reading']['y']
         add_value_to_dict_entry(dict_entry, str(self.first_row_entry.text()))
         self.first_row_entry.setText(str(dict_entry['value']))
 
     def set_num_rows(self):
         LOG.debug(self.num_rows_entry.text())
-        dict_entry = SECTIONS['reading']['height']
+        dict_entry = EZVARS['reading']['height']
         add_value_to_dict_entry(dict_entry, str(self.num_rows_entry.text()))
         self.num_rows_entry.setText(str(dict_entry['value']))
 
     def set_reco_nth_rows(self):
         LOG.debug(self.nth_row_entry.text())
-        dict_entry = SECTIONS['reading']['y-step']
+        dict_entry = EZVARS['reading']['y-step']
         add_value_to_dict_entry(dict_entry, str(self.nth_row_entry.text()))
         self.nth_row_entry.setText(str(dict_entry['value']))
 
@@ -201,7 +199,7 @@ class ROIandHistGroup(QGroupBox):
             return '32'
 
     def set_bitdepth(self):
-        dict_entry = SECTIONS['general']['output-bitdepth']
+        dict_entry = EZVARS['general']['output-bitdepth']
         if self.eight_bit_rButton.isChecked():
             LOG.debug("8 bit")
             add_value_to_dict_entry(dict_entry, str(8))
@@ -214,13 +212,13 @@ class ROIandHistGroup(QGroupBox):
 
     def set_min_val(self):
         LOG.debug(self.min_val_entry.text())
-        dict_entry = SECTIONS['general']['output-minimum']
+        dict_entry = EZVARS['general']['output-minimum']
         add_value_to_dict_entry(dict_entry, str(self.min_val_entry.text()))
         self.min_val_entry.setText(str(dict_entry['value']))
 
     def set_max_val(self):
         LOG.debug(self.max_val_entry.text())
-        dict_entry = SECTIONS['general']['output-maximum']
+        dict_entry = EZVARS['general']['output-maximum']
         add_value_to_dict_entry(dict_entry, str(self.max_val_entry.text()))
         self.max_val_entry.setText(str(dict_entry['value']))
 
@@ -255,6 +253,6 @@ class ROIandHistGroup(QGroupBox):
 
     def set_rotate_volume(self):
         LOG.debug(self.rotate_vol_entry.text())
-        dict_entry = SECTIONS['general-reconstruction']['volume-angle-z']
+        dict_entry = EZVARS['general-reconstruction']['volume-angle-z']
         add_value_to_dict_entry(dict_entry, str(self.rotate_vol_entry.text()))
         self.rotate_vol_entry.setText(str(dict_entry['value']))

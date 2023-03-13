@@ -17,8 +17,6 @@ import re
 import warnings
 import time
 
-import tofu.ez.params as glob_parameters
-from tofu.config import SECTIONS
 from tofu.ez.params import EZVARS
 
 def findCTdirs(root: str, tomo_name: str):
