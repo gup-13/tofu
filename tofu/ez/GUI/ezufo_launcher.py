@@ -12,9 +12,8 @@ from tofu.ez.GUI.Main.config import ConfigGroup
 from tofu.ez.main import clean_tmp_dirs
 from tofu.ez.yaml_in_out import Yaml_IO
 from tofu.ez.GUI.image_viewer import ImageViewerGroup
-import tofu.ez.params as parameters
+import tofu.ez.params as parameters # NEED UPDATING
 from tofu.ez.params import EZVARS
-from tofu.config import SECTIONS
 from tofu.util import add_value_to_dict_entry
 from tofu.ez.GUI.Advanced.advanced import AdvancedGroup
 from tofu.ez.GUI.Advanced.optimization import OptimizationGroup
@@ -194,12 +193,8 @@ class GUI(qtw.QWidget):
         # Place default value in each setting
         for key1 in EZVARS.keys():
             for key2 in EZVARS[key1].keys():
+                print(key1, key2)
                 dict_entry = EZVARS[key1][key2]
-                add_value_to_dict_entry(dict_entry, '') # Add default value
-        
-        for key1 in SECTIONS.keys():
-            for key2 in SECTIONS[key1].keys():
-                dict_entry = SECTIONS[key1][key2]
                 add_value_to_dict_entry(dict_entry, '') # Add default value
 
     def update_values_from_params(self):

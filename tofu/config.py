@@ -17,7 +17,7 @@ SECTIONS['general'] = {
         'help': "File name of configuration",
         'metavar': 'FILE'},
     'verbose': {
-        'default': False, #G
+        'default': False,
         'help': 'Verbose output',
         'action': 'store_true'},
     'output': {
@@ -27,17 +27,17 @@ SECTIONS['general'] = {
                 "for storing reconstructed slices",
         'metavar': 'PATH'},
     'output-bitdepth': {
-        'default': 8, #G - original: 32
+        'default': 32,
         'type': restrict_value((0, None), dtype=int),
         'help': "Bit depth of output, either 8, 16 or 32",
         'metavar': 'BITDEPTH'},
     'output-minimum': {
-        'default': 0.0, #G
+        'default': None,
         'type': float,
         'help': "Minimum value that maps to zero",
         'metavar': 'MIN'},
     'output-maximum': {
-        'default': 0.0, #G
+        'default': None,
         'type': float,
         'help': "Maximum input value that maps to largest output value",
         'metavar': 'MAX'},
@@ -52,67 +52,67 @@ SECTIONS['general'] = {
         'action': 'store_true',
         'help': 'Append images instead of overwriting existing files'},
     'log': {
-        'default': "",
+        'default': None,
         'type': str,
         'help': "File name of optional log",
         'metavar': 'FILE'},
     'width': {
-        'default': 0,
+        'default': None,
         'type': restrict_value((0, None), dtype=int),
         'help': "Input width"}}
 
 SECTIONS['reading'] = {
     'y': {
-        'default': 100, #G
         'type': restrict_value((0, None), dtype=int),
+        'default': 0,
         'help': 'Vertical coordinate from where to start reading the input image'},
     'height': {
-        'default': 200, #G
+        'default': None,
         'type': restrict_value((0, None), dtype=int),
-        'help': "Number of rows which will be read (ROI height)"},
+        'help': "Number of rows which will be read"},
     'bitdepth': {
         'default': 32,
         'type': restrict_value((0, None), dtype=int),
         'help': "Bit depth of raw files"},
     'y-step': {
-        'default': 20, #G
         'type': restrict_value((0, None), dtype=int),
+        'default': 1,
         'help': "Read every \"step\" row from the input"},
     'start': {
-        'default': 0,
         'type': restrict_value((0, None), dtype=int),
+        'default': 0,
         'help': 'Offset to the first read file'},
     'number': {
-        'default': 0,
         'type': restrict_value((0, None), dtype=int),
+        'default': None,
         'help': 'Number of files to read'},
     'step': {
-        'default': 1,
         'type': restrict_value((0, None), dtype=int),
+        'default': 1,
         'help': 'Read every \"step\" file'},
     'resize': {
-        'default': 0,
         'type': restrict_value((0, None), dtype=int),
+        'default': None,
         'help': 'Bin pixels before processing'},
     'retries': {
-        'default': 0,
         'type': restrict_value((0, None), dtype=int),
+        'default': 0,
         'metavar': 'NUMBER',
         'help': 'How many times to wait for new files'},
     'retry-timeout': {
-        'default': 0,
         'type': restrict_value((0, None), dtype=int),
+        'default': 0,
         'metavar': 'TIME',
         'help': 'How long to wait for new files per trial'}}
 
 SECTIONS['flat-correction'] = {
     'projections': {
-        'default': "",
+        'default': None,
         'type': str,
         'help': "Location with projections",
         'metavar': 'PATH'},
     'darks': {
-        'default': "",
+        'default': None,
         'type': str,
         'help': "Location with darks",
         'metavar': 'PATH'},
@@ -129,12 +129,12 @@ SECTIONS['flat-correction'] = {
         'help': "Fix nan and inf",
         'action': 'store_true'},
     'flats': {
-        'default': "",
+        'default': None,
         'type': str,
         'help': "Location with flats",
         'metavar': 'PATH'},
     'flats2': {
-        'default': "",
+        'default': None,
         'type': str,
         'help': "Location with flats 2 for interpolation correction",
         'metavar': 'PATH'},
@@ -148,34 +148,29 @@ SECTIONS['flat-correction'] = {
         'help': 'Do absorption correction'}}
 
 SECTIONS['retrieve-phase'] = {
-    'enable': {
-        'default': False, #G
-        'type': bool,
-        'help': "Enable phase retrieval"},
     'retrieval-method': {
-        'default': 'tie',
-        'type': str,
         'choices': ['tie', 'ctf', 'qp', 'qp2'],
+        'default': 'tie',
         'help': "Phase retrieval method"},
     'energy': {
-        'default': 20, #G
-        'type': restrict_value((0,None),dtype=float),
-        'help': "Photon energy [keV]"},
+        'default': None,
+        'type': float,
+        'help': "X-ray energy [keV]"},
     'propagation-distance': {
-        'default': "0.1", #G
-        'type': restrict_tupleize((0,None)),
+        'default': None,
+        'type': tupleize(),
         'help': ("Sample <-> detector distance (if one value, then use the same for x and y "
                  "direction, otherwise first specifies x and second y direction) [m]")},
     'pixel-size': {
-        'default': 3.6, #G
-        'type': restrict_value((0,None),dtype=float),
-        'help': "Pixel size [micron]"},
+        'default': 1e-6,
+        'type': float,
+        'help': "Pixel size [m]"},
     'regularization-rate': {
-        'default': 200, #G - (!) - mismatch from help. Orignally 2. 
-        'type': restrict_value((0,None),dtype=float),
+        'default': 2,
+        'type': float,
         'help': "Regularization rate (typical values between [2, 3])"},
     'delta': {
-        'default': 0.0,
+        'default': None,
         'type': float,
         'help': "Real part of the complex refractive index of the material. "
                 "If specified, phase retrieval returns projected thickness, "
@@ -190,7 +185,6 @@ SECTIONS['retrieve-phase'] = {
         'help': "Padded height used for phase retrieval"},
     'retrieval-padding-mode': {
         'choices': ['none', 'clamp', 'clamp_to_edge', 'repeat', 'mirrored_repeat'],
-        'type': str,
         'default': 'clamp_to_edge',
         'help': "Padded values assignment"},
     'thresholding-rate': {
@@ -204,18 +198,18 @@ SECTIONS['retrieve-phase'] = {
 
 SECTIONS['sinos'] = {
     'pass-size': {
-        'default': 0,
         'type': restrict_value((0, None), dtype=int),
+        'default': 0,
         'help': 'Number of sinograms to process per pass'}}
 
 SECTIONS['reconstruction'] = {
     'sinograms': {
-        'default': "",
+        'default': None,
         'type': str,
         'help': "Location with sinograms",
         'metavar': 'PATH'},
     'angle': {
-        'default': 0.0,
+        'default': None,
         'type': float,
         'help': "Angle step between projections in radians"},
     'enable-tracing': {
@@ -223,7 +217,7 @@ SECTIONS['reconstruction'] = {
         'help': "Enable tracing and store result in .PID.json",
         'action': 'store_true'},
     'remotes': {
-        'default': "",
+        'default': None,
         'type': str,
         'help': "Addresses to remote ufo-nodes",
         'nargs': '+'},
@@ -237,14 +231,13 @@ SECTIONS['reconstruction'] = {
         'type': float,
         'help': "Relative cutoff frequency"},
     'projection-padding-mode': {
-        'default': 'clamp_to_edge',
-        'type': str,
         'choices': ['none', 'clamp', 'clamp_to_edge', 'repeat', 'mirrored_repeat'],
+        'default': 'clamp_to_edge',
         'help': "Padded values assignment"}}
 
 SECTIONS['tomographic-reconstruction'] = {
     'axis': {
-        'default': 0.0,
+        'default': None,
         'type': float,
         'help': "Axis position"},
     'dry-run': {
@@ -263,7 +256,7 @@ SECTIONS['tomographic-reconstruction'] = {
 
 SECTIONS['laminographic-reconstruction'] = {
     'angle': {
-        'default': 0.0,
+        'default': None,
         'type': float,
         'help': "Angle step between projections in radians"},
     'dry-run': {
@@ -271,7 +264,7 @@ SECTIONS['laminographic-reconstruction'] = {
         'help': "Reconstruct without writing data",
         'action': 'store_true'},
     'axis': {
-        'default': "0,0",
+        'default': None,
         'required': True,
         'type': tupleize(num_items=2),
         'help': "Axis position"},
@@ -297,11 +290,11 @@ SECTIONS['laminographic-reconstruction'] = {
         'type': tupleize(num_items=3),
         'help': "Z-axis parameter region as from,to,step"},
     'overall-angle': {
-        'default': 0.0,
+        'default': None,
         'type': float,
         'help': "The total angle over which projections were taken in degrees"},
     'lamino-angle': {
-        'default': 0.0,
+        'default': None,
         'required': True,
         'type': float,
         'help': "The laminographic angle in degrees"},
@@ -311,7 +304,7 @@ SECTIONS['laminographic-reconstruction'] = {
         'help': "Sample angular misalignment to the side (roll) in degrees, positive angles mean\
         clockwise misalignment"},
     'slices-per-device': {
-        'default': 0,
+        'default': None,
         'type': restrict_value((0, None), dtype=int),
         'help': "Number of slices computed by one computing device"},
     'only-bp': {
@@ -319,26 +312,24 @@ SECTIONS['laminographic-reconstruction'] = {
         'action': 'store_true',
         'help': "Do only backprojection with no other processing steps"},
     'lamino-padding-mode': {
-        'default': 'clamp',
-        'type': str,
         'choices': ['none', 'clamp', 'clamp_to_edge', 'repeat', 'mirrored_repeat'],
+        'default': 'clamp',
         'help': "Padded values assignment for the filtered projection"}}
 
 SECTIONS['fbp'] = {
     'crop-width': {
-        'default': 0,
+        'default': None,
         'type': restrict_value((0, None), dtype=int),
         'help': "Width of final slice"},
     'projection-crop-after': {
-        'default': 'backprojection',
-        'type': str,
         'choices': ['filter', 'backprojection'],
+        'default': 'backprojection',
         'help': "Whether to crop projections after filtering (can cause truncation "
                 "artifacts) or after backprojection"}}
 
 SECTIONS['dfi'] = {
     'oversampling': {
-        'default': 0,
+        'default': None,
         'type': restrict_value((0, None), dtype=int),
         'help': "Oversample factor"}}
 
@@ -403,8 +394,8 @@ SECTIONS['gui'] = {
 
 SECTIONS['estimate'] = {
     'estimate-method': {
-        'default': 'correlation',
         'type': str,
+        'default': 'correlation',
         'help': 'Rotation axis estimation algorithm',
         'choices': ['reconstruction', 'correlation']}}
 
@@ -445,14 +436,12 @@ SECTIONS['preprocess'] = {
         'type': float,
         'help': "Multiplicative factor of the projection filter"},
     'projection-padding-mode': {
-        'default': 'clamp_to_edge',
-        'type': str,
         'choices': ['none', 'clamp', 'clamp_to_edge', 'repeat', 'mirrored_repeat'],
+        'default': 'clamp_to_edge',
         'help': "Padded values assignment"},
     'projection-crop-after': {
-        'default': 'backprojection',
-        'type': str,
         'choices': ['filter', 'backprojection'],
+        'default': 'backprojection',
         'help': "Whether to crop projections after filtering (can cause truncation "
                 "artifacts) or after backprojection"}}
 
@@ -468,16 +457,16 @@ SECTIONS['cone-beam-weight'] = {
         'help': "Y detector position (along beam direction) in global coordinates [pixels] "
                 "(multiple of detector pixel size)"},
     'center-position-x': {
-        'default': 0.0,
-        'type': float,
+        'default': None,
+        'type': tupleize(),
         'help': "X rotation axis position on a projection [pixels]"},
     'center-position-z': {
-        'default': 0, #G
-        'type': float,
+        'default': None,
+        'type': tupleize(),
         'help': "Z rotation axis position on a projection [pixels]"},
-    'axis-angle-x': {   
-        'default': 30, #G
-        'type': float,
+    'axis-angle-x': {
+        'default': "0",
+        'type': tupleize(dtype=list),
         'help': "Rotation axis rotation around the x axis"
                 "(laminographic angle, 0 = tomography) [deg]"}}
 
@@ -491,14 +480,14 @@ SECTIONS['general-reconstruction'] = {
         'action': 'store_true',
         'help': "Disable cone beam weighting"},
     'slice-memory-coeff': {
-        'default': 0.7, #G - original: 0.8
+        'default': 0.8,
         'type': restrict_value((0.01, 0.95)),
         'help': "Portion of the GPU memory used for slices (from 0.01 to 0.9) [fraction]. "
                 "The total amount of consumed memory will be larger depending on the "
                 "complexity of the graph. In case of OpenCL memory allocation errors, "
                 "try reducing this value."},
     'num-gpu-threads': {
-        'default': 1, #G
+        'default': 1,
         'type': restrict_value((1, None), dtype=int),
         'help': "Number of parallel reconstruction threads on one GPU"},
     'disable-projection-crop': {
@@ -510,9 +499,9 @@ SECTIONS['general-reconstruction'] = {
         'help': "Reconstruct without reading or writing data",
         'action': 'store_true'},
     'data-splitting-policy': {
-        'default': 'one', #G
+        'default': 'one',
         'type': str,
-        'help': "'one': one GPU should process as many slices as possible,\n"
+        'help': "'one': one GPU should process as many slices as possible, "
                 "'many': slices should be spread across as many GPUs as possible",
         'choices': ['one', 'many']},
     'projection-margin': {
@@ -521,16 +510,16 @@ SECTIONS['general-reconstruction'] = {
         'help': "By optimization of the read projection region, the read region will be "
                 "[y - margin, y + height + margin]"},
     'slices-per-device': {
-        'default': 0,
+        'default': None,
         'type': restrict_value((0, None), dtype=int),
         'help': "Number of slices computed by one computing device"},
     'gpus': {
-        'default': 0,
+        'default': None,
         'nargs': '+',
         'type': int,
         'help': "GPUs with these indices will be used (0-based)"},
     'burst': {
-        'default': 0,
+        'default': None,
         'type': restrict_value((0, None), dtype=int),
         'help': "Number of projections processed per kernel invocation"},
     'x-region': {
@@ -588,24 +577,24 @@ SECTIONS['general-reconstruction'] = {
         'type': tupleize(dtype=list),
         'help': "Detector rotation around the z axis (vertical) [deg]"},
     'axis-angle-y': {
-        'default': 0, #G
-        'type': float,
+        'default': "0",
+        'type': tupleize(dtype=list),
         'help': "Rotation axis rotation around the y axis (along beam direction) [deg]"},
     'axis-angle-z': {
-        'default': 0.0,
-        'type': float,
+        'default': "0",
+        'type': tupleize(dtype=list),
         'help': "Rotation axis rotation around the z axis (vertical) [deg]"},
     'volume-angle-x': {
-        'default': 0.0,
-        'type': float,
+        'default': "0",
+        'type': tupleize(dtype=list),
         'help': "Volume rotation around the x axis (horizontal) [deg]"},
     'volume-angle-y': {
-        'default': 0.0,
-        'type': float,
+        'default': "0",
+        'type': tupleize(dtype=list),
         'help': "Volume rotation around the y axis (along beam direction) [deg]"},
     'volume-angle-z': {
-        'default': 0.0, #G
-        'type': float,
+        'default': "0",
+        'type': tupleize(dtype=list),
         'help': "Volume rotation around the z axis (vertical) [deg]"},
     'compute-type': {
         'default': 'float',
@@ -624,13 +613,12 @@ SECTIONS['general-reconstruction'] = {
         'help': "Data type of the output volume",
         'choices': ['half', 'float', 'double', 'uchar', 'ushort', 'uint']},
     'overall-angle': {
-        'default': 360, #G
+        'default': None,
         'type': float,
         'help': "The total angle over which projections were taken in degrees"},
     'genreco-padding-mode': {
-        'default': 'clamp',
-        'type': str,
         'choices': ['none', 'clamp', 'clamp_to_edge', 'repeat', 'mirrored_repeat'],
+        'default': 'clamp',
         'help': "Padded values assignment for the filtered projection"},
     'slice-gray-map': {
         'default': "0,0",
@@ -639,7 +627,7 @@ SECTIONS['general-reconstruction'] = {
 
 SECTIONS['find-large-spots'] = {
     'images': {
-        'default': "",
+        'default': None,
         'type': str,
         'help': "Location with input images",
         'metavar': 'PATH'},
@@ -650,7 +638,7 @@ SECTIONS['find-large-spots'] = {
                 "instead of vertical"},
     'gauss-sigma': {
         'default': 0.0,
-        'type': restrict_value((0,None), dtype=float),
+        'type': float,
         'help': "Gaussian sigma for removing low frequencies (filter will be 1 - gauss window)"},
     'vertical-sigma': {
         'default': False,
@@ -659,12 +647,12 @@ SECTIONS['find-large-spots'] = {
                 "(vertical Gaussian profile applied around frequency ky=0 for all kx in a 1 - "
                 "gauss window fashion)"},
     'blurred-output': {
-        'default': "",
+        'default': None,
         'type': str,
         'help': "Path where to store the blurred input"},
     'spot-threshold': {
         'default': 0.0,
-        'type': restrict_value((0,None), dtype=float),
+        'type': float,
         'help': "Pixels with grey value larger than this are considered as spots"},
     'spot-threshold-mode': {
         'default': 'absolute',
@@ -677,9 +665,8 @@ SECTIONS['find-large-spots'] = {
         'type': float,
         'help': "Spot growing threshold, if 0 it will be set to FWTM times noise standard deviation"},
     'find-large-spots-padding-mode': {
-        'default': 'repeat',
-        'type': str,
         'choices': ['none', 'clamp', 'clamp_to_edge', 'repeat', 'mirrored_repeat'],
+        'default': 'repeat',
         'help': "Padded values assignment for the filtered input image"},
     }
 
