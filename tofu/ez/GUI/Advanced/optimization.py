@@ -32,10 +32,12 @@ class OptimizationGroup(QGroupBox):
         self.slice_memory_label.setToolTip(tmpstr)
         self.slice_memory_entry.editingFinished.connect(self.set_slice)
 
-        self.num_GPU_label = QLabel("Number of GPUs")
-        self.num_GPU_entry = QLineEdit()
-        self.num_GPU_entry.setValidator(get_int_validator())
-        self.num_GPU_entry.editingFinished.connect(self.set_num_gpu)
+        self.data_spllitting_policy_label = QLabel("Data Splitting Policy")
+        self.data_spllitting_policy_entry = QLineEdit()
+        self.data_spllitting_policy_label.setToolTip(EZVARS['general-reconstruction']['data-splitting-policy']['help'])
+        self.data_spllitting_policy_entry.setToolTip(EZVARS['general-reconstruction']['data-splitting-policy']['help'])
+        self.data_spllitting_policy_entry.setValidator(get_alphabet_lowercase_validator())
+        self.data_spllitting_policy_entry.editingFinished.connect(self.set_data_splitting_policy)
 
         self.slices_per_device_label = QLabel("Slices per device")
         self.slices_per_device_entry = QLineEdit()
@@ -53,12 +55,14 @@ class OptimizationGroup(QGroupBox):
 
         gpu_group = QGroupBox("GPU optimization")
         gpu_group.setCheckable(True)
-        gpu_group.setChecked(False)
+        gpu_group.setChecked(bool(EZVARS['general-reconstruction']['enable-optimization']['value']))
+        gpu_group.clicked.connect(self.set_enable_optimization)
+        
         gpu_layout = QGridLayout()
         gpu_layout.addWidget(self.slice_memory_label, 0, 0)
         gpu_layout.addWidget(self.slice_memory_entry, 0, 1)
-        gpu_layout.addWidget(self.num_GPU_label, 1, 0)
-        gpu_layout.addWidget(self.num_GPU_entry, 1, 1)
+        gpu_layout.addWidget(self.data_spllitting_policy_label, 1, 0)
+        gpu_layout.addWidget(self.data_spllitting_policy_entry, 1, 1)
         gpu_layout.addWidget(self.slices_per_device_label, 2, 0)
         gpu_layout.addWidget(self.slices_per_device_entry, 2, 1)
         gpu_group.setLayout(gpu_layout)
@@ -70,7 +74,7 @@ class OptimizationGroup(QGroupBox):
     def set_values_from_params(self):
         self.verbose_switch.setChecked(bool(EZVARS['general']['verbose']['value']))
         self.slice_memory_entry.setText(str(EZVARS['general-reconstruction']['slice-memory-coeff']['value']))
-        self.num_GPU_entry.setText(str(EZVARS['general-reconstruction']['num-gpu-threads']['value']))
+        self.data_spllitting_policy_entry.setText(str(EZVARS['general-reconstruction']['data-splitting-policy']['value']))
         self.slices_per_device_entry.setText(str(EZVARS['general-reconstruction']['slices-per-device']['value']))
 
     def set_verbose_switch(self):
@@ -78,20 +82,27 @@ class OptimizationGroup(QGroupBox):
         dict_entry = EZVARS['general']['verbose']
         add_value_to_dict_entry(dict_entry, str(self.verbose_switch.isChecked()))
 
+    def set_enable_optimization(self):
+        checkbox = self.sender()
+        LOG.debug("GPU Optimization: " + str(checkbox.isChecked()))
+        dict_entry = EZVARS['general-reconstruction']['enable-optimization']
+        add_value_to_dict_entry(dict_entry, checkbox.isChecked())
+        
     def set_slice(self):
         LOG.debug(self.slice_memory_entry.text())
         dict_entry = EZVARS['general-reconstruction']['slice-memory-coeff']
         add_value_to_dict_entry(dict_entry, str(self.slice_memory_entry.text()))
         self.slice_memory_entry.setText(str(dict_entry['value']))
-
-    def set_num_gpu(self):
-        LOG.debug(self.num_GPU_entry.text())
-        dict_entry = EZVARS['general-reconstruction']['num-gpu-threads']
-        add_value_to_dict_entry(dict_entry, str(self.num_GPU_entry.text()))
-        self.num_GPU_entry.setText(str(dict_entry['value']))
+        
+    def set_data_splitting_policy(self):
+        LOG.debug(self.data_spllitting_policy_entry.text())
+        dict_entry = EZVARS['general-reconstruction']['data-splitting-policy']
+        add_value_to_dict_entry(dict_entry, str(self.data_spllitting_policy_entry.text()))
+        self.data_spllitting_policy_entry.setText(str(dict_entry['value']))
 
     def set_slices_per_device(self):
         LOG.debug(self.slices_per_device_entry.text())
         dict_entry = EZVARS['general-reconstruction']['slices-per-device']
         add_value_to_dict_entry(dict_entry, str(self.slices_per_device_entry.text()))
         self.slices_per_device_entry.setText(str(dict_entry['value']))
+        

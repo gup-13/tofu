@@ -6,6 +6,7 @@ Created on Apr 6, 2018
 import os
 import numpy as np
 from tofu.ez.ufo_cmd_gen import fmt_in_out_path
+from tofu.ez.params import EZVARS
 
 
 class tofu_cmds(object):
@@ -347,13 +348,15 @@ class tofu_cmds(object):
                               args.main_region_histogram_max)
         cmd = self.check_bigtif(cmd, args.main_config_save_multipage_tiff)
         # Optimization
-        cmd += ' --slice-memory-coeff={}'.format(args.advanced_optimize_slice_mem_coeff)
         if args.advanced_optimize_verbose_console:
             cmd += ' --verbose'
-        if not args.advanced_optimize_num_gpus == '':
-            cmd += ' --gpus {}'.format(args.advanced_optimize_num_gpus)
-        if not args.advanced_optimize_slices_per_device == '':
-            cmd += ' --slices-per-device {}'.format(args.advanced_optimize_slices_per_device)
+        if EZVARS['general-reconstruction']['enable-optimization']['value']: 
+            print("optimizing")
+            cmd += ' --slice-memory-coeff={}'.format(args.advanced_optimize_slice_mem_coeff)        
+            if not args.advanced_optimize_slices_per_device == '':
+                cmd += ' --slices-per-device {}'.format(args.advanced_optimize_slices_per_device)
+            if not args.advanced_data_splitting_policy == '':
+                cmd += ' --data-splitting-policy {}'.format(args.advanced_data_splitting_policy)
         return cmd
 
     def get_reco_cmd_sinFFC(self, ctset, out_pattern, ax, args, nviews, WH, ffc, PR):
@@ -418,11 +421,13 @@ class tofu_cmds(object):
                               args.main_region_histogram_max)
         cmd = self.check_bigtif(cmd, args.main_config_save_multipage_tiff)
         # Optimization
-        cmd += ' --slice-memory-coeff={}'.format(args.advanced_optimize_slice_mem_coeff)
         if args.advanced_optimize_verbose_console:
             cmd += ' --verbose'
-        if not args.advanced_optimize_num_gpus == '':
-            cmd += ' --gpus {}'.format(args.advanced_optimize_num_gpus)
-        if not args.advanced_optimize_slices_per_device == '':
-            cmd += ' --slices-per-device {}'.format(args.advanced_optimize_slices_per_device)
+        if EZVARS['general-reconstruction']['enable-optimization']['value']: 
+            print("optimizing")
+            cmd += ' --slice-memory-coeff={}'.format(args.advanced_optimize_slice_mem_coeff)        
+            if not args.advanced_optimize_slices_per_device == '':
+                cmd += ' --slices-per-device {}'.format(args.advanced_optimize_slices_per_device)
+            if not args.advanced_data_splitting_policy == '':
+                cmd += ' --data-splitting-policy {}'.format(args.advanced_data_splitting_policy)
         return cmd

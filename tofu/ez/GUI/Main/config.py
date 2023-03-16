@@ -789,8 +789,8 @@ class ConfigGroup(QGroupBox):
                            EZVARS['flat-correction']['flat-scale']['value'],
                            EZVARS['general']['verbose']['value'],
                            EZVARS['general-reconstruction']['slice-memory-coeff']['value'],
-                           EZVARS['general-reconstruction']['num-gpu-threads']['value'],
-                           EZVARS['general-reconstruction']['slices-per-device']['value']
+                           EZVARS['general-reconstruction']['slices-per-device']['value'],
+                           EZVARS['general-reconstruction']['data-splitting-policy']['value']
                            )
         
             # #################
@@ -845,7 +845,7 @@ class tk_args():
                 advanced_advtofu_extended_settings,
                 advanced_advtofu_lamino_angle, advanced_adv_tofu_z_axis_rotation, advanced_advtofu_center_position_z, advanced_advtofu_y_axis_rotation,
                 advanced_advtofu_aux_ffc_dark_scale, advanced_advtofu_aux_ffc_flat_scale,
-                advanced_optimize_verbose_console, advanced_optimize_slice_mem_coeff, advanced_optimize_num_gpus, advanced_optimize_slices_per_device):
+                advanced_optimize_verbose_console, advanced_optimize_slice_mem_coeff, advanced_optimize_slices_per_device, advanced_data_splitting_policy):
 
         self.args={}
         # PATHS
@@ -1020,10 +1020,10 @@ class tk_args():
         setattr(self, 'advanced_optimize_verbose_console', self.args['advanced_optimize_verbose_console'])
         self.args['advanced_optimize_slice_mem_coeff'] = str(advanced_optimize_slice_mem_coeff) #EZVARS['general-reconstruction']['slice-memory-coeff']
         setattr(self, 'advanced_optimize_slice_mem_coeff', self.args['advanced_optimize_slice_mem_coeff'])
-        self.args['advanced_optimize_num_gpus'] = str(advanced_optimize_num_gpus)  #EZVARS['general-reconstruction']['data-splitting-policy']
-        setattr(self, 'advanced_optimize_num_gpus', self.args['advanced_optimize_num_gpus'])  # replace by 'data-splitting-policy' !!
-        self.args['advanced_optimize_slices_per_device'] = str(advanced_optimize_slices_per_device)  # 'num-gpu-threads' ??
+        self.args['advanced_optimize_slices_per_device'] = str(advanced_optimize_slices_per_device)  # 'num-gpu-threads' ?? -> I left it as is
         setattr(self, 'advanced_optimize_slices_per_device', self.args['advanced_optimize_slices_per_device'])
+        self.args['advanced_data_splitting_policy'] = str(advanced_data_splitting_policy)  #EZVARS['general-reconstruction']['data-splitting-policy']
+        setattr(self, 'advanced_data_splitting_policy', self.args['advanced_data_splitting_policy'])    # replaced from advanced_optimize_num_gpus
 
         LOG.debug("Contents of arg dict: ")
         LOG.debug(self.args.items())
