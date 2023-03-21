@@ -50,13 +50,16 @@ def genreco(args):
 
     resources = [Ufo.Resources()]
     gpus = np.array(resources[0].get_gpu_nodes())
-    gpu_indices = []
-    if (args.data_splitting_policy == 'one'):
-        gpu_indices = list(range(0,min(1,len(gpus)))) # 0 gpus if none found
-    elif (args.data_splitting_policy == 'many'):
-        gpu_indices = list(range(0,len(gpus)))
-    else:
-        raise ValueError('--data_splitting_policy contains invalid choices')
+    gpu_indices = np.array(args.gpus or list(range(len(gpus))))
+    if min(gpu_indices) < 0 or max(gpu_indices) > len(gpus) - 1:
+        raise ValueError('--gpus contains invalid indices')
+    # gpu_indices = []
+    # if (args.data_splitting_policy == 'one'):
+    #     gpu_indices = list(range(0,min(1,len(gpus)))) # 0 gpus if none found
+    # elif (args.data_splitting_policy == 'many'):
+    #     gpu_indices = list(range(0,len(gpus)))
+    # else:
+    #     raise ValueError('--data_splitting_policy contains invalid choices')
     gpus = gpus[gpu_indices]
     duration = 0
     for i, gpu in enumerate(gpus):
