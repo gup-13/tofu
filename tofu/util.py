@@ -221,6 +221,16 @@ def get_tuple_validator():
     regexp = "[-0-9,.]*"
     return QRegExpValidator(QRegExp(regexp))
 
+def set_dict_entry_to_line_edit(line_edit, dict_entry, debug_tag = "line_edit"):
+    text = line_edit.text().strip()
+    LOG.debug(debug_tag + ": " + text)
+    add_value_to_dict_entry(dict_entry, str(text))
+    line_edit.setText(str(dict_entry['value']))
+    
+def set_dict_entry_to_checkbox(checkbox, dict_entry, debug_tag = "checkbox"):
+    LOG.debug(debug_tag + ": " + str(checkbox.isChecked()))
+    add_value_to_dict_entry(dict_entry, checkbox.isChecked())
+    
 def next_power_of_two(number):
     """Compute the next power of two of the *number*."""
     return 2 ** int(math.ceil(math.log(number, 2)))
