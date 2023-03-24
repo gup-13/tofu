@@ -2,6 +2,7 @@ import logging
 from PyQt5.QtWidgets import QGridLayout, QLabel, QGroupBox, QLineEdit, QCheckBox
 
 from tofu.ez.params import EZVARS
+from tofu.config import SECTIONS
 from tofu.util import add_value_to_dict_entry, get_int_validator, get_double_validator, get_alphabet_lowercase_validator
 
 
@@ -34,15 +35,15 @@ class OptimizationGroup(QGroupBox):
 
         self.data_spllitting_policy_label = QLabel("Data Splitting Policy")
         self.data_spllitting_policy_entry = QLineEdit()
-        self.data_spllitting_policy_label.setToolTip(EZVARS['general-reconstruction']['data-splitting-policy']['help'])
-        self.data_spllitting_policy_entry.setToolTip(EZVARS['general-reconstruction']['data-splitting-policy']['help'])
+        self.data_spllitting_policy_label.setToolTip(SECTIONS['general-reconstruction']['data-splitting-policy']['help'])
+        self.data_spllitting_policy_entry.setToolTip(SECTIONS['general-reconstruction']['data-splitting-policy']['help'])
         self.data_spllitting_policy_entry.setValidator(get_alphabet_lowercase_validator())
         self.data_spllitting_policy_entry.editingFinished.connect(self.set_data_splitting_policy)
 
         self.slices_per_device_label = QLabel("Slices per device")
         self.slices_per_device_entry = QLineEdit()
-        self.slices_per_device_label.setToolTip(EZVARS['general-reconstruction']['slices-per-device']['help'])
-        self.slices_per_device_entry.setToolTip(EZVARS['general-reconstruction']['slices-per-device']['help'])
+        self.slices_per_device_label.setToolTip(SECTIONS['general-reconstruction']['slices-per-device']['help'])
+        self.slices_per_device_entry.setToolTip(SECTIONS['general-reconstruction']['slices-per-device']['help'])
         self.slices_per_device_entry.setValidator(get_int_validator())
         self.slices_per_device_entry.editingFinished.connect(self.set_slices_per_device)
 
@@ -72,14 +73,14 @@ class OptimizationGroup(QGroupBox):
         self.setLayout(layout)
 
     def set_values_from_params(self):
-        self.verbose_switch.setChecked(bool(EZVARS['general']['verbose']['value']))
-        self.slice_memory_entry.setText(str(EZVARS['general-reconstruction']['slice-memory-coeff']['value']))
-        self.data_spllitting_policy_entry.setText(str(EZVARS['general-reconstruction']['data-splitting-policy']['value']))
-        self.slices_per_device_entry.setText(str(EZVARS['general-reconstruction']['slices-per-device']['value']))
+        self.verbose_switch.setChecked(bool(SECTIONS['general']['verbose']['value']))
+        self.slice_memory_entry.setText(str(SECTIONS['general-reconstruction']['slice-memory-coeff']['value']))
+        self.data_spllitting_policy_entry.setText(str(SECTIONS['general-reconstruction']['data-splitting-policy']['value']))
+        self.slices_per_device_entry.setText(str(SECTIONS['general-reconstruction']['slices-per-device']['value']))
 
     def set_verbose_switch(self):
         LOG.debug("Verbose: " + str(self.verbose_switch.isChecked()))
-        dict_entry = EZVARS['general']['verbose']
+        dict_entry = SECTIONS['general']['verbose']
         add_value_to_dict_entry(dict_entry, str(self.verbose_switch.isChecked()))
 
     def set_enable_optimization(self):
@@ -90,19 +91,19 @@ class OptimizationGroup(QGroupBox):
         
     def set_slice(self):
         LOG.debug(self.slice_memory_entry.text())
-        dict_entry = EZVARS['general-reconstruction']['slice-memory-coeff']
+        dict_entry = SECTIONS['general-reconstruction']['slice-memory-coeff']
         add_value_to_dict_entry(dict_entry, str(self.slice_memory_entry.text()))
         self.slice_memory_entry.setText(str(dict_entry['value']))
         
     def set_data_splitting_policy(self):
         LOG.debug(self.data_spllitting_policy_entry.text())
-        dict_entry = EZVARS['general-reconstruction']['data-splitting-policy']
+        dict_entry = SECTIONS['general-reconstruction']['data-splitting-policy']
         add_value_to_dict_entry(dict_entry, str(self.data_spllitting_policy_entry.text()))
         self.data_spllitting_policy_entry.setText(str(dict_entry['value']))
 
     def set_slices_per_device(self):
         LOG.debug(self.slices_per_device_entry.text())
-        dict_entry = EZVARS['general-reconstruction']['slices-per-device']
+        dict_entry = SECTIONS['general-reconstruction']['slices-per-device']
         add_value_to_dict_entry(dict_entry, str(self.slices_per_device_entry.text()))
         self.slices_per_device_entry.setText(str(dict_entry['value']))
         

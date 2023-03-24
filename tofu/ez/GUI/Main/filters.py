@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 
 from tofu.ez.params import EZVARS
+from tofu.config import SECTIONS
 
 from tofu.util import add_value_to_dict_entry, get_int_validator, get_double_validator
 
@@ -180,8 +181,8 @@ class FiltersGroup(QGroupBox):
 
     def set_values_from_params(self):
         self.remove_spots_checkBox.setChecked(EZVARS['filters']['rm_spots']['value'])
-        self.threshold_entry.setText(str(EZVARS['find-large-spots']['spot-threshold']['value']))
-        self.spot_blur_entry.setText(str(EZVARS['find-large-spots']['gauss-sigma']['value']))
+        self.threshold_entry.setText(str(SECTIONS['find-large-spots']['spot-threshold']['value']))
+        self.spot_blur_entry.setText(str(SECTIONS['find-large-spots']['gauss-sigma']['value']))
         self.enable_RR_checkbox.setChecked(EZVARS['RR']['enable']['value'])
         if EZVARS['RR']['use-ufo']['value'] == True:
             self.use_LPF_rButton.setChecked(True)
@@ -207,13 +208,13 @@ class FiltersGroup(QGroupBox):
 
     def set_threshold(self):
         LOG.debug(self.threshold_entry.text())
-        dict_entry = EZVARS['find-large-spots']['spot-threshold']
+        dict_entry = SECTIONS['find-large-spots']['spot-threshold']
         add_value_to_dict_entry(dict_entry, self.threshold_entry.text())
         self.threshold_entry.setText(str(dict_entry['value']))
 
     def set_spot_blur(self):
         LOG.debug(self.spot_blur_entry.text())
-        dict_entry = EZVARS['find-large-spots']['gauss-sigma']
+        dict_entry = SECTIONS['find-large-spots']['gauss-sigma']
         add_value_to_dict_entry(dict_entry, self.spot_blur_entry.text())
         self.spot_blur_entry.setText(str(dict_entry['value']))
 

@@ -2,7 +2,8 @@ import logging
 from PyQt5.QtWidgets import QGridLayout, QLabel, QGroupBox, QLineEdit
 
 from tofu.ez.params import EZVARS
-from tofu.util import add_value_to_dict_entry, get_double_validator
+from tofu.config import SECTIONS
+from tofu.util import add_value_to_dict_entry, get_double_validator, reverse_tupleize
 
 LOG = logging.getLogger(__name__)
 
@@ -89,10 +90,10 @@ class AdvancedGroup(QGroupBox):
 
     def set_values_from_params(self):
         self.lamino_group.setChecked(EZVARS['advanced']['more-reco-params']['value'])
-        self.lamino_angle_entry.setText(str(EZVARS['general-reconstruction']['axis-angle-x']['value']))
-        self.overall_rotation_entry.setText(str(EZVARS['general-reconstruction']['overall-angle']['value']))
-        self.center_position_z_entry.setText(str(EZVARS['general-reconstruction']['center-position-z']['value']))
-        self.axis_rotation_y_entry.setText(str(EZVARS['general-reconstruction']['axis-angle-y']['value']))
+        self.lamino_angle_entry.setText(str(reverse_tupleize()(SECTIONS['cone-beam-weight']['axis-angle-x']['value'])))
+        self.overall_rotation_entry.setText(str(SECTIONS['general-reconstruction']['overall-angle']['value']))
+        self.center_position_z_entry.setText(str(reverse_tupleize()(SECTIONS['cone-beam-weight']['center-position-z']['value'])))
+        self.axis_rotation_y_entry.setText(str(reverse_tupleize()(SECTIONS['general-reconstruction']['axis-angle-y']['value'])))
         self.dark_scale_entry.setText(str(EZVARS['flat-correction']['dark-scale']['value']))
         self.flat_scale_entry.setText(str(EZVARS['flat-correction']['flat-scale']['value']))
 
@@ -103,25 +104,25 @@ class AdvancedGroup(QGroupBox):
 
     def set_lamino_angle(self):
         LOG.debug(self.lamino_angle_entry.text())
-        dict_entry = EZVARS['general-reconstruction']['axis-angle-x']
+        dict_entry = SECTIONS['cone-beam-weight']['axis-angle-x']
         add_value_to_dict_entry(dict_entry, str(self.lamino_angle_entry.text()))
         self.lamino_angle_entry.setText(str(dict_entry['value']))
 
     def set_overall_rotation(self):
         LOG.debug(self.overall_rotation_entry.text())
-        dict_entry = EZVARS['general-reconstruction']['overall-angle']
+        dict_entry = SECTIONS['general-reconstruction']['overall-angle']
         add_value_to_dict_entry(dict_entry, str(self.overall_rotation_entry.text()))
         self.overall_rotation_entry.setText(str(dict_entry['value']))
 
     def set_center_position_z(self):
         LOG.debug(self.center_position_z_entry.text())
-        dict_entry = EZVARS['general-reconstruction']['center-position-z']
+        dict_entry = SECTIONS['cone-beam-weight']['center-position-z']
         add_value_to_dict_entry(dict_entry, str(self.center_position_z_entry.text()))
         self.center_position_z_entry.setText(str(dict_entry['value']))
 
     def set_rotation_about_beam(self):
         LOG.debug(self.axis_rotation_y_entry.text())
-        dict_entry = EZVARS['general-reconstruction']['axis-angle-y']
+        dict_entry = SECTIONS['general-reconstruction']['axis-angle-y']
         add_value_to_dict_entry(dict_entry, str(self.axis_rotation_y_entry.text()))
         self.axis_rotation_y_entry.setText(str(dict_entry['value']))
 

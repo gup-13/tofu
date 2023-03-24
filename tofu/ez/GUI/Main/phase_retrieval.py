@@ -2,6 +2,7 @@ import logging
 from PyQt5.QtWidgets import QGridLayout, QLabel, QGroupBox, QLineEdit, QCheckBox
 
 from tofu.ez.params import EZVARS
+from tofu.config import SECTIONS
 from tofu.util import add_value_to_dict_entry, reverse_tupleize, get_double_validator, get_tuple_validator
 
 LOG = logging.getLogger(__name__)
@@ -64,37 +65,37 @@ class PhaseRetrievalGroup(QGroupBox):
         self.setLayout(layout)
 
     def set_values_from_params(self):
-        self.enable_PR_checkBox.setChecked(EZVARS['retrieve-phase']['enable-phase']['value'])
-        self.photon_energy_entry.setText(str(EZVARS['retrieve-phase']['energy']['value']))
-        self.pixel_size_entry.setText(str(EZVARS['retrieve-phase']['pixel-size']['value']))
-        self.detector_distance_entry.setText(str(reverse_tupleize()(EZVARS['retrieve-phase']['propagation-distance']['value'])))
-        self.delta_beta_ratio_entry.setText(str(EZVARS['retrieve-phase']['regularization-rate']['value']))
+        self.enable_PR_checkBox.setChecked(SECTIONS['retrieve-phase']['enable-phase']['value'])
+        self.photon_energy_entry.setText(str(SECTIONS['retrieve-phase']['energy']['value']))
+        self.pixel_size_entry.setText(str(SECTIONS['retrieve-phase']['pixel-size']['value']))
+        self.detector_distance_entry.setText(str(reverse_tupleize()(SECTIONS['retrieve-phase']['propagation-distance']['value'])))
+        self.delta_beta_ratio_entry.setText(str(SECTIONS['retrieve-phase']['regularization-rate']['value']))
 
     def set_PR(self):
         LOG.debug("PR: " + str(self.enable_PR_checkBox.isChecked()))
-        dict_entry = EZVARS['retrieve-phase']['enable-phase']
+        dict_entry = SECTIONS['retrieve-phase']['enable-phase']
         add_value_to_dict_entry(dict_entry, self.enable_PR_checkBox.isChecked())
 
     def set_photon_energy(self):
         LOG.debug(self.photon_energy_entry.text())
-        dict_entry = EZVARS['retrieve-phase']['energy']
+        dict_entry = SECTIONS['retrieve-phase']['energy']
         add_value_to_dict_entry(dict_entry, str(self.photon_energy_entry.text()))
         self.photon_energy_entry.setText(str(dict_entry['value']))
 
     def set_pixel_size(self):
         LOG.debug(self.pixel_size_entry.text())
-        dict_entry = EZVARS['retrieve-phase']['pixel-size']
+        dict_entry = SECTIONS['retrieve-phase']['pixel-size']
         add_value_to_dict_entry(dict_entry, str(self.pixel_size_entry.text()))
         self.pixel_size_entry.setText(str(dict_entry['value']))
 
     def set_detector_distance(self):
         LOG.debug(self.detector_distance_entry.text())
-        dict_entry = EZVARS['retrieve-phase']['propagation-distance']
+        dict_entry = SECTIONS['retrieve-phase']['propagation-distance']
         add_value_to_dict_entry(dict_entry, str(self.detector_distance_entry.text()))
         self.detector_distance_entry.setText(str(reverse_tupleize()(dict_entry['value'])))
 
     def set_delta_beta(self):
         LOG.debug(self.delta_beta_ratio_entry.text())
-        dict_entry = EZVARS['retrieve-phase']['regularization-rate']
+        dict_entry = SECTIONS['retrieve-phase']['regularization-rate']
         add_value_to_dict_entry(dict_entry, str(self.delta_beta_ratio_entry.text()))
         self.delta_beta_ratio_entry.setText(str(dict_entry['value']))

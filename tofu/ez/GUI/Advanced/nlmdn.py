@@ -331,7 +331,7 @@ class NLMDNGroup(QGroupBox):
             dialog = QMessageBox.warning(self, title_text, text1, QMessageBox.Yes | QMessageBox.No)
             if dialog == QMessageBox.Yes:
                 main_tk(args)#, EZVARS['inout']['clip_hist']['value'],
-                             # EZVARS['general']['output-bitdepth']['value'])
+                             # SECTIONS['general']['output-bitdepth']['value'])
                 QMessageBox.information(self, "Finished", "Finished")
         else:
             main_tk(args)
