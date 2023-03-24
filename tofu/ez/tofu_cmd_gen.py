@@ -350,7 +350,7 @@ class tofu_cmds(object):
         # Optimization
         if args.advanced_optimize_verbose_console:
             cmd += ' --verbose'
-        if EZVARS['general-reconstruction']['enable-optimization']['value']: 
+        if EZVARS['advanced']['enable-optimization']['value']: 
             print("optimizing")
             cmd += ' --slice-memory-coeff={}'.format(args.advanced_optimize_slice_mem_coeff)        
             if not args.advanced_optimize_slices_per_device == '':
@@ -423,7 +423,7 @@ class tofu_cmds(object):
         # Optimization
         if args.advanced_optimize_verbose_console:
             cmd += ' --verbose'
-        if EZVARS['general-reconstruction']['enable-optimization']['value']: 
+        if EZVARS['advanced']['enable-optimization']['value']: 
             print("optimizing")
             cmd += ' --slice-memory-coeff={}'.format(args.advanced_optimize_slice_mem_coeff)        
             if not args.advanced_optimize_slices_per_device == '':

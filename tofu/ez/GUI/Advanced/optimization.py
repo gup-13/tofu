@@ -55,7 +55,7 @@ class OptimizationGroup(QGroupBox):
 
         gpu_group = QGroupBox("GPU optimization")
         gpu_group.setCheckable(True)
-        gpu_group.setChecked(bool(EZVARS['general-reconstruction']['enable-optimization']['value']))
+        gpu_group.setChecked(bool(EZVARS['advanced']['enable-optimization']['value']))
         gpu_group.clicked.connect(self.set_enable_optimization)
         
         gpu_layout = QGridLayout()
@@ -85,7 +85,7 @@ class OptimizationGroup(QGroupBox):
     def set_enable_optimization(self):
         checkbox = self.sender()
         LOG.debug("GPU Optimization: " + str(checkbox.isChecked()))
-        dict_entry = EZVARS['general-reconstruction']['enable-optimization']
+        dict_entry = EZVARS['advanced']['enable-optimization']
         add_value_to_dict_entry(dict_entry, checkbox.isChecked())
         
     def set_slice(self):

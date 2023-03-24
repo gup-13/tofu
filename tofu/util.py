@@ -180,16 +180,17 @@ def reverse_tupleize(num_items=None, conv=float):
     return combine_to_string
 
 def add_value_to_dict_entry(dict_entry, param_value_str):
+    """Add a value to a dictionary entry. An empty string will insert the ezdefault value"""
     #print(dict_entry, param_value_str, dict_entry['default'])
     if 'action' in dict_entry:
         # no 'type' can be defined in dictionary entries with 'action' key
         dict_entry['value'] = bool(param_value_str)
     elif param_value_str == '':
         # takes default value if empty string
-        if dict_entry['default'] is None:
-            dict_entry['value'] = dict_entry['default']
+        if dict_entry['ezdefault'] is None:
+            dict_entry['value'] = dict_entry['ezdefault']
         else:    
-            dict_entry['value'] = dict_entry['type'](dict_entry['default'])
+            dict_entry['value'] = dict_entry['type'](dict_entry['ezdefault'])
     else:
         try:
             dict_entry['value'] = dict_entry['type'](param_value_str)
@@ -200,36 +201,47 @@ def add_value_to_dict_entry(dict_entry, param_value_str):
     print("Input: ", param_value_str, "; Dict value: ", dict_entry['value'])
 
 def get_ascii_validator():
+    """Returns a validator that only allows the input of visible ASCII characters"""
     regexp = "[-A-Za-z0-9_]*"
     return QRegExpValidator(QRegExp(regexp))
 
 def get_alphabet_lowercase_validator():
+    """Returns a validator that only allows the input of lowercase ASCII characters"""
     regexp = "[a-z]*"
     return QRegExpValidator(QRegExp(regexp))
 
 def get_int_validator():
+    """Returns a validator that only allows the input of integers"""
     # Note: QIntValidator allows commas, which is undesirable
     regexp = "[\-]?[0-9]*"
     return QRegExpValidator(QRegExp(regexp))
 
 def get_double_validator():
+    """Returns a validator that only allows the input of floating point number"""
     # Note: QDoubleValidator allows commas before period, which is undesirable
     regexp = "[\-]?[0-9]*[.]?[0-9]*"
     return QRegExpValidator(QRegExp(regexp))
 
 def get_tuple_validator():
+    """Returns a validator that only allows a tuple of floating point numbers"""
     regexp = "[-0-9,.]*"
     return QRegExpValidator(QRegExp(regexp))
 
 def set_dict_entry_to_line_edit(line_edit, dict_entry, debug_tag = "line_edit"):
+    """Generalized function for QLineEdit widgets that store values in a dictionary entry"""
     text = line_edit.text().strip()
     LOG.debug(debug_tag + ": " + text)
     add_value_to_dict_entry(dict_entry, str(text))
     line_edit.setText(str(dict_entry['value']))
     
 def set_dict_entry_to_checkbox(checkbox, dict_entry, debug_tag = "checkbox"):
+    """Generalized function for QCheckbox widgets that store values in a dictionary entry"""
     LOG.debug(debug_tag + ": " + str(checkbox.isChecked()))
     add_value_to_dict_entry(dict_entry, checkbox.isChecked())
+    
+def get_dict_without_keys(d, keys):
+    """Returns a new dictionary entry without the selected group of keys"""
+    return {k: v for k, v in d.items() if k not in keys}
     
 def next_power_of_two(number):
     """Compute the next power of two of the *number*."""

@@ -71,7 +71,7 @@ MAP_TABLE = [
     ['main_filters_ring_removal_sarepy_SNR','ezvars','RR','spy-wide-SNR'],                      #EZVARS['RR']['spy-wide-SNR'] int
     
     # phase retrieval
-    ['main_pr_phase_retrieval','sections','retrieve-phase','enable'],                   #SECTIONS['retrieve-phase']['enable'] bool -> (N/A)
+    ['main_pr_phase_retrieval','sections','retrieve-phase','enable-phase'],                   #SECTIONS['retrieve-phase']['enable-phase'] bool -> (N/A)
     ['main_pr_photon_energy','sections','retrieve-phase','energy'],                     #SECTIONS['retrieve-phase']['energy'] int -> float
     ['main_pr_pixel_size','sections','retrieve-phase','pixel-size'],                    #SECTIONS['retrieve-phase']['pixel-size'] float -> float
     ['main_pr_detector_distance','sections','retrieve-phase','propagation-distance'],   #SECTIONS['retrieve-phase']['propagation-distance'] float ->'tupleize()'
@@ -165,178 +165,178 @@ EZVARS = OrderedDict()
 
 EZVARS['inout'] = {
     'input-dir': {
-        'default': "/Users/gup/Personal/Documents/Image-Data/Reduced-head-neck-nolmndn/TestCTset/z01", 
+        'ezdefault': "/Users/gup/Personal/Documents/Image-Data/Reduced-head-neck-nolmndn/TestCTset/z01", 
         'type': str, 
         'help': "TODO"},
     'output-dir': {
-        'default': "/Users/gup/Personal/Documents/Image-Data/output", 
+        'ezdefault': "/Users/gup/Personal/Documents/Image-Data/output", 
         'type': str, 
         'help': "TODO"},
     'tmp-dir' : {
-        'default': os.path.join(os.path.expanduser('~'),"tmp-ezufo"), #G
+        'ezdefault': os.path.join(os.path.expanduser('~'),"tmp-ezufo"), #G
         'type': str, 
         'help': "TODO-updated Default"},
     'darks-dir': {
-        'default': "darks", #G
+        'ezdefault': "darks", #G
         'type': str, 
         'help': "TODO-updated Default"},
     'flats-dir': {
-        'default': "flats", #G
+        'ezdefault': "flats", #G
         'type': str, 
         'help': "TODO-updated Default"},
     'tomo-dir': {
-        'default': "tomo", #G
+        'ezdefault': "tomo", #G
         'type': str, 
         'help': "TODOç"},
     'flats2-dir': {
-        'default': "flats2", #G
+        'ezdefault': "flats2", #G
         'type': str, 
         'help': "TODO-updated Default"},
     'bigtiff-output': {
-        'default': False, #G 
+        'ezdefault': False, #G 
         'type': bool, 
         'help': "TODO"},
     'input_ROI': {
-        'default': False, #G
+        'ezdefault': False, #G
         'type': bool, 
         'help': "TODO"},
     'clip_hist': {
-        'default': False, #G
+        'ezdefault': False, #G
         'type': bool, 
         'help': "TODO"},
     'preprocess': {
-        'default': False, 
+        'ezdefault': False, 
         'type': bool, 
         'help': "TODO-updated Default"},
     'preprocess-command': {
-        'default': "remove-outliers size=3 threshold=500 sign=1", 
+        'ezdefault': "remove-outliers size=3 threshold=500 sign=1", 
         'type': str, 
         'help': "TODO-updated Default"},
     'output-ROI': {
-        'default': False, #G
+        'ezdefault': False, #G
         'type': bool, 
         'help': "TODO"},
     'output-x': {
-        'default': 0, #G
+        'ezdefault': 0, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "Crop slices: x"},
     'output-width': {
-        'default': 0, #G
+        'ezdefault': 0, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "Crop slices: width"},
     'output-y': {
-        'default': 0, #G
+        'ezdefault': 0, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "Crop slices: y"},
     'output-height': {
-        'default': 0, #G
+        'ezdefault': 0, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "Crop slices: height"},
     'dryrun': {
-        'default': False, 
+        'ezdefault': False, 
         'type': bool, 
         'help': "TODO-updated Default"},
     'save-params': {
-        'default': True, 
+        'ezdefault': True, 
         'type': bool, 
         'help': "TODO-updated Default"},
     'keep-tmp': {
-        'default': False, 
+        'ezdefault': False, 
         'type': bool, 
         'help': "TODO-updated Default"},
     'open-viewer': {
-        'default': False, 
+        'ezdefault': False, 
         'type': bool, 
         'help': "TODO-updated Default"},
     'shared-flatsdarks': {
-        'default': False, 
+        'ezdefault': False, 
         'type': bool, 
         'help': "TODO-updated Default"},
     'path2-shared-darks': {
-        'default': "Absolute path to darks", 
+        'ezdefault': "Absolute path to darks", 
         'type': str, 
         'help': "TODO-updated Default"},
     'path2-shared-flats': {
-        'default': "Absolute path to flats", 
+        'ezdefault': "Absolute path to flats", 
         'type': str, 
         'help': "TODO"},
     'shared-flats-after': {
-        'default': False, 
+        'ezdefault': False, 
         'type': bool, 
         'help': "TODO-updated Default"},
     'path2-shared-flats-after': {
-        'default': "Absolute path to flats2", 
+        'ezdefault': "Absolute path to flats2", 
         'type': str, 
         'help': "TODO-updated Default"},
 }
 
 EZVARS['COR'] = {
     'search-method': {
-        'default': 1, #G
+        'ezdefault': 1, #G
         'type': int, 
         'help': "TODO"},
     'search-interval': {
-        'default': "1010,1030,0.5", #G
+        'ezdefault': "1010,1030,0.5", #G
         'type': str, 
         'help': "TODO"},
     'patch-size': {
-        'default': 256, #G
+        'ezdefault': 256, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "Size of reconstructed patch [pixel]"},
     'search-row': {
-        'default': 100, #G
+        'ezdefault': 100, #G
         'type': restrict_value((0,None), dtype=int), 
         'help': "Search in slice from row number"},
     'user-defined-ax': {
-        'default': 0.0, #G
+        'ezdefault': 0.0, #G
         'type': restrict_value((0,None),dtype=float), 
         'help': "Axis is in column No [pixel]"},
     'user-defined-dax': {
-        'default': 0.0, #G
+        'ezdefault': 0.0, #G
         'type': float, 
         'help': "TODO"},
 }
 
 EZVARS['filters'] = {'rm_spots': {
-        'default': False, #G
+        'ezdefault': False, #G
         'type': bool, 
         'help': "TODO-G"}}
 
 EZVARS['RR'] = {
     'enable': {
-        'default': False, #G
+        'ezdefault': False, #G
         'type': bool, 
         'help': "TODO-G"},
     'use-ufo': {
-        'default': True, #G
+        'ezdefault': True, #G
         'type': bool, 
         'help': "TODO-G"},
     'ufo-2d': {
-        'default': False, #G 
+        'ezdefault': False, #G 
         'type': bool, 
         'help': "TODO"},
     'sx': {
-        'default': 0, 
+        'ezdefault': 0, 
         'type': restrict_value((0,None),dtype=int), 
         'help': "ufo ring-removal sigma horizontal"},
     'sy': {
-        'default': 0, 
+        'ezdefault': 0, 
         'type': restrict_value((0,None),dtype=int), 
         'help': "ufo ring-removal sigma vertical"},
     'spy-narrow-window': {
-        'default': 21, #G
+        'ezdefault': 21, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "window size"},
     'spy-rm-wide': {
-        'default': False, #G
+        'ezdefault': False, #G
         'type': bool, 
         'help': "TODO"},
     'spy-wide-window': {
-        'default': 91, #G 
+        'ezdefault': 91, #G 
         'type': restrict_value((0,None),dtype=int), 
         'help': "wind"},
     'spy-wide-SNR': {
-        'default': 3, #G 
+        'ezdefault': 3, #G 
         'type': restrict_value((0,None),dtype=int), 
         'help': "SNR"},
 }
@@ -345,86 +345,86 @@ EZVARS['RR'] = {
 #TODO ADD CHECKING FOR ADVANCED SETTINGS
 EZVARS['flat-correction'] = {
     'smart-ffc': {
-        'default': False, #G
+        'ezdefault': False, #G
         'type': bool, 
         'help': "TODO"},
     'smart-ffc-method': {
-        'default': "eigen", #G
+        'ezdefault': "eigen", #G
         'type': str, 
         'help': "TODO"},
     'eigen-pco-reps': {
-        'default': 4, #G
+        'ezdefault': 4, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "Flat Field Correction: Eigen PCO Repetitions"},
     'eigen-pco-downsample': {
-        'default': 2, #G
+        'ezdefault': 2, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "Flat Field Correction: Eigen PCO Downsample"},
     'downsample': {
-        'default': 4, #G
+        'ezdefault': 4, #G
         'type': restrict_value((0,None),dtype=int), 
         'help': "Flat Field Correction: Downsample"},
     'dark-scale': {
-        'default': 1.0, #G
+        'ezdefault': 1.0, #G
         'type': float, 
         'help': "Scaling dark"}, #(?) has the same name in SECTION
     'flat-scale': {
-        'default': 1.0, #G
+        'ezdefault': 1.0, #G
         'type': float, 
         'help': "Scaling falt"}, #(?) has the same name in SECTION
 }
 
 EZVARS['nlmdn'] = {
     'do-after-reco': {
-        'default': False, #G
+        'ezdefault': False, #G
         'type': bool, 
         'help': "TODO"},
     'input-dir': {
-        'default': os.getcwd(), #G
+        'ezdefault': os.getcwd(), #G
         'type': str, 
         'help': "TODO"},
     'input-is-1file': {
-        'default': False, 
+        'ezdefault': False, 
         'type': bool, 
         'help': "TODO"},
     'output_pattern': {
-        'default': os.getcwd() + '-nlmfilt', #G
+        'ezdefault': os.getcwd() + '-nlmfilt', #G
         'type': str, 
         'help': "TODO"},
     'bigtiff_output': {
-        'default': False, #G
+        'ezdefault': False, #G
         'type': bool, 
         'help': "TODO-updated Default"},
     'search-radius': {
-        'default': 10, #G
+        'ezdefault': 10, #G
         'type': int, 
         'help': "TODO"},
     'patch-radius': {
-        'default': "3", #G
+        'ezdefault': "3", #G
         'type': int, 
         'help': "TODO"},
     'h': {
-        'default': 0.0, #G
+        'ezdefault': 0.0, #G
         'type': float, 
         'help': "TODO"},
     'sigma': {
-        'default': 0.0, #G
+        'ezdefault': 0.0, #G
         'type': float, 
         'help': "TODO"},
     'window': {
-        'default': 0.0, #G
+        'ezdefault': 0.0, #G
         'type': float, 
         'help': "TODO"},
     'fast': {
-        'default': True, #G
+        'ezdefault': True, #G
         'type': bool, 
         'help': "TODO"},
     'estimate-sigma': {
-        'default': False, #G
+        'ezdefault': False, #G
         'type': bool, 
         'help': "TODO"},
     'dryrun': {
-        'default': False, #G
+        'ezdefault': False, #G
         'type': bool, 
         'help': "TODO"},
 }
@@ -432,82 +432,87 @@ EZVARS['nlmdn'] = {
 
 EZVARS['advanced'] = {
     'more-reco-params': {
-        'default': False, #G
+        'ezdefault': False, #G
         'type': bool, 
         'help': "TODO"},
     'parameter-type': {
-        'default': "", 
+        'ezdefault': "", 
         'type': str, 
-        'help': "TODO"}
+        'help': "TODO"},
+    'enable-optimization': {
+        'ezdefault': False,
+        'type': bool,
+        'help': "TODO"
+    }   
 }
 
 EZVARS['find-large-spots'] = {
     'gauss-sigma': {
-        'default': 0.0,
+        'ezdefault': 0.0,
         'type': restrict_value((0,None), dtype=float),
         'help': "Gaussian sigma for removing low frequencies (filter will be 1 - gauss window)"},
     'spot-threshold': {
-        'default': 0.0,
+        'ezdefault': 0.0,
         'type': restrict_value((0,None), dtype=float),
         'help': "Pixels with grey value larger than this are considered as spots"},
 }
 
 EZVARS['retrieve-phase'] = {
-    'enable': {
-        'default': False, #G
+    'enable-phase': {
+        'ezdefault': False, #G
         'type': bool,
         'help': "Enable phase retrieval"},
     'energy': {
-        'default': 20, #G
+        'ezdefault': 20, #G
         'type': restrict_value((0,None),dtype=float),
         'help': "Photon energy [keV]"},
     'pixel-size': {
-        'default': 3.6, #G
+        'ezdefault': 3.6, #G
         'type': restrict_value((0,None),dtype=float),
         'help': "Pixel size [micron]"},
     'propagation-distance': {
-        'default': "0.1", #G
+        'ezdefault': "0.1", #G
         'type': restrict_tupleize((0,None)),
         'help': ("Sample <-> detector distance (if one value, then use the same for x and y "
                  "direction, otherwise first specifies x and second y direction) [m]")},
     'regularization-rate': {
-        'default': 200, #G - (!) - mismatch from help. Orignally 2. 
+        'ezdefault': 200, #G - (!) - mismatch from help. Orignally 2. 
         'type': restrict_value((0,None),dtype=float),
         'help': "Regularization rate (typical values between [2, 3])"}
 }
 
 EZVARS['reading'] = {
     'y': {
-        'default': 100, #G
+        'ezdefault': 100, #G
         'type': restrict_value((0, None), dtype=int),
         'help': 'Vertical coordinate from where to start reading the input image'},
     'height': {
-        'default': 200, #G
+        'ezdefault': 200, #G
         'type': restrict_value((0, None), dtype=int),
         'help': "Number of rows which will be read (ROI height)"},
     'y-step': {
-        'default': 20, #G
+        'ezdefault': 20, #G
         'type': restrict_value((0, None), dtype=int),
         'help': "Read every \"step\" row from the input"}    
 }
 
 EZVARS['general'] = {
     'verbose': {
-        'default': False, #G
+        'ezdefault': False, #G
         'help': 'Verbose output',
         'action': 'store_true'},
     'output-bitdepth': {
-        'default': 8, #G - original: 32
+        'ezdefault': 8, #G - original: 32
         'type': restrict_value((0, None), dtype=int),
         'help': "Bit depth of output, either 8, 16 or 32",
         'metavar': 'BITDEPTH'},
     'output-minimum': {
-        'default': 0.0, #G
+        'ezdefault': 0.0, #G
         'type': float,
         'help': "Minimum value that maps to zero",
         'metavar': 'MIN'},
     'output-maximum': {
-        'default': 0.0, #G
+        'ezdefault': 0.0, #G
         'type': float,
         'help': "Maximum input value that maps to largest output value",
         'metavar': 'MAX'},
@@ -516,50 +521,104 @@ EZVARS['general'] = {
 
 EZVARS['general-reconstruction'] = {
     'center-position-z': {
-        'default': 0, #G
+        'ezdefault': 0, #G
         'type': float,
         'help': "Z rotation axis position on a projection [pixels]"},
     'axis-angle-x': {   
-        'default': 30, #G
+        'ezdefault': 30, #G
         'type': float,
         'help': "Rotation axis rotation around the x axis"
                 "(laminographic angle, 0 = tomography) [deg]"},
     'volume-angle-z': {
-        'default': 0.0, #G
-        'type': float,
+        'ezdefault': 0.0, #G
+        'type': float, #TUPLE
         'help': "Volume rotation around the z axis (vertical) [deg]"},
     'overall-angle': {
-        'default': 360, #G
+        'ezdefault': 360, #G
         'type': float,
         'help': "The total angle over which projections were taken in degrees"},
     'axis-angle-y': {
-        'default': 0, #G
-        'type': float,
+        'ezdefault': 0, #G
+        'type': float, #TUPLE
         'help': "Rotation axis rotation around the y axis (along beam direction) [deg]"},
     'slice-memory-coeff': {
-        'default': 0.7, #G - original: 0.8
+        'ezdefault': 0.7, #G - original: 0.8
         'type': restrict_value((0.01, 0.95)),
         'help': "Portion of the GPU memory used for slices (from 0.01 to 0.9) [fraction]. "
                 "The total amount of consumed memory will be larger depending on the "
                 "complexity of the graph. In case of OpenCL memory allocation errors, "
                 "try reducing this value."},
     'num-gpu-threads': {
-        'default': 1, #G
+        'ezdefault': 1, #G
         'type': restrict_value((1, None), dtype=int),
         'help': "Number of parallel reconstruction threads on one GPU"},
     'slices-per-device': {
-        'default': 0,
+        'ezdefault': 0,
         'type': restrict_value((0, None), dtype=int),
         'help': "Number of slices computed by one computing device"},
     'data-splitting-policy': {
-        'default': 'one', #G
+        'ezdefault': 'one', #G
         'type': str,
         'help': "'one': one GPU should process as many slices as possible,\n"
                 "'many': slices should be spread across as many GPUs as possible",
         'choices': ['one', 'many']},
-    'enable-optimization': {
-        'default': False,
-        'type': bool,
-        'help': "TODO"
-    }   
 }
+
+# ##################
+
+# EZVARS['find-large-spots']['gauss-sigma']
+# EZVARS['find-large-spots']['spot-threshold']
+
+# EZVARS['retrieve-phase']['enable-phase']
+# EZVARS['retrieve-phase']['energy']
+# EZVARS['retrieve-phase']['pixel-size']
+# EZVARS['retrieve-phase']['propagation-distance']
+# EZVARS['retrieve-phase']['regularization-rate'
+
+# EZVARS['reading']['y']
+# EZVARS['reading']['height']
+# EZVARS['reading']['y-step']
+
+# EZVARS['general']['verbose']
+# EZVARS['general']['output-bitdepth']
+# EZVARS['general']['output-minimum']
+# EZVARS['general']['output-maximum'
+
+# EZVARS['general-reconstruction']['center-position-z']
+# EZVARS['general-reconstruction']['axis-angle-x']
+# EZVARS['general-reconstruction']['volume-angle-z']
+# EZVARS['general-reconstruction']['overall-angle']
+# EZVARS['general-reconstruction']['axis-angle-y']
+# EZVARS['general-reconstruction']['slice-memory-coeff']
+# EZVARS['general-reconstruction']['num-gpu-threads']
+# EZVARS['general-reconstruction']['slices-per-device']
+# EZVARS['general-reconstruction']['data-splitting-policy']
+# ##############################
+
+# SECTIONS['find-large-spots']['gauss-sigma']
+# SECTIONS['find-large-spots']['spot-threshold']
+
+# SECTIONS['retrieve-phase']['enable-phase']
+# SECTIONS['retrieve-phase']['energy']
+# SECTIONS['retrieve-phase']['pixel-size']
+# SECTIONS['retrieve-phase']['propagation-distance']
+# SECTIONS['retrieve-phase']['regularization-rate'
+
+# SECTIONS['reading']['y']
+# SECTIONS['reading']['height']
+# SECTIONS['reading']['y-step']
+
+# SECTIONS['general']['verbose']
+# SECTIONS['general']['output-bitdepth']
+# SECTIONS['general']['output-minimum']
+# SECTIONS['general']['output-maximum'
+
+# SECTIONS['general-reconstruction']['center-position-z']
+# SECTIONS['general-reconstruction']['axis-angle-x']
+# SECTIONS['general-reconstruction']['volume-angle-z']
+# SECTIONS['general-reconstruction']['overall-angle']
+# SECTIONS['general-reconstruction']['axis-angle-y']
+# SECTIONS['general-reconstruction']['slice-memory-coeff']
+# SECTIONS['general-reconstruction']['num-gpu-threads']
+# SECTIONS['general-reconstruction']['slices-per-device']
+# SECTIONS['general-reconstruction']['data-splitting-policy']

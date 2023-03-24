@@ -723,7 +723,7 @@ class ConfigGroup(QGroupBox):
                            EZVARS['RR']['spy-rm-wide']['value'],
                            EZVARS['RR']['spy-wide-window']['value'],
                            EZVARS['RR']['spy-wide-SNR']['value'],
-                           EZVARS['retrieve-phase']['enable']['value'],
+                           EZVARS['retrieve-phase']['enable-phase']['value'],
                            EZVARS['retrieve-phase']['energy']['value'],
                            EZVARS['retrieve-phase']['pixel-size']['value'],
                            EZVARS['retrieve-phase']['propagation-distance']['value'][0],  #(?) Not sure what to do with y-direction

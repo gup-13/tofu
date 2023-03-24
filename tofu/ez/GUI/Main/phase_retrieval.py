@@ -64,7 +64,7 @@ class PhaseRetrievalGroup(QGroupBox):
         self.setLayout(layout)
 
     def set_values_from_params(self):
-        self.enable_PR_checkBox.setChecked(EZVARS['retrieve-phase']['enable']['value'])
+        self.enable_PR_checkBox.setChecked(EZVARS['retrieve-phase']['enable-phase']['value'])
         self.photon_energy_entry.setText(str(EZVARS['retrieve-phase']['energy']['value']))
         self.pixel_size_entry.setText(str(EZVARS['retrieve-phase']['pixel-size']['value']))
         self.detector_distance_entry.setText(str(reverse_tupleize()(EZVARS['retrieve-phase']['propagation-distance']['value'])))
@@ -72,7 +72,7 @@ class PhaseRetrievalGroup(QGroupBox):
 
     def set_PR(self):
         LOG.debug("PR: " + str(self.enable_PR_checkBox.isChecked()))
-        dict_entry = EZVARS['retrieve-phase']['enable']
+        dict_entry = EZVARS['retrieve-phase']['enable-phase']
         add_value_to_dict_entry(dict_entry, self.enable_PR_checkBox.isChecked())
 
     def set_photon_energy(self):
