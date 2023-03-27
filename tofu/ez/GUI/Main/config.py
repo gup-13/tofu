@@ -761,7 +761,7 @@ class ConfigGroup(QGroupBox):
                            # NLMDN Parameters
                            EZVARS['nlmdn']['do-after-reco']['value'],
                            EZVARS['nlmdn']['input-dir']['value'],
-                           EZVARS['nlmdn']['input-is-1file']['value'],
+                           EZVARS['nlmdn']['input-is-1file']['value'],  #unused?
                            EZVARS['nlmdn']['output_pattern']['value'],
                            EZVARS['nlmdn']['bigtiff_output']['value'],
                            EZVARS['nlmdn']['search-radius']['value'],

@@ -6,6 +6,8 @@ Created on Apr 6, 2018
 import glob
 import os
 from tofu.util import next_power_of_two
+from tofu.ez.params import EZVARS
+from tofu.config import SECTIONS
 
 from tofu.ez.util import enquote
 
@@ -57,11 +59,11 @@ class ufo_cmds(object):
         if flats2 - 3:
             indir.append(os.path.join(lvl0, self._fdt_names[3]))
         # If using common flats/darks/flats2 across multiple reconstructions
-        if args.main_config_common_flats_darks and not self.common_fd_used:
-            indir[0] = args.main_config_darks_path
-            indir[1] = args.main_config_flats_path
-            if args.main_config_flats2_checkbox:
-                indir[3] = args.main_config_flats2_path
+        if EZVARS['inout']['shared-flatsdarks']['value'] and not self.common_fd_used:
+            indir[0] = EZVARS['inout']['path2-shared-darks']['value']
+            indir[1] = EZVARS['inout']['path2-shared-flats']['value']
+            if EZVARS['inout']['shared-flats-after']['value']:
+                indir[3] = EZVARS['inout']['path2-shared-flats-after']['value']
             self.common_fd_used = True
         return indir
 
@@ -90,8 +92,8 @@ class ufo_cmds(object):
         return cmd
 
     def get_pr_ufo_cmd(self, args, nviews, WH):
-        # in_proj_dir, out_pattern = fmt_in_out_path(args.main_config_temp_dir,args.main_config_input_dir,self._fdt_names[2])
-        in_proj_dir, out_pattern = fmt_in_out_path(args.main_config_temp_dir,
+        # in_proj_dir, out_pattern = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'],EZVARS['inout']['input-dir']['value'],self._fdt_names[2])
+        in_proj_dir, out_pattern = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'],
                                                    "quatsch", self._fdt_names[2])
         cmds = []
         pad_width = next_power_of_two(WH[1] + 50)
@@ -103,15 +105,15 @@ class ufo_cmds(object):
         cmd += ' addressing-mode=clamp_to_edge'
         cmd += ' ! fft dimensions=2 ! retrieve-phase'
         cmd += ' energy={} distance={} pixel-size={} regularization-rate={:0.2f}' \
-            .format(args.main_pr_photon_energy, args.main_pr_detector_distance,
-                    args.main_pr_pixel_size, args.main_pr_delta_beta_ratio)
+            .format(SECTIONS['retrieve-phase']['energy']['value'], SECTIONS['retrieve-phase']['propagation-distance']['value'][0],
+                    SECTIONS['retrieve-phase']['pixel-size']['value'], SECTIONS['retrieve-phase']['regularization-rate']['value'])
         cmd += ' ! ifft dimensions=2 crop-width={} crop-height={}' \
             .format(pad_width, pad_height)
         cmd += ' ! crop x={} width={} y={} height={}'.format(pad_x, WH[1], pad_y, WH[0])
         cmd += ' ! opencl kernel=\'absorptivity\' ! opencl kernel=\'fix_nan_and_inf\' !'
         cmd += ' write filename={}'.format(enquote(out_pattern))
         cmds.append(cmd)
-        if not args.main_config_keep_temp:
+        if not EZVARS['inout']['keep-tmp']['value']:
             cmds.append('rm -rf {}'.format(in_proj_dir))
         return cmds
 
@@ -175,13 +177,13 @@ class ufo_cmds(object):
         # generate mask
         cmd = 'tofu find-large-spots --images {}'.format(flat1_file)
         cmd += ' --spot-threshold {} --gauss-sigma {}'.format(
-                        args.main_filters_remove_spots_threshold,
-                        args.main_filters_remove_spots_blur_sigma)
+                        SECTIONS['find-large-spots']['spot-threshold']['value'],
+                        SECTIONS['find-large-spots']['gauss-sigma']['value'])
         cmd += ' --output {} --output-bytes-per-file 0'.format(mask_file)
         cmds.append(cmd)
         ######### FLAT-CORRECT #########
-        in_proj_dir, out_pattern = fmt_in_out_path(args.main_config_temp_dir, ctset[0], self._fdt_names[2])
-        if args.advanced_ffc_sinFFC:
+        in_proj_dir, out_pattern = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'], ctset[0], self._fdt_names[2])
+        if EZVARS['flat-correction']['smart-ffc']['value']:
             cmd = 'bmit_sin --fix-nan'
             cmd += ' --darks {} --flats {}'.format(indir[0], indir[1])
             cmd += ' --projections {}'.format(in_proj_dir)
@@ -191,49 +193,49 @@ class ufo_cmds(object):
             if ctset[1] == 4:
                 cmd += ' --flats2 {}'.format(indir[3])
             # Add options for eigen-pco-repetitions etc.
-            cmd += ' --eigen-pco-repetitions {}'.format(args.advanced_ffc_eigen_pco_reps)
-            cmd += ' --eigen-pco-downsample {}'.format(args.advanced_ffc_eigen_pco_downsample)
-            cmd += ' --downsample {}'.format(args.advanced_ffc_downsample)
-            #if not args.main_pr_phase_retrieval:
+            cmd += ' --eigen-pco-repetitions {}'.format(EZVARS['flat-correction']['eigen-pco-reps']['value'])
+            cmd += ' --eigen-pco-downsample {}'.format(EZVARS['flat-correction']['eigen-pco-downsample']['value'])
+            cmd += ' --downsample {}'.format(EZVARS['flat-correction']['downsample']['value'])
+            #if not SECTIONS['retrieve-phase']['enable-phase']['value']:
             #    cmd += ' --absorptivity'
             cmds.append(cmd)
-        elif not args.advanced_ffc_sinFFC:
+        elif not EZVARS['flat-correction']['smart-ffc']['value']:
             cmd = 'tofu flatcorrect --fix-nan-and-inf'
             cmd += ' --darks {} --flats {}'.format(indir[0], indir[1])
             cmd += ' --projections {}'.format(in_proj_dir)
             cmd += ' --output {}'.format(out_pattern)
             if ctset[1] == 4:
                 cmd += ' --flats2 {}'.format(indir[3])
-            if not args.main_pr_phase_retrieval:
+            if not SECTIONS['retrieve-phase']['enable-phase']['value']:
                 cmd += ' --absorptivity'
-            if not args.advanced_advtofu_aux_ffc_dark_scale == "":
-                cmd += ' --dark-scale {}'.format(args.advanced_advtofu_aux_ffc_dark_scale)
-            if not args.advanced_advtofu_aux_ffc_flat_scale == "":
-                cmd += ' --flat-scale {}'.format(args.advanced_advtofu_aux_ffc_flat_scale)
+            if not EZVARS['flat-correction']['dark-scale']['value'] == "":
+                cmd += ' --dark-scale {}'.format(EZVARS['flat-correction']['dark-scale']['value'])
+            if not EZVARS['flat-correction']['flat-scale']['value'] == "":
+                cmd += ' --flat-scale {}'.format(EZVARS['flat-correction']['flat-scale']['value'])
             cmds.append(cmd)
-        if not args.main_config_keep_temp and args.main_config_preprocess:
+        if not EZVARS['inout']['keep-tmp']['value'] and EZVARS['inout']['preprocess']['value']:
             cmds.append('rm -rf {}'.format(indir[0]))
             cmds.append('rm -rf {}'.format(indir[1]))
             cmds.append('rm -rf {}'.format(in_proj_dir))
             if len(indir) > 3:
                 cmds.append("rm -rf {}".format(indir[3]))
         ######### INPAINT #########
-        in_proj_dir, out_pattern = fmt_in_out_path(args.main_config_temp_dir, ctset[0], self._fdt_names[2])
+        in_proj_dir, out_pattern = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'], ctset[0], self._fdt_names[2])
         cmd = "ufo-launch [read path={} height={} number={}".format(in_proj_dir, N, nviews)
         cmd += ", read path={}]".format(mask_file)
         cmd += " ! horizontal-interpolate ! "
         cmd += "write filename={}".format(enquote(out_pattern))
         cmds.append(cmd)
-        if not args.main_config_keep_temp:
+        if not EZVARS['inout']['keep-tmp']['value']:
             cmds.append("rm -rf {}".format(in_proj_dir))
         return cmds
 
     def get_crop_sli(self, out_pattern, args):
         cmd = 'ufo-launch read path={}/*.tif ! '.format(os.path.dirname(out_pattern))
         cmd += 'crop x={} width={} y={} height={} ! '. \
-            format(args.main_region_crop_x, args.main_region_crop_width,
-                   args.main_region_crop_y, args.main_region_crop_height)
+            format(EZVARS['inout']['output-x']['value'], EZVARS['inout']['output-width']['value'],
+                   EZVARS['inout']['output-y']['value'], EZVARS['inout']['output-height']['value'])
         cmd += 'write filename={}'.format(out_pattern)
-        if args.main_region_clip_histogram:
+        if EZVARS['inout']['clip_hist']['value']:
             cmd += ' bits=8 rescale=False'
         return cmd

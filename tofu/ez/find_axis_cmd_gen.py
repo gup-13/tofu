@@ -11,7 +11,7 @@ from tofu.ez.evaluate_sharpness import process as process_metrics
 from tofu.ez.util import enquote
 from tofu.util import get_filenames, read_image, determine_shape
 import tifffile
-
+from tofu.ez.params import EZVARS
 
 class findCOR_cmds(object):
     """
@@ -30,19 +30,19 @@ class findCOR_cmds(object):
         """
         indir = []
         # If using flats/darks/flats2 in same dir as tomo
-        if not args.main_config_common_flats_darks:
+        if not EZVARS['inout']['shared-flatsdarks']['value']:
             for i in self._fdt_names[:3]:
                 indir.append(os.path.join(lvl0, i))
             if flats2 - 3:
                 indir.append(os.path.join(lvl0, self._fdt_names[3]))
             return indir
         # If using common flats/darks/flats2 across multiple reconstructions
-        elif args.main_config_common_flats_darks:
-            indir.append(args.main_config_darks_path)
-            indir.append(args.main_config_flats_path)
+        elif EZVARS['inout']['shared-flatsdarks']['value']:
+            indir.append(EZVARS['inout']['path2-shared-darks']['value'])
+            indir.append(EZVARS['inout']['path2-shared-flats']['value'])
             indir.append(os.path.join(lvl0, self._fdt_names[2]))
-            if args.main_config_flats2_checkbox:
-                indir.append(args.main_config_flats2_path)
+            if EZVARS['inout']['shared-flats-after']['value']:
+                indir.append(EZVARS['inout']['path2-shared-flats-after']['value'])
             return indir
 
     def find_axis_std(self, ctset, tmpdir, ax_range, p_width, search_row, nviews, args, WH):
@@ -69,7 +69,7 @@ class findCOR_cmds(object):
         res = [float(num) for num in ax_range.split(",")]
         cmd += " --output-bytes-per-file 0"
         cmd += ' --z-parameter center-position-x'
-        cmd += ' --z {}'.format(args.main_cor_search_row_start - int(image_height/2))
+        cmd += ' --z {}'.format(EZVARS['COR']['search-row']['value'] - int(image_height/2))
         print(cmd)
         os.system(cmd)
         points, maximum = evaluate_images_simp(out_pattern + "*.tif", "msag")

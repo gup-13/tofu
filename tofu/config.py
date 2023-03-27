@@ -507,7 +507,7 @@ SECTIONS['general-reconstruction'] = {
                 "try reducing this value."},
     'num-gpu-threads': {
         'default': 1,
-        'ezdefault': 1, #G
+        'ezdefault': None, #G = 1; Causes a crash with a number due to accessing nonexistent index
         'type': restrict_value((1, None), dtype=int),
         'help': "Number of parallel reconstruction threads on one GPU"},
     'disable-projection-crop': {

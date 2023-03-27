@@ -5,7 +5,7 @@ Created on Apr 5, 2018
 """
 
 import os
-
+from tofu.ez.params import EZVARS
 
 class WalkCTdirs:
     """
@@ -25,10 +25,10 @@ class WalkCTdirs:
         self.good = 0
         self.verb = verb
         self._fdt_names = fdt_names
-        self.common_flats = args.main_config_flats_path
-        self.common_darks = args.main_config_darks_path
-        self.common_flats2 = args.main_config_flats2_path
-        self.use_common_flats2 = args.main_config_flats2_checkbox
+        self.common_flats = EZVARS['inout']['path2-shared-flats']['value']
+        self.common_darks = EZVARS['inout']['path2-shared-darks']['value']
+        self.common_flats2 = EZVARS['inout']['path2-shared-flats-after']['value']
+        self.use_common_flats2 = EZVARS['inout']['shared-flats-after']['value']
 
     def print_tree(self):
         print("We start in {}".format(self.lvl0))
