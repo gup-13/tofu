@@ -22,17 +22,16 @@ from tofu.config import SECTIONS
 LOG = logging.getLogger(__name__)
 
 
-def get_CTdirs_list(inpath, fdt_names, args):
+def get_CTdirs_list(inpath, fdt_names):
     """
     Determines whether directories containing CT data are valid.
     Returns list of subdirectories with valid CT data
     :param inpath: Path to the CT directory containing subdirectories with flats/darks/tomo (and flats2 if used)
     :param fdt_names: Names of the directories which store flats/darks/tomo (and flats2 if used)
-    :param args: Arguments from the GUI
     :return: W.ctsets: List of "good" CTSets and W.lvl0: Path to root of CT sets
     """
     # Constructor call to create WalkCTDirs object
-    W = WalkCTdirs(inpath, fdt_names, args)
+    W = WalkCTdirs(inpath, fdt_names)
     # Find any directories containing "tomo" directory
     W.findCTdirs()
     # If "Use common flats/darks across multiple experiments" is enabled
@@ -66,7 +65,7 @@ def get_CTdirs_list(inpath, fdt_names, args):
         return W.ctsets, W.lvl0
 
 
-def frmt_ufo_cmds(cmds, ctset, out_pattern, ax, args, Tofu, Ufo, FindCOR, nviews, WH):
+def frmt_ufo_cmds(cmds, ctset, out_pattern, ax, Tofu, Ufo, FindCOR, nviews, WH):
     """formats list of processing commands for a CT set"""
     # two helper variables to mark that PR/FFC has been done at some step
     swiFFC = True  # FFC is always required required
@@ -86,7 +85,7 @@ def frmt_ufo_cmds(cmds, ctset, out_pattern, ax, args, Tofu, Ufo, FindCOR, nviews
     if EZVARS['inout']['preprocess']['value']:
         cmds.append('echo " - Applying filter(s) to images "')
         cmds_prepro = Ufo.get_pre_cmd(ctset, EZVARS['inout']['preprocess-command']['value'],
-                                      EZVARS['inout']['tmp-dir']['value'], args)
+                                      EZVARS['inout']['tmp-dir']['value'])
         cmds.extend(cmds_prepro)
         # reset location of input data
         ctset = (EZVARS['inout']['tmp-dir']['value'], ctset[1])
@@ -95,7 +94,7 @@ def frmt_ufo_cmds(cmds, ctset, out_pattern, ax, args, Tofu, Ufo, FindCOR, nviews
     ###################################################
     if EZVARS['filters']['rm_spots']['value']:  # generate commands to remove sci. spots from projections
         cmds.append('echo " - Flat-correcting and removing large spots"')
-        cmds_inpaint = Ufo.get_inp_cmd(ctset, EZVARS['inout']['tmp-dir']['value'], args, WH[0], nviews)
+        cmds_inpaint = Ufo.get_inp_cmd(ctset, EZVARS['inout']['tmp-dir']['value'], WH[0], nviews)
         # reset location of input data
         ctset = (EZVARS['inout']['tmp-dir']['value'], ctset[1])
         Ufo.common_fd_used = True
@@ -109,14 +108,14 @@ def frmt_ufo_cmds(cmds, ctset, out_pattern, ax, args, Tofu, Ufo, FindCOR, nviews
         if swiFFC:  # we still need need flat correction #Inpaint No
             cmds.append('echo " - Phase retrieval with flat-correction"')
             if EZVARS['flat-correction']['smart-ffc']['value']:
-                cmds.append(Tofu.get_pr_sinFFC_cmd(ctset, args, nviews, WH[0]))
-                cmds.append(Tofu.get_pr_tofu_cmd_sinFFC(ctset, args, nviews, WH))
+                cmds.append(Tofu.get_pr_sinFFC_cmd(ctset, nviews, WH[0]))
+                cmds.append(Tofu.get_pr_tofu_cmd_sinFFC(ctset, nviews, WH))
             elif not EZVARS['flat-correction']['smart-ffc']['value']:
-                cmds.append(Tofu.get_pr_tofu_cmd(ctset, args, nviews, WH[0]))
+                cmds.append(Tofu.get_pr_tofu_cmd(ctset, nviews, WH[0]))
             Tofu.common_fd_used = True
         else:  # Inpaint Yes
             cmds.append('echo " - Phase retrieval from flat-corrected projections"')
-            cmds.extend(Ufo.get_pr_ufo_cmd(args, nviews, WH))
+            cmds.extend(Ufo.get_pr_ufo_cmd(nviews, WH))
         swiPR = False  # no need to do PR anymore
         swiFFC = False  # no need to do FFC anymore
 
@@ -129,15 +128,15 @@ def frmt_ufo_cmds(cmds, ctset, out_pattern, ax, args, Tofu, Ufo, FindCOR, nviews
         if swiFFC:  # we still need to do flat-field correction
             if EZVARS['flat-correction']['smart-ffc']['value']:
                 # Create flat corrected images using sinFFC
-                cmds.append(Tofu.get_sinFFC_cmd(ctset, args, nviews, WH[0]))
+                cmds.append(Tofu.get_sinFFC_cmd(ctset, nviews, WH[0]))
                 # Feed the flat corrected images to sino gram generation
-                cmds.append(Tofu.get_sinos_noffc_cmd(ctset[0], EZVARS['inout']['tmp-dir']['value'], args, nviews, WH))
+                cmds.append(Tofu.get_sinos_noffc_cmd(ctset[0], EZVARS['inout']['tmp-dir']['value'], nviews, WH))
             elif not EZVARS['flat-correction']['smart-ffc']['value']:
                 cmds.append('echo " - Make sinograms with flat-correction"')
-                cmds.append(Tofu.get_sinos_ffc_cmd(ctset, EZVARS['inout']['tmp-dir']['value'], args, nviews, WH))
+                cmds.append(Tofu.get_sinos_ffc_cmd(ctset, EZVARS['inout']['tmp-dir']['value'], nviews, WH))
         else:  # we do not need flat-field correction
             cmds.append('echo " - Make sinograms without flat-correction"')
-            cmds.append(Tofu.get_sinos_noffc_cmd(ctset[0], EZVARS['inout']['tmp-dir']['value'], args, nviews, WH))
+            cmds.append(Tofu.get_sinos_noffc_cmd(ctset[0], EZVARS['inout']['tmp-dir']['value'], nviews, WH))
         swiFFC = False
         # Filter sinograms
         if EZVARS['RR']['use-ufo']['value']:
@@ -171,28 +170,27 @@ def frmt_ufo_cmds(cmds, ctset, out_pattern, ax, args, Tofu, Ufo, FindCOR, nviews
             cmds.append("rm -rf {}".format(os.path.join(EZVARS['inout']['tmp-dir']['value'], "sinos")))
         # Convert filtered sinograms back to projections
         cmds.append('echo " - Generating proj from filtered sinograms"')
-        cmds.append(Tofu.get_sinos2proj_cmd(args, WH[0]))
+        cmds.append(Tofu.get_sinos2proj_cmd(WH[0]))
         # reset location of input data
         ctset = (EZVARS['inout']['tmp-dir']['value'], ctset[1])
 
     # Finally - call to tofu reco
     cmds.append('echo " - CT with axis {}; ffc:{}, PR:{}"'.format(ax, swiFFC, swiPR))
     if EZVARS['flat-correction']['smart-ffc']['value'] and swiFFC:
-        cmds.append(Tofu.get_sinFFC_cmd(ctset, args, nviews, WH[0]))
+        cmds.append(Tofu.get_sinFFC_cmd(ctset, nviews, WH[0]))
         cmds.append(
-            Tofu.get_reco_cmd_sinFFC(ctset, out_pattern, ax, args, nviews, WH, swiFFC, swiPR)
+            Tofu.get_reco_cmd_sinFFC(ctset, out_pattern, ax, nviews, WH, swiFFC, swiPR)
         )
     else:  # If not using sinFFC
-        cmds.append(Tofu.get_reco_cmd(ctset, out_pattern, ax, args, nviews, WH, swiFFC, swiPR))
+        cmds.append(Tofu.get_reco_cmd(ctset, out_pattern, ax, nviews, WH, swiFFC, swiPR))
 
     return nviews, WH
 
 
-def fmt_nlmdn_ufo_cmd(inpath: str, outpath: str, args):  ### TODO call one function from nlmdn module!!
+def fmt_nlmdn_ufo_cmd(inpath: str, outpath: str):  ### TODO call one function from nlmdn module!!
     """
     :param inp: Path to input directory before NLMDN applied
     :param out: Path to output directory after NLMDN applied
-    :param args: List of args
     :return:
     """
     cmd = 'ufo-launch read path={}'.format(inpath)
@@ -210,7 +208,7 @@ def fmt_nlmdn_ufo_cmd(inpath: str, outpath: str, args):  ### TODO call one funct
         cmd += f" bits={SECTIONS['general']['output-bitdepth']['value']} rescale=False"
     return cmd
 
-def execute_reconstruction(args, fdt_names):
+def execute_reconstruction(fdt_names):
     # array with the list of commands
     cmds = []
     # clean temporary directory or create if it doesn't exist
@@ -226,7 +224,7 @@ def execute_reconstruction(args, fdt_names):
     # get list of all good CT directories to be reconstructed
 
     print('*********** Analyzing input directory ************')
-    W, lvl0 = get_CTdirs_list(EZVARS['inout']['input-dir']['value'], fdt_names, args)
+    W, lvl0 = get_CTdirs_list(EZVARS['inout']['input-dir']['value'], fdt_names)
     # W is an array of tuples (path, type)
     # get list of already reconstructed sets
     recd_sets = findSlicesDirs(EZVARS['inout']['output-dir']['value'])
@@ -256,7 +254,7 @@ def execute_reconstruction(args, fdt_names):
                     ax = FindCOR.find_axis_corr(ctset,
                                     EZVARS['inout']['input_ROI']['value'],
                                     SECTIONS['reading']['y']['value'],
-                                    SECTIONS['reading']['height']['value'], multipage, args)
+                                    SECTIONS['reading']['height']['value'], multipage)
                 # Find axis of rotation using auto: minimize STD of a slice
                 elif EZVARS['COR']['search-method']['value'] == 2:
                     cmds.append("echo \"Cleaning axis-search in tmp directory\"")
@@ -266,7 +264,7 @@ def execute_reconstruction(args, fdt_names):
                                                EZVARS['COR']['search-interval']['value'],
                                                EZVARS['COR']['patch-size']['value'],
                                                EZVARS['COR']['search-row']['value'],
-                                               nviews, args, WH)
+                                               nviews, WH)
                 else:
                     ax = EZVARS['COR']['user-defined-ax']['value'] + i * EZVARS['COR']['user-defined-dax']['value']
             # If EZVARS['COR']['search-method']['value'] == 4 then bypass axis search and use image midpoint
@@ -284,8 +282,8 @@ def execute_reconstruction(args, fdt_names):
             clean_tmp_dirs(EZVARS['inout']['tmp-dir']['value'], fdt_names)
             # call function which formats commands for this data set
             nviews, WH = frmt_ufo_cmds(cmds, ctset, out_pattern, \
-                                       ax, args, Tofu, Ufo, FindCOR, nviews, WH)
-            save_params(args, setid, ax, nviews, WH)
+                                       ax, Tofu, Ufo, FindCOR, nviews, WH)
+            save_params(setid, ax, nviews, WH)
             print('{}\t{}'.format('CTset:', ctset[0]))
             print('{:>30}\t{}'.format('Axis:', ax))
             print("{:>30}\t{}, dimensions: {}".format("Number of projections:", nviews, WH))
@@ -296,7 +294,7 @@ def execute_reconstruction(args, fdt_names):
                 head, tail = os.path.split(out_pattern)
                 slidir = os.path.dirname(os.path.join(head, 'sli'))
                 nlmdn_output = os.path.join(slidir+"-nlmdn", "sli-nlmdn-%04i.tif")
-                cmds.append(fmt_nlmdn_ufo_cmd(slidir, nlmdn_output, args))
+                cmds.append(fmt_nlmdn_ufo_cmd(slidir, nlmdn_output))
         else:
             print("{} has been already reconstructed".format(ctset[0]))
     # execute commands = start reconstruction

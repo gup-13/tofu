@@ -84,7 +84,7 @@ def enquote(string, escape=False):
     return addition + string + addition
 
 
-def save_params(args, ctsetname, ax, nviews, WH):
+def save_params(ctsetname, ax, nviews, WH):
     if not EZVARS['inout']['dryrun']['value'] and not os.path.exists(EZVARS['inout']['output-dir']['value']):
         os.makedirs(EZVARS['inout']['output-dir']['value'])
     tmp = os.path.join(EZVARS['inout']['output-dir']['value'], ctsetname)

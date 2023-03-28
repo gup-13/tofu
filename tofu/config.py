@@ -95,6 +95,7 @@ SECTIONS['reading'] = {
         'help': 'Number of files to read'},
     'step': {
         'default': 1,
+        'ezdefault': 1, #Note: Added due to 'tofu_cmd_gen.py' using parameter; not set in GUI
         'type': restrict_value((0, None), dtype=int),
         'help': 'Read every \"step\" file'},
     'resize': {

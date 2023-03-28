@@ -45,7 +45,7 @@ class ufo_cmds(object):
         self._fdt_names = fol
         self.common_fd_used = False
 
-    def make_inpaths(self, lvl0, flats2, args):
+    def make_inpaths(self, lvl0, flats2):
         """
         Creates a list of paths to flats/darks/tomo directories
         :param lvl0: Root of directory containing flats/darks/tomo
@@ -149,8 +149,8 @@ class ufo_cmds(object):
         cmd += " ! write filename={}".format(enquote(out_pattern))
         return cmd
 
-    def get_pre_cmd(self, ctset, pre_cmd, tmpdir, args):
-        indir = self.make_inpaths(ctset[0], ctset[1], args)
+    def get_pre_cmd(self, ctset, pre_cmd, tmpdir):
+        indir = self.make_inpaths(ctset[0], ctset[1])
         outdir = self.make_outpaths(tmpdir, ctset[1])
         # add index to the name of the output directory with projections
         # if enabled preprocessing is always the first step
@@ -168,8 +168,8 @@ class ufo_cmds(object):
             cmds[i] += " ! write filename={}".format(enquote(out_pattern))
         return cmds
 
-    def get_inp_cmd(self, ctset, tmpdir, args, N, nviews):
-        indir = self.make_inpaths(ctset[0], ctset[1], args)
+    def get_inp_cmd(self, ctset, tmpdir, N, nviews):
+        indir = self.make_inpaths(ctset[0], ctset[1])
         cmds = []
         ######### CREATE MASK #########
         flat1_file = os.path.join(tmpdir, "flat1.tif")
@@ -230,7 +230,7 @@ class ufo_cmds(object):
             cmds.append("rm -rf {}".format(in_proj_dir))
         return cmds
 
-    def get_crop_sli(self, out_pattern, args):
+    def get_crop_sli(self, out_pattern):
         cmd = 'ufo-launch read path={}/*.tif ! '.format(os.path.dirname(out_pattern))
         cmd += 'crop x={} width={} y={} height={} ! '. \
             format(EZVARS['inout']['output-x']['value'], EZVARS['inout']['output-width']['value'],

@@ -21,7 +21,7 @@ class findCOR_cmds(object):
     def __init__(self, fol):
         self._fdt_names = fol
 
-    def make_inpaths(self, lvl0, flats2, args):
+    def make_inpaths(self, lvl0, flats2):
         """
         Creates a list of paths to flats/darks/tomo directories
         :param lvl0: Root of directory containing flats/darks/tomo
@@ -45,8 +45,8 @@ class findCOR_cmds(object):
                 indir.append(EZVARS['inout']['path2-shared-flats-after']['value'])
             return indir
 
-    def find_axis_std(self, ctset, tmpdir, ax_range, p_width, search_row, nviews, args, WH):
-        indir = self.make_inpaths(ctset[0], ctset[1], args)
+    def find_axis_std(self, ctset, tmpdir, ax_range, p_width, search_row, nviews, WH):
+        indir = self.make_inpaths(ctset[0], ctset[1])
         image = read_image(get_filenames(indir[2])[0])
         cmd = "tofu reco --absorptivity --fix-nan-and-inf --overall-angle 180 --axis-angle-x 0"
         cmd += " --darks {} --flats {} --projections {}".format(
@@ -75,8 +75,8 @@ class findCOR_cmds(object):
         points, maximum = evaluate_images_simp(out_pattern + "*.tif", "msag")
         return res[0] + res[2] * maximum
 
-    def find_axis_corr(self, ctset, vcrop, y, height, multipage, args):
-        indir = self.make_inpaths(ctset[0], ctset[1], args)
+    def find_axis_corr(self, ctset, vcrop, y, height, multipage):
+        indir = self.make_inpaths(ctset[0], ctset[1])
         """Use correlation to estimate center of rotation for tomography."""
         from scipy.signal import fftconvolve
 

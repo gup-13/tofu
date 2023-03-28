@@ -20,7 +20,7 @@ class tofu_cmds(object):
         self._fdt_names = fol
         self.common_fd_used = False
 
-    def make_inpaths(self, lvl0, flats2, args):
+    def make_inpaths(self, lvl0, flats2):
         """
         Creates a list of paths to flats/darks/tomo directories
         :param lvl0: Root of directory containing flats/darks/tomo
@@ -42,7 +42,7 @@ class tofu_cmds(object):
             self.common_fd_used = True
         return indir
 
-    def check_lamino(self, cmd, args):
+    def check_lamino(self, cmd):
         cmd += 'tofu reco'
         if not SECTIONS['cone-beam-weight']['axis-angle-x']['value'][0] == '':
             cmd += ' --axis-angle-x {}'.format(SECTIONS['cone-beam-weight']['axis-angle-x']['value'][0])
@@ -74,10 +74,10 @@ class tofu_cmds(object):
             cmd += " --output-bytes-per-file 0"
         return cmd
 
-    def get_1step_ct_cmd(self, ctset, out_pattern, ax, args, nviews, WH):
+    def get_1step_ct_cmd(self, ctset, out_pattern, ax, nviews, WH):
         # direct CT reconstruction from input dir to output dir;
         # or CT reconstruction after preprocessing only
-        indir = self.make_inpaths(ctset[0], ctset[1], args)
+        indir = self.make_inpaths(ctset[0], ctset[1])
         # correct location of proj folder in case if prepro was done
         in_proj_dir, quatsch = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'],
                                                ctset[0], self._fdt_names[2], False)
@@ -91,8 +91,8 @@ class tofu_cmds(object):
         cmd += " --axis {}".format(ax)
         cmd += " --offset {}".format(SECTIONS['general-reconstruction']['volume-angle-z']['value'][0])
         cmd += " --number {}".format(nviews)
-        if args.step > 0.0:
-            cmd += ' --angle {}'.format(args.step)
+        if SECTIONS['reading']['step']['value'] > 0.0:
+            cmd += ' --angle {}'.format(SECTIONS['reading']['step']['value'])
         cmd = self.check_vcrop(cmd, EZVARS['inout']['input_ROI']['value'],
                                SECTIONS['reading']['y']['value'],
                                SECTIONS['reading']['height']['value'],
@@ -104,7 +104,7 @@ class tofu_cmds(object):
         cmd = self.check_bigtif(cmd, EZVARS['inout']['bigtiff-output']['value'])
         return cmd
 
-    def get_ct_proj_cmd(self, out_pattern, ax, args, nviews, WH):
+    def get_ct_proj_cmd(self, out_pattern, ax, nviews, WH):
         # CT reconstruction from pre-processed and flat-corrected projections
         in_proj_dir, quatsch = fmt_in_out_path(
             EZVARS['inout']['tmp-dir']['value'], "obsolete;if-you-need-fix-it", self._fdt_names[2], False
@@ -114,8 +114,8 @@ class tofu_cmds(object):
         cmd += " --axis {}".format(ax)
         cmd += " --offset {}".format(SECTIONS['general-reconstruction']['volume-angle-z']['value'][0])
         cmd += " --number {}".format(nviews)
-        if args.step > 0.0:
-            cmd += ' --angle {}'.format(args.step)
+        if SECTIONS['reading']['step']['value'] > 0.0:
+            cmd += ' --angle {}'.format(SECTIONS['reading']['step']['value'])
         cmd = self.check_vcrop(cmd, EZVARS['inout']['input_ROI']['value'],
                                SECTIONS['reading']['y']['value'],
                                SECTIONS['reading']['height']['value'],
@@ -127,7 +127,7 @@ class tofu_cmds(object):
         cmd = self.check_bigtif(cmd, EZVARS['inout']['bigtiff-output']['value'])
         return cmd
 
-    def get_ct_sin_cmd(self, out_pattern, ax, args, nviews, WH):
+    def get_ct_sin_cmd(self, out_pattern, ax, nviews, WH):
         sinos_dir = os.path.join(EZVARS['inout']['tmp-dir']['value'], 'sinos-filt')
         cmd = 'tofu tomo --sinograms {}'.format(sinos_dir)
         cmd += ' --output {}'.format(out_pattern)
@@ -138,8 +138,8 @@ class tofu_cmds(object):
         else:
             cmd += " --number {}".format(WH[0])
         cmd += " --height {}".format(nviews)
-        if args.step > 0.0:
-            cmd += ' --angle {}'.format(args.step)
+        if SECTIONS['reading']['step']['value'] > 0.0:
+            cmd += ' --angle {}'.format(SECTIONS['reading']['step']['value'])
         cmd = self.check_8bit(cmd, EZVARS['inout']['clip_hist']['value'],
                               SECTIONS['general']['output-bitdepth']['value'],
                               SECTIONS['general']['output-minimum']['value'],
@@ -147,8 +147,8 @@ class tofu_cmds(object):
         cmd = self.check_bigtif(cmd, EZVARS['inout']['bigtiff-output']['value'])
         return cmd
 
-    def get_sinos_ffc_cmd(self, ctset, tmpdir, args, nviews, WH):
-        indir = self.make_inpaths(ctset[0], ctset[1], args)
+    def get_sinos_ffc_cmd(self, ctset, tmpdir, nviews, WH):
+        indir = self.make_inpaths(ctset[0], ctset[1])
         in_proj_dir, out_pattern = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'],
                                         ctset[0], self._fdt_names[2], False)
         cmd = 'tofu sinos --absorptivity --fix-nan-and-inf'
@@ -171,7 +171,7 @@ class tofu_cmds(object):
             cmd += ' --flat-scale {}'.format(EZVARS['flat-correction']['flat-scale']['value'])
         return cmd
 
-    def get_sinos_noffc_cmd(self, ctsetpath, tmpdir, args, nviews, WH):
+    def get_sinos_noffc_cmd(self, ctsetpath, tmpdir, nviews, WH):
         in_proj_dir, out_pattern = fmt_in_out_path(
             EZVARS['inout']['tmp-dir']['value'], ctsetpath, self._fdt_names[2], False
         )
@@ -189,7 +189,7 @@ class tofu_cmds(object):
             cmd += " --output-bytes-per-file 0"
         return cmd
 
-    def get_sinos2proj_cmd(self, args, proj_height):
+    def get_sinos2proj_cmd(self, proj_height):
         quatsch, out_pattern = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'], 'quatsch', self._fdt_names[2], True)
         cmd = 'tofu sinos'
         cmd += ' --projections {}'.format(os.path.join(EZVARS['inout']['tmp-dir']['value'], 'sinos-filt'))
@@ -200,8 +200,8 @@ class tofu_cmds(object):
             cmd += ' --number {}'.format(int(SECTIONS['reading']['height']['value'] / SECTIONS['reading']['y-step']['value']))
         return cmd
 
-    def get_sinFFC_cmd(self, ctset, args, nviews, n):
-        indir = self.make_inpaths(ctset[0], ctset[1], args)
+    def get_sinFFC_cmd(self, ctset, nviews, n):
+        indir = self.make_inpaths(ctset[0], ctset[1])
         in_proj_dir, out_pattern = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'],
                                                    ctset[0], self._fdt_names[2])
         cmd = 'bmit_sin --fix-nan'
@@ -216,8 +216,8 @@ class tofu_cmds(object):
         cmd += ' --downsample {}'.format(EZVARS['flat-correction']['downsample']['value'])
         return cmd
 
-    def get_pr_sinFFC_cmd(self, ctset, args, nviews, n):
-        indir = self.make_inpaths(ctset[0], ctset[1], args)
+    def get_pr_sinFFC_cmd(self, ctset, nviews, n):
+        indir = self.make_inpaths(ctset[0], ctset[1])
         in_proj_dir, out_pattern = fmt_in_out_path(
             EZVARS['inout']['tmp-dir']['value'], ctset[0], self._fdt_names[2])
         cmd = 'bmit_sin --fix-nan'
@@ -232,7 +232,7 @@ class tofu_cmds(object):
         cmd += ' --downsample {}'.format(EZVARS['flat-correction']['downsample']['value'])
         return cmd
 
-    def get_pr_tofu_cmd_sinFFC(self, ctset, args, nviews, WH):
+    def get_pr_tofu_cmd_sinFFC(self, ctset, nviews, WH):
         # indir will format paths to flats darks and tomo2 correctly even if they were
         # pre-processed, however path to the input directory with projections
         # cannot be formatted with that command correctly
@@ -251,11 +251,11 @@ class tofu_cmds(object):
         cmd += ' --projection-crop-after filter'
         return cmd
 
-    def get_pr_tofu_cmd(self, ctset, args, nviews, WH):
+    def get_pr_tofu_cmd(self, ctset, nviews, WH):
         # indir will format paths to flats darks and tomo2 correctly even if they were
         # pre-processed, however path to the input directory with projections
         # cannot be formatted with that command correctly
-        indir = self.make_inpaths(ctset[0], ctset[1], args)
+        indir = self.make_inpaths(ctset[0], ctset[1])
         # so we need a separate "universal" command which considers all previous steps
         in_proj_dir, out_pattern = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'],
                                                    ctset[0], self._fdt_names[2])
@@ -274,17 +274,17 @@ class tofu_cmds(object):
             cmd += ' --flat-scale {}'.format(EZVARS['flat-correction']['flat-scale']['value'])
         return cmd
 
-    def get_reco_cmd(self, ctset, out_pattern, ax, args, nviews, WH, ffc, PR):
+    def get_reco_cmd(self, ctset, out_pattern, ax, nviews, WH, ffc, PR):
         # direct CT reconstruction from input dir to output dir;
         # or CT reconstruction after preprocessing only
-        indir = self.make_inpaths(ctset[0], ctset[1], args)
+        indir = self.make_inpaths(ctset[0], ctset[1])
         # correct location of proj folder in case if prepro was done
         in_proj_dir, quatsch = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'],
                                                ctset[0], self._fdt_names[2], False)
         # Laminography
         cmd = ''
         if EZVARS['advanced']['more-reco-params']['value'] is True:
-            cmd += self.check_lamino(cmd, args)
+            cmd += self.check_lamino(cmd)
         elif EZVARS['advanced']['more-reco-params']['value'] is False:
             cmd = "tofu reco"
             cmd += ' --overall-angle 180'
@@ -360,10 +360,10 @@ class tofu_cmds(object):
                 cmd += ' --data-splitting-policy {}'.format(SECTIONS['general-reconstruction']['data-splitting-policy']['value'])
         return cmd
 
-    def get_reco_cmd_sinFFC(self, ctset, out_pattern, ax, args, nviews, WH, ffc, PR):
+    def get_reco_cmd_sinFFC(self, ctset, out_pattern, ax, nviews, WH, ffc, PR):
         # direct CT reconstruction from input dir to output dir;
         # or CT reconstruction after preprocessing only
-        indir = self.make_inpaths(ctset[0], ctset[1], args)
+        indir = self.make_inpaths(ctset[0], ctset[1])
         # correct location of proj folder in case if prepro was done
         in_proj_dir, quatsch = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'],
                                         ctset[0], self._fdt_names[2], False)
@@ -373,7 +373,7 @@ class tofu_cmds(object):
         cmd = "tofu reco"
         # Laminography
         if EZVARS['advanced']['more-reco-params']['value']:
-            cmd += self.check_lamino(cmd, args)
+            cmd += self.check_lamino(cmd)
         else:
             cmd += " --overall-angle 180"
         ##############

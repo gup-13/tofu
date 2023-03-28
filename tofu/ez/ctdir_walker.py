@@ -15,7 +15,7 @@ class WalkCTdirs:
     fdt_names = flats/darks/tomo directory names
     """
 
-    def __init__(self, inpath, fdt_names, args, verb=True):
+    def __init__(self, inpath, fdt_names, verb=True):
         self.lvl0 = os.path.abspath(inpath)
         self.ctdirs = []
         self.types = []
