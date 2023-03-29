@@ -130,7 +130,7 @@ def save_params(ctsetname, ax, nviews, WH):
             f.write('  energy {} keV\n'.format(SECTIONS['retrieve-phase']['energy']['value']))
             f.write('  pixel size {:0.1f} um\n'.format(SECTIONS['retrieve-phase']['pixel-size']['value'] * 1e6))
             f.write('  sample-detector distance {} m\n'.format(SECTIONS['retrieve-phase']['propagation-distance']['value'][0]))
-            f.write('  delta/beta ratio {:0.0f}\n'.format(10 ** SECTIONS['retrieve-phase']['regularization-rate']['value']))
+            f.write('  delta/beta ratio {}\n'.format(SECTIONS['retrieve-phase']['regularization-rate']['value']))
         else:
             f.write('  Phase retrieval disabled\n')
         f.write('*** Ring removal ***\n')
