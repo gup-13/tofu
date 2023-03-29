@@ -95,7 +95,7 @@ SECTIONS['reading'] = {
         'help': 'Number of files to read'},
     'step': {
         'default': 1,
-        'ezdefault': 1, #Note: Added due to 'tofu_cmd_gen.py' using parameter; not set in GUI
+        'ezdefault': 1, # Not updated in GUI
         'type': restrict_value((0, None), dtype=int),
         'help': 'Read every \"step\" file'},
     'resize': {
@@ -500,7 +500,7 @@ SECTIONS['general-reconstruction'] = {
         'help': "Disable cone beam weighting"},
     'slice-memory-coeff': {
         'default': 0.8,
-        'ezdefault': 0.7, #G - original: 0.8
+        'ezdefault': 0.7, #G
         'type': restrict_value((0.01, 0.95)),
         'help': "Portion of the GPU memory used for slices (from 0.01 to 0.9) [fraction]. "
                 "The total amount of consumed memory will be larger depending on the "
@@ -508,7 +508,7 @@ SECTIONS['general-reconstruction'] = {
                 "try reducing this value."},
     'num-gpu-threads': {
         'default': 1,
-        'ezdefault': None, #G = 1; Causes a crash with a number due to accessing nonexistent index
+        'ezdefault': None, #G = 1; Not updated in GUI; Causes a crash if not "None" due to accessing nonexistent indices
         'type': restrict_value((1, None), dtype=int),
         'help': "Number of parallel reconstruction threads on one GPU"},
     'disable-projection-crop': {
@@ -533,7 +533,7 @@ SECTIONS['general-reconstruction'] = {
                 "[y - margin, y + height + margin]"},
     'slices-per-device': {
         'default': None,
-        'ezdefault': None,
+        'ezdefault': None, # Not updated in GUI
         'type': restrict_value((0, None), dtype=int),
         'help': "Number of slices computed by one computing device"},
     'gpus': {

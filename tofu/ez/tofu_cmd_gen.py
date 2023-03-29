@@ -268,9 +268,9 @@ class tofu_cmds(object):
                ' --pixel-size {} --regularization-rate {:0.2f}' \
             .format(SECTIONS['retrieve-phase']['energy']['value'], SECTIONS['retrieve-phase']['propagation-distance']['value'][0],
                     SECTIONS['retrieve-phase']['pixel-size']['value'], SECTIONS['retrieve-phase']['regularization-rate']['value'])
-        if not EZVARS['flat-correction']['dark-scale']['value'] == "":
+        if not EZVARS['flat-correction']['dark-scale']['value'] is None:
             cmd += ' --dark-scale {}'.format(EZVARS['flat-correction']['dark-scale']['value'])
-        if not EZVARS['flat-correction']['flat-scale']['value'] == "":
+        if not EZVARS['flat-correction']['flat-scale']['value'] is None:
             cmd += ' --flat-scale {}'.format(EZVARS['flat-correction']['flat-scale']['value'])
         return cmd
 
@@ -298,9 +298,9 @@ class tofu_cmds(object):
                 cmd += ' --flats2 {}'.format(indir[3])
             if not PR:
                 cmd += ' --absorptivity'
-            if not EZVARS['flat-correction']['dark-scale']['value'] == "":
+            if not EZVARS['flat-correction']['dark-scale']['value'] is None:
                 cmd += ' --dark-scale {}'.format(EZVARS['flat-correction']['dark-scale']['value'])
-            if not EZVARS['flat-correction']['flat-scale']['value'] == "":
+            if not EZVARS['flat-correction']['flat-scale']['value'] is None:
                 cmd += ' --flat-scale {}'.format(EZVARS['flat-correction']['flat-scale']['value'])
         if PR:
             cmd += (
@@ -354,9 +354,9 @@ class tofu_cmds(object):
         if EZVARS['advanced']['enable-optimization']['value']: 
             print("optimizing")
             cmd += ' --slice-memory-coeff={}'.format(SECTIONS['general-reconstruction']['slice-memory-coeff']['value'])        
-            if not SECTIONS['general-reconstruction']['slices-per-device']['value'] == '':
+            if not SECTIONS['general-reconstruction']['slices-per-device']['value'] is None:
                 cmd += ' --slices-per-device {}'.format(SECTIONS['general-reconstruction']['slices-per-device']['value'])
-            if not SECTIONS['general-reconstruction']['data-splitting-policy']['value'] == '':
+            if not SECTIONS['general-reconstruction']['data-splitting-policy']['value'] is None:
                 cmd += ' --data-splitting-policy {}'.format(SECTIONS['general-reconstruction']['data-splitting-policy']['value'])
         return cmd
 
@@ -427,8 +427,8 @@ class tofu_cmds(object):
         if EZVARS['advanced']['enable-optimization']['value']: 
             print("optimizing")
             cmd += ' --slice-memory-coeff={}'.format(SECTIONS['general-reconstruction']['slice-memory-coeff']['value'])        
-            if not SECTIONS['general-reconstruction']['slices-per-device']['value'] == '':
+            if not SECTIONS['general-reconstruction']['slices-per-device']['value'] is None:
                 cmd += ' --slices-per-device {}'.format(SECTIONS['general-reconstruction']['slices-per-device']['value'])
-            if not SECTIONS['general-reconstruction']['data-splitting-policy']['value'] == '':
+            if not SECTIONS['general-reconstruction']['data-splitting-policy']['value'] is None:
                 cmd += ' --data-splitting-policy {}'.format(SECTIONS['general-reconstruction']['data-splitting-policy']['value'])
         return cmd
