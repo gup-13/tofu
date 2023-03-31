@@ -1,7 +1,7 @@
 # This file is used to share params as a global variable
 import yaml
 from collections import OrderedDict
-from tofu.util import restrict_value, tupleize, restrict_tupleize
+from tofu.util import restrict_value
 
 import os #EZVARS[inout][tmp-dir]
 

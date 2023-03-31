@@ -4,6 +4,7 @@ import glob
 import logging
 import math
 import os
+from types import FunctionType
 from collections import OrderedDict
 from PyQt5.QtCore import QRegExp
 from PyQt5.QtGui import QRegExpValidator
@@ -84,8 +85,12 @@ def restrict_value(limits, dtype=float):
     """Convert value to *dtype* and make sure it is within *limits* (included) specified as tuple
     (min, max). If one of the tuple values is None it is ignored."""
 
-    def check(value, clamp=False):
+    def check(value=None, clamp=False):
+        if value is None:
+            return limits
+        
         result = dtype(value)
+        
         if limits[0] is not None and result < limits[0]:
             if clamp:
                 result = dtype(limits[0])
@@ -127,12 +132,13 @@ def tupleize(num_items=None, conv=float, dtype=tuple):
     """Convert comma-separated string values to a *num-items*-tuple of values converted with
     *conv*.
     """
-    def split_values(value):
+    
+    def split_values(value=None):
         """Convert comma-separated string *value* to a tuple of numbers."""
-        if isinstance(value, float) or isinstance(value,int):
+        if not value:   #empty value or string
+            return dtype([])
+        if type(value) is float or type(value) is int:
             return dtype([value])
-        if not value:   #empty string
-            return dtype([0.0])
         try:
             result = dtype([conv(x) for x in value.split(',')])
         except:
@@ -149,7 +155,7 @@ def restrict_tupleize(limits, num_items=None, conv=float, dtype=tuple):
     """Convert a string of numbers separated by commas to tuple with *dtype* and make sure it is within *limits* (included) specified as tuple
     (min, max). If one of the limits values is None it is ignored."""
     
-    def check(value, clamp=False):
+    def check(value=None, clamp=False):
         if value is None:
             return limits
         results = tupleize(num_items, conv, dtype)(value)
@@ -160,10 +166,11 @@ def restrict_tupleize(limits, num_items=None, conv=float, dtype=tuple):
 
 def reverse_tupleize(num_items=None, conv=float):
     """Convert a tuple into a comma-separted string of *value*"""
+    
     def combine_to_string(value):
         """Combine a tuple of numbers into a comma-separated string"""
-        result = ""
         
+        result = ""        
         if num_items and len(result) != num_items:
             # A certain number of output is expected
             raise argparse.ArgumentTypeError('Expected {} items'.format(num_items))
@@ -172,20 +179,44 @@ def reverse_tupleize(num_items=None, conv=float):
             # No tuple to convert into string
             return result
         
-        # Tuple with non-zero length
+        # Tuple with non-zero lengthh
         for v in value:
             result = result + "," + str(conv(v))
         result = result[1:] # Remove the erroneous first period
         return result
     return combine_to_string
 
-def add_value_to_dict_entry(dict_entry, param_value_str):
+def is_value_on_limit(dict_entry):
+    """Checks if a value is at the limit defined by the functions 'restrict_value' or 'restrict_tupleize'."""
+    if type(dict_entry['type']) is FunctionType: #is a custom data type
+        limits = dict_entry['type']()
+        if len(limits) is 2: # has a min & max limit
+            if limits[0] is not None and dict_entry['value'] == limits[0]:
+                return True
+            elif limits[1] is not None and dict_entry['value'] == limits[1]:
+                return True
+    return False
+
+def warn_if_value_at_limit(dict_entry):
+    """Display a message in terminal if the set value is at the limit"""
+    if is_value_on_limit(dict_entry):
+        limits = dict_entry['type']()
+        minLim = limits[0]
+        maxLim = limits[1]
+        if minLim is None:
+            minLim = "-inf"
+        if maxLim is None:
+            maxLim = "inf"
+        msg = "Warning: Set a value within the limits of ("+ str(minLim) + ", " + str(maxLim) + ")"
+        print(msg)  #QMessageBox doesn't seem to work from util.py
+
+def add_value_to_dict_entry(dict_entry, value):
     """Add a value to a dictionary entry. An empty string will insert the ezdefault value"""
-    #print(dict_entry, param_value_str, dict_entry['default'])
     if 'action' in dict_entry:
         # no 'type' can be defined in dictionary entries with 'action' key
-        dict_entry['value'] = bool(param_value_str)
-    elif param_value_str == '':
+        dict_entry['value'] = bool(value)
+        return
+    elif value == '':
         # takes default value if empty string
         if dict_entry['ezdefault'] is None:
             dict_entry['value'] = dict_entry['ezdefault']
@@ -193,12 +224,12 @@ def add_value_to_dict_entry(dict_entry, param_value_str):
             dict_entry['value'] = dict_entry['type'](dict_entry['ezdefault'])
     else:
         try:
-            dict_entry['value'] = dict_entry['type'](param_value_str)
-        except argparse.ArgumentTypeError: 
-            dict_entry['value'] = dict_entry['type'](param_value_str, clamp=True)
+            dict_entry['value'] = dict_entry['type'](value)
+        except argparse.ArgumentTypeError: #Outside of range of type
+            dict_entry['value'] = dict_entry['type'](value, clamp=True)
         except ValueError: #int can't convert string with decimal (e.g. "1.0" -> 1)
-            dict_entry['value'] = dict_entry['type'](float(param_value_str))
-    print("Input: ", param_value_str, "; Dict value: ", dict_entry['value'])
+            dict_entry['value'] = dict_entry['type'](float(value))
+    #warn_if_value_at_limit(dict_entry) # Not sure if all limits are exclusive
 
 def get_ascii_validator():
     """Returns a validator that only allows the input of visible ASCII characters"""
