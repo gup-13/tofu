@@ -1,9 +1,9 @@
 import logging
-from PyQt5.QtWidgets import QGridLayout, QLabel, QGroupBox, QLineEdit, QCheckBox
+from PyQt5.QtWidgets import QGridLayout, QLabel, QGroupBox, QLineEdit, QCheckBox, QComboBox
 
 from tofu.ez.params import EZVARS
 from tofu.config import SECTIONS
-from tofu.util import add_value_to_dict_entry, get_int_validator, get_double_validator, get_alphabet_lowercase_validator
+from tofu.util import add_value_to_dict_entry, get_double_validator
 
 
 LOG = logging.getLogger(__name__)
@@ -34,11 +34,11 @@ class OptimizationGroup(QGroupBox):
         self.slice_memory_entry.editingFinished.connect(self.set_slice)
 
         self.data_spllitting_policy_label = QLabel("Data Splitting Policy")
-        self.data_spllitting_policy_entry = QLineEdit()
+        self.data_spllitting_policy_combobox = QComboBox()
         self.data_spllitting_policy_label.setToolTip(SECTIONS['general-reconstruction']['data-splitting-policy']['help'])
-        self.data_spllitting_policy_entry.setToolTip(SECTIONS['general-reconstruction']['data-splitting-policy']['help'])
-        self.data_spllitting_policy_entry.setValidator(get_alphabet_lowercase_validator())
-        self.data_spllitting_policy_entry.editingFinished.connect(self.set_data_splitting_policy)
+        self.data_spllitting_policy_combobox.setToolTip(SECTIONS['general-reconstruction']['data-splitting-policy']['help'])
+        self.data_spllitting_policy_combobox.addItems(["one","many"])
+        self.data_spllitting_policy_combobox.currentIndexChanged.connect(self.set_data_splitting_policy)
 
         self.set_layout()
 
@@ -56,7 +56,7 @@ class OptimizationGroup(QGroupBox):
         gpu_layout.addWidget(self.slice_memory_label, 0, 0)
         gpu_layout.addWidget(self.slice_memory_entry, 0, 1)
         gpu_layout.addWidget(self.data_spllitting_policy_label, 1, 0)
-        gpu_layout.addWidget(self.data_spllitting_policy_entry, 1, 1)
+        gpu_layout.addWidget(self.data_spllitting_policy_combobox, 1, 1)
         gpu_group.setLayout(gpu_layout)
 
         layout.addWidget(gpu_group, 1, 0)
@@ -66,7 +66,9 @@ class OptimizationGroup(QGroupBox):
     def set_values_from_params(self):
         self.verbose_switch.setChecked(bool(SECTIONS['general']['verbose']['value']))
         self.slice_memory_entry.setText(str(SECTIONS['general-reconstruction']['slice-memory-coeff']['value']))
-        self.data_spllitting_policy_entry.setText(str(SECTIONS['general-reconstruction']['data-splitting-policy']['value']))
+        idx = self.data_spllitting_policy_combobox.findText(SECTIONS['general-reconstruction']['data-splitting-policy']['value'])
+        if idx >= 0:
+            self.data_spllitting_policy_combobox.setCurrentIndex(idx)
 
     def set_verbose_switch(self):
         LOG.debug("Verbose: " + str(self.verbose_switch.isChecked()))
@@ -86,8 +88,7 @@ class OptimizationGroup(QGroupBox):
         self.slice_memory_entry.setText(str(dict_entry['value']))
         
     def set_data_splitting_policy(self):
-        LOG.debug(self.data_spllitting_policy_entry.text())
+        LOG.debug(self.data_spllitting_policy_combobox.currentText())
         dict_entry = SECTIONS['general-reconstruction']['data-splitting-policy']
-        add_value_to_dict_entry(dict_entry, str(self.data_spllitting_policy_entry.text()))
-        self.data_spllitting_policy_entry.setText(str(dict_entry['value']))
+        add_value_to_dict_entry(dict_entry, str(self.data_spllitting_policy_combobox.currentText()))
         
