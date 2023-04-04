@@ -650,69 +650,20 @@ class ConfigGroup(QGroupBox):
             else:
                 LOG.debug("Key" + key + "in MAP_TABLE does not have exactly 4 elements.")
         return result
-        
     
-    def reset_values_dicts(self):
-        """
-        Set all the values of dictionary entries to its default
-        """
-        ## TODO: Add to "import_settings_button_pressed"
-        for key1 in EZVARS:
-            for key2 in EZVARS[key1]:
-                m = EZVARS[key1][key2]
-                m['value'] = m['default']
-                
-        for key1 in SECTIONS:
-            for key2 in SECTIONS[key1]:
-                m = SECTIONS[key1][key2]
-                m['value'] = m['default']
     
-    def import_params_to_dicts(self, params):
+    def import_params_to_dict_entries(self, params):
         """
         Import parameter values into their corresponding dictionary entries
-        """
-        
-        ## TODO: Add to "import_settings_button_pressed"
-        # Note: This is a brute-force method to find a key, which should be acceptable for a 
-        #   small number of parameters that is only updated when a file is imported
-        mapToDictEntry = self.createMapFromParamsToDictEntry()
-        for key in params.keys():
-            m = mapToDictEntry[key]
-            if(key in m):
-                try:
-                    m['value'] = m['type'](params[key])
-                except:
-                    raise InvalidInputError("Parameter \"" + params[key] + "\" cannot be converted to the type: " + m['type'])
-            else:
-                LOG.debug("No mapping to import parameter \'" + key + "\'.")
-        
-    def update_params(self):
-        """
-        Update parameter values from their corresponding dictionary entries
-        """
-        # ##TODO: Add to "export_settings_button_pressed"
-        # ##TODO: Consider updating the tuples to their string forms
-        # mapToDictEntry = self.createMapFromParamsToDictEntry()
-        # for key in params.keys():
-        #     m = mapToDictEntry[key]
-        #     if(key in m):
-        #         params[key] =
-        #         m['value'] = m['type'](params[key])
-    
+        """             
+        LOG.debug("Entering parameter values into dictionary entries")
+        map_param_to_dict_entries = self.createMapFromParamsToDictEntry()
+        for p in params:
+            dict_entry = map_param_to_dict_entries[str(p)]
+            add_value_to_dict_entry(dict_entry, params[str(p)])
 
     def run_reconstruction(self, params, batch_run):
-        try:
-            # #################
-            # LOG.debug("Entering parameter values into dictionary entries...")
-            
-            # # Insert values of parameter files into dictionary entries
-            # map_param_to_dict_entries = self.createMapFromParamsToDictEntry()
-            # for p in params:
-            #     dict_entry = map_param_to_dict_entries[str(p)]
-            #     add_value_to_dict_entry(dict_entry, params[str(p)])
-        
-            ####################
-            
+        try:            
             execute_reconstruction(self.get_fdt_names())
             if batch_run is False:
                 msg = "Done. See output in terminal for details."
