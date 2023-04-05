@@ -23,7 +23,7 @@ from tofu.ez.GUI.message_dialog import warning_message
 import tofu.ez.params as parameters # NEED UPDATE
 from tofu.ez.params import EZVARS, MAP_TABLE
 from tofu.config import SECTIONS
-from tofu.util import add_value_to_dict_entry
+from tofu.util import add_value_to_dict_entry, reverse_tupleize
 import argparse
 
 LOG = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ class ConfigGroup(QGroupBox):
     """
 
     # Used to send signal to ezufo_launcher when settings are imported https://stackoverflow.com/questions/2970312/pyqt4-qtcore-pyqtsignal-object-has-no-attribute-connect
-    signal_update_vals_from_params = pyqtSignal(dict)
+    signal_update_vals_from_params = pyqtSignal()
     # Used to send signal when reconstruction is done
     signal_reco_done = pyqtSignal(dict)
 
@@ -272,7 +272,7 @@ class ConfigGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    def set_values_from_params(self):
+    def load_values(self):
         """
         Updates displayed values for config group
         """
@@ -577,7 +577,8 @@ class ConfigGroup(QGroupBox):
         if file_extension[-1] == "":
             fileName = fileName + ".yaml"
         # Create and write to YAML file based on given fileName
-        self.yaml_io.write_yaml(fileName, parameters.params)
+        # self.yaml_io.write_yaml(fileName, parameters.params)
+        self.export_values(fileName)
 
     def import_settings_button_pressed(self):
         """
@@ -595,9 +596,8 @@ class ConfigGroup(QGroupBox):
         )
         if filePath:
             LOG.debug("Import YAML Path: " + filePath)
-            yaml_data = self.yaml_io.read_yaml(filePath)
-            parameters.params = dict(yaml_data)
-            self.signal_update_vals_from_params.emit(parameters.params)
+            self.import_values(filePath)
+            self.signal_update_vals_from_params.emit()
 
     def reco_button_pressed(self):
         """
@@ -651,8 +651,40 @@ class ConfigGroup(QGroupBox):
                 LOG.debug("Key" + key + "in MAP_TABLE does not have exactly 4 elements.")
         return result
     
+    def extract_values_from_dict(self, dict):
+        new_dict = {}
+        for key1 in dict.keys():
+            new_dict[key1] = {}
+            for key2 in dict[key1].keys():
+                dict_entry = dict[key1][key2]
+                if 'value' in dict_entry:
+                    new_dict[key1][key2] = {}
+                    value_type = type(dict_entry['value'])
+                    if value_type is list or value_type is tuple:
+                        new_dict[key1][key2]['value'] = str(reverse_tupleize()(dict_entry['value']))
+                    else:                      
+                        new_dict[key1][key2]['value'] = dict_entry['value']
+        return new_dict                   
     
-    def import_params_to_dict_entries(self, params):
+    def import_values_from_dict(self, dict, imported_dict):
+        for key1 in imported_dict.keys():
+            for key2 in imported_dict[key1].keys():
+                print(key1, key2, imported_dict[key1][key2]['value'], type(imported_dict[key1][key2]['value']))
+                add_value_to_dict_entry(dict[key1][key2],imported_dict[key1][key2]['value'])
+    
+    def export_values(self, filePath):
+        combined_dict = {}
+        combined_dict['sections'] = self.extract_values_from_dict(SECTIONS)
+        combined_dict['ezvars'] = self.extract_values_from_dict(EZVARS)
+        self.yaml_io.write_yaml(filePath, combined_dict)
+        
+    def import_values(self, filePath):
+        yaml_data = dict(self.yaml_io.read_yaml(filePath))
+        self.import_values_from_dict(EZVARS,yaml_data['ezvars'])
+        self.import_values_from_dict(SECTIONS,yaml_data['sections'])
+        print(dict(yaml_data))
+    
+    def import_values_from_params(self, params):
         """
         Import parameter values into their corresponding dictionary entries
         """             

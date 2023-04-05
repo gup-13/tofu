@@ -64,7 +64,7 @@ class PhaseRetrievalGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    def set_values_from_params(self):
+    def load_values(self):
         self.enable_PR_checkBox.setChecked(SECTIONS['retrieve-phase']['enable-phase']['value'])
         self.photon_energy_entry.setText(str(SECTIONS['retrieve-phase']['energy']['value']))
         self.pixel_size_entry.setText(str(SECTIONS['retrieve-phase']['pixel-size']['value']))

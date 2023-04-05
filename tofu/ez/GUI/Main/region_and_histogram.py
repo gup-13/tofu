@@ -145,7 +145,7 @@ class ROIandHistGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    def set_values_from_params(self):
+    def load_values(self):
         self.select_rows_checkbox.setChecked(EZVARS['inout']['input_ROI']['value'])
         self.first_row_entry.setText(str(SECTIONS['reading']['y']['value']))
         self.num_rows_entry.setText(str(SECTIONS['reading']['height']['value']))

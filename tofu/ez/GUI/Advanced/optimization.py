@@ -63,7 +63,7 @@ class OptimizationGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    def set_values_from_params(self):
+    def load_values(self):
         self.verbose_switch.setChecked(bool(SECTIONS['general']['verbose']['value']))
         self.slice_memory_entry.setText(str(SECTIONS['general-reconstruction']['slice-memory-coeff']['value']))
         idx = self.data_spllitting_policy_combobox.findText(SECTIONS['general-reconstruction']['data-splitting-policy']['value'])

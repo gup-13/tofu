@@ -80,7 +80,7 @@ class FFCGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    def set_values_from_params(self):
+    def load_values(self):
         self.enable_sinFFC_checkbox.setChecked(EZVARS['flat-correction']['smart-ffc']['value'])
         self.set_method_from_params()
         self.eigen_pco_repetitions_entry.setText(str(EZVARS['flat-correction']['eigen-pco-reps']['value']))

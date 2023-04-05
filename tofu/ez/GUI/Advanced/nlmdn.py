@@ -131,7 +131,7 @@ class NLMDNGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    def set_values_from_params(self):
+    def load_values(self):
         self.apply_to_reco_checkbox.setChecked(bool(EZVARS['nlmdn']['do-after-reco']['value']))
         self.input_dir_entry.setText(str(EZVARS['nlmdn']['input-dir']['value']))
         self.output_dir_entry.setText(str(EZVARS['nlmdn']['output_pattern']['value']))

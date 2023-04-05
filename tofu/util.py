@@ -273,6 +273,14 @@ def set_dict_entry_to_checkbox(checkbox, dict_entry, debug_tag = "checkbox"):
 def get_dict_without_keys(d, keys):
     """Returns a new dictionary entry without the selected group of keys"""
     return {k: v for k, v in d.items() if k not in keys}
+
+def load_values_from_ezdefault(dict):
+    """Populates a dictionary with values from ezdefault"""
+    for key1 in dict.keys():
+        for key2 in dict[key1].keys():
+            dict_entry = dict[key1][key2]
+            if 'ezdefault' in dict_entry:
+                add_value_to_dict_entry(dict_entry, '') # Add default value
     
 def next_power_of_two(number):
     """Compute the next power of two of the *number*."""

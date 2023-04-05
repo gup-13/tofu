@@ -88,7 +88,7 @@ class AdvancedGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    def set_values_from_params(self):
+    def load_values(self):
         self.lamino_group.setChecked(EZVARS['advanced']['more-reco-params']['value'])
         self.lamino_angle_entry.setText(str(reverse_tupleize()(SECTIONS['cone-beam-weight']['axis-angle-x']['value'])))
         self.overall_rotation_entry.setText(str(SECTIONS['general-reconstruction']['overall-angle']['value']))

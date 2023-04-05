@@ -15,7 +15,7 @@ from tofu.ez.GUI.image_viewer import ImageViewerGroup
 import tofu.ez.params as parameters # NEED UPDATING
 from tofu.ez.params import EZVARS
 from tofu.config import SECTIONS
-from tofu.util import add_value_to_dict_entry
+from tofu.util import load_values_from_ezdefault
 from tofu.ez.GUI.Advanced.advanced import AdvancedGroup
 from tofu.ez.GUI.Advanced.optimization import OptimizationGroup
 from tofu.ez.GUI.Advanced.nlmdn import NLMDNGroup
@@ -62,40 +62,41 @@ class GUI(qtw.QWidget):
         self.tab4 = qtw.QWidget()
 
         # initialize dictionary entries
-        self.init_dict_entries()
+        load_values_from_ezdefault(EZVARS)
+        load_values_from_ezdefault(SECTIONS)
 
         # Create and setup classes for each section of GUI
         # Main Tab
         self.config_group = ConfigGroup()
-        self.config_group.set_values_from_params()
+        self.config_group.load_values()
         
         self.centre_of_rotation_group = CentreOfRotationGroup()
-        self.centre_of_rotation_group.set_values_from_params()
+        self.centre_of_rotation_group.load_values()
 
         self.filters_group = FiltersGroup()
-        self.filters_group.set_values_from_params()
+        self.filters_group.load_values()
         
         self.ffc_group = FFCGroup()
-        self.ffc_group.set_values_from_params()
+        self.ffc_group.load_values()
 
         self.phase_retrieval_group = PhaseRetrievalGroup()
-        self.phase_retrieval_group.set_values_from_params()
+        self.phase_retrieval_group.load_values()
         
         self.binning_group = ROIandHistGroup()  #TODO rename binning to something short and meaningful
-        self.binning_group.set_values_from_params()
+        self.binning_group.load_values()
 
         # Image Viewer
         self.image_group = ImageViewerGroup()
 
         # Advanced Tab
         self.advanced_group = AdvancedGroup()
-        self.advanced_group.set_values_from_params()
+        self.advanced_group.load_values()
 
         self.optimization_group = OptimizationGroup()
-        self.optimization_group.set_values_from_params()
+        self.optimization_group.load_values()
 
         self.nlmdn_group = NLMDNGroup()
-        self.nlmdn_group.set_values_from_params()
+        self.nlmdn_group.load_values()
 
         # Stitch_tools_tab Tab 
         # ----((P)Completed up to here) ----#
@@ -117,7 +118,7 @@ class GUI(qtw.QWidget):
         self.resize(0, 0)  # window to minimum size
 
         # When new settings are imported signal is sent and this catches it to update params for each GUI object
-        self.config_group.signal_update_vals_from_params.connect(self.update_values_from_params)
+        self.config_group.signal_update_vals_from_params.connect(self.update_values)
 
         # When RECO is done send signal from config
         self.config_group.signal_reco_done.connect(self.switch_to_image_tab)
@@ -189,38 +190,21 @@ class GUI(qtw.QWidget):
         # Add tabs to widget
         layout.addWidget(self.tabs)
         self.setLayout(layout)
-        
-    def init_dict_entries(self):
-        # Place default value in each setting
-        for key1 in EZVARS.keys():
-            for key2 in EZVARS[key1].keys():
-                print("EZVARS",key1,key2)
-                dict_entry = EZVARS[key1][key2]
-                if 'ezdefault' in dict_entry:
-                    add_value_to_dict_entry(dict_entry, '') # Add default value
-                
-        for key1 in SECTIONS.keys():
-            for key2 in SECTIONS[key1].keys():
-                print("SECTIONS",key1,key2)
-                dict_entry = SECTIONS[key1][key2]
-                if 'ezdefault' in dict_entry:
-                    add_value_to_dict_entry(dict_entry, '') # Add default value
 
-    def update_values_from_params(self):
+    def update_values(self):
         """
         Updates displayed values when loaded in from external .yaml file of parameters
         """
-        LOG.debug("Update Values from Params")
-        LOG.debug(parameters.params)
-        self.centre_of_rotation_group.set_values_from_params()
-        self.filters_group.set_values_from_params()
-        self.ffc_group.set_values_from_params()
-        self.phase_retrieval_group.set_values_from_params()
-        self.binning_group.set_values_from_params()
-        self.config_group.set_values_from_params()
-        self.nlmdn_group.set_values_from_params()
-        self.advanced_group.set_values_from_params()
-        self.optimization_group.set_values_from_params()
+        LOG.debug("Update Values from dictionary entries")
+        self.centre_of_rotation_group.load_values()
+        self.filters_group.load_values()
+        self.ffc_group.load_values()
+        self.phase_retrieval_group.load_values()
+        self.binning_group.load_values()
+        self.config_group.load_values()
+        self.nlmdn_group.load_values()
+        self.advanced_group.load_values()
+        self.optimization_group.load_values()
 
     def switch_to_image_tab(self):
         """

@@ -95,7 +95,7 @@ class CentreOfRotationGroup(QGroupBox):
 
         self.setLayout(layout)
 
-    def set_values_from_params(self):
+    def load_values(self):
         self.set_rButton_from_params()
         self.search_rotation_entry.setText(str(EZVARS['COR']['search-interval']['value']))
         self.search_in_slice_entry.setText(str(EZVARS['COR']['search-row']['value']))
