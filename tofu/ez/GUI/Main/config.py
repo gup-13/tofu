@@ -2,7 +2,6 @@ import os
 import logging
 from functools import partial
 
-import numpy as np
 from shutil import rmtree
 
 from PyQt5.QtWidgets import (
@@ -17,14 +16,11 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import QCoreApplication, QTimer, pyqtSignal, Qt
 from tofu.ez.main import execute_reconstruction, clean_tmp_dirs
-from tofu.ez.yaml_in_out import Yaml_IO
+from tofu.ez.util import import_values, export_values
 from tofu.ez.GUI.message_dialog import warning_message
 
-import tofu.ez.params as parameters # NEED UPDATE
-from tofu.ez.params import EZVARS, MAP_TABLE
-from tofu.config import SECTIONS
-from tofu.util import add_value_to_dict_entry, reverse_tupleize
-import argparse
+from tofu.ez.params import EZVARS
+from tofu.util import add_value_to_dict_entry
 
 LOG = logging.getLogger(__name__)
 
@@ -43,8 +39,6 @@ class ConfigGroup(QGroupBox):
 
         self.setTitle("Input/output and misc settings")
         self.setStyleSheet("QGroupBox {color: purple;}")
-
-        self.yaml_io = Yaml_IO()
 
         # Select input directory
         self.input_dir_select = QPushButton("Select input directory (or paste abs. path)")
@@ -578,7 +572,7 @@ class ConfigGroup(QGroupBox):
             fileName = fileName + ".yaml"
         # Create and write to YAML file based on given fileName
         # self.yaml_io.write_yaml(fileName, parameters.params)
-        self.export_values(fileName)
+        export_values(fileName)
 
     def import_settings_button_pressed(self):
         """
@@ -596,7 +590,7 @@ class ConfigGroup(QGroupBox):
         )
         if filePath:
             LOG.debug("Import YAML Path: " + filePath)
-            self.import_values(filePath)
+            import_values(filePath)
             self.signal_update_vals_from_params.emit()
 
     def reco_button_pressed(self):
@@ -619,83 +613,6 @@ class ConfigGroup(QGroupBox):
         run_reco = partial(self.run_reconstruction, batch_run=False)
         QTimer.singleShot(100, run_reco)
         #self.run_reconstruction(parameters.params, batch_run=False)
-        
-    def createMapFromParamsToDictEntry(self):
-        """
-        Creates a map from parameters to dictionary entry 
-        (e.g. result['<parameter name>'] -> dictionary entry
-        """
-        result = {}
-        for key in MAP_TABLE:
-            if(len(key) == 4):
-                #Note: Dictionary entries are automatically updated in the map as the program runs
-                if(key[1] == 'ezvars' and key[2] in EZVARS and key[3] in EZVARS[key[2]]):
-                    result[key[0]] = EZVARS[key[2]][key[3]]     #Updates as dictionary updates
-                else:
-                    LOG.debug("Can't create dictionary entry: "+ key[1]+ "["+key[2]+"]"+"["+key[3]+"]"+": "+ key[0]
-                              +".\n  Is the parameter spelled correctly?")
-            else:
-                LOG.debug("Key" + key + "in MAP_TABLE does not have exactly 4 elements.")
-        return result
-    
-    def createMapFromParamsToDictKeys(self):
-        """
-        Creates a map from parameters to dictionary entry 
-        (e.g. result['<parameter name>'] -> {dict name, key1 in dict, key2 in dict[key1]}
-        """
-        result = {}
-        for key in MAP_TABLE:
-            if(len(key) == 4):
-                result[key[0]] = [key[1],[key[2],key[3]]]
-            else:
-                LOG.debug("Key" + key + "in MAP_TABLE does not have exactly 4 elements.")
-        return result
-    
-    def extract_values_from_dict(self, dict):
-        new_dict = {}
-        for key1 in dict.keys():
-            new_dict[key1] = {}
-            for key2 in dict[key1].keys():
-                dict_entry = dict[key1][key2]
-                if 'value' in dict_entry:
-                    new_dict[key1][key2] = {}
-                    value_type = type(dict_entry['value'])
-                    if value_type is list or value_type is tuple:
-                        new_dict[key1][key2]['value'] = str(reverse_tupleize()(dict_entry['value']))
-                    else:                      
-                        new_dict[key1][key2]['value'] = dict_entry['value']
-        return new_dict                   
-    
-    def import_values_from_dict(self, dict, imported_dict):
-        for key1 in imported_dict.keys():
-            for key2 in imported_dict[key1].keys():
-                print(key1, key2, imported_dict[key1][key2]['value'], type(imported_dict[key1][key2]['value']))
-                add_value_to_dict_entry(dict[key1][key2],imported_dict[key1][key2]['value'])
-    
-    def export_values(self, filePath):
-        combined_dict = {}
-        combined_dict['sections'] = self.extract_values_from_dict(SECTIONS)
-        combined_dict['ezvars'] = self.extract_values_from_dict(EZVARS)
-        self.yaml_io.write_yaml(filePath, combined_dict)
-        LOG.debug("Exported values:")
-        LOG.debug(combined_dict)
-        
-    def import_values(self, filePath):
-        yaml_data = dict(self.yaml_io.read_yaml(filePath))
-        self.import_values_from_dict(EZVARS,yaml_data['ezvars'])
-        self.import_values_from_dict(SECTIONS,yaml_data['sections'])
-        LOG.debug("Imported values:")
-        LOG.debug(yaml_data)
-    
-    def import_values_from_params(self, params):
-        """
-        Import parameter values into their corresponding dictionary entries
-        """             
-        LOG.debug("Entering parameter values into dictionary entries")
-        map_param_to_dict_entries = self.createMapFromParamsToDictEntry()
-        for p in params:
-            dict_entry = map_param_to_dict_entries[str(p)]
-            add_value_to_dict_entry(dict_entry, params[str(p)])
 
     def run_reconstruction(self, batch_run):
         try:            

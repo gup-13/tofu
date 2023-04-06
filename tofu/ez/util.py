@@ -5,12 +5,10 @@ Created on Apr 20, 2020
 """
 import os
 import tifffile
-import yaml
-import numpy as np
-from tofu.util import get_filenames, get_first_filename, get_image_shape, read_image
+from tofu.ez.yaml_in_out import read_yaml, write_yaml
+from tofu.util import get_filenames, get_first_filename, get_image_shape, read_image, reverse_tupleize, add_value_to_dict_entry
 
-import tofu.ez.params as parameters
-from tofu.ez.params import EZVARS
+from tofu.ez.params import EZVARS, MAP_TABLE
 from tofu.config import SECTIONS
 
 def get_dims(pth):
@@ -44,7 +42,6 @@ def bad_vert_ROI(multipage, path2proj, y, height):
         return True
     else:
         return False
-
 
 def make_copy_of_flat(flatdir, flat_copy_name, dryrun):
     first_flat_file = get_first_filename(flatdir)
@@ -83,6 +80,83 @@ def enquote(string, escape=False):
 
     return addition + string + addition
 
+def createMapFromParamsToDictEntry():
+    """
+    Creates a map from parameters to dictionary entry 
+    (e.g. result['<parameter name>'] -> dictionary entry
+    """
+    result = {}
+    for key in MAP_TABLE:
+        if(len(key) == 4):
+            #Note: Dictionary entries are automatically updated in the map as the program runs
+            if(key[1] == 'ezvars' and key[2] in EZVARS and key[3] in EZVARS[key[2]]):
+                result[key[0]] = EZVARS[key[2]][key[3]]     #Updates as dictionary updates
+            else:
+                print("Can't create dictionary entry: "+ key[1]+ "["+key[2]+"]"+"["+key[3]+"]"+": "+ key[0])
+        else:
+            print("Key" + key + "in MAP_TABLE does not have exactly 4 elements.")
+    return result
+
+def createMapFromParamsToDictKeys():
+    """
+    Creates a map from parameters to dictionary entry 
+    (e.g. result['<parameter name>'] -> {dict name, key1 in dict, key2 in dict[key1]}
+    """
+    result = {}
+    for key in MAP_TABLE:
+        if(len(key) == 4):
+            result[key[0]] = [key[1],[key[2],key[3]]]
+        else:
+            print("Key" + key + "in MAP_TABLE does not have exactly 4 elements.")
+    return result
+
+def extract_values_from_dict(dict):
+    new_dict = {}
+    for key1 in dict.keys():
+        new_dict[key1] = {}
+        for key2 in dict[key1].keys():
+            dict_entry = dict[key1][key2]
+            if 'value' in dict_entry:
+                new_dict[key1][key2] = {}
+                value_type = type(dict_entry['value'])
+                if value_type is list or value_type is tuple:
+                    new_dict[key1][key2]['value'] = str(reverse_tupleize()(dict_entry['value']))
+                else:                      
+                    new_dict[key1][key2]['value'] = dict_entry['value']
+    return new_dict                   
+
+def import_values_from_dict(dict, imported_dict):
+    for key1 in imported_dict.keys():
+        for key2 in imported_dict[key1].keys():
+            add_value_to_dict_entry(dict[key1][key2],imported_dict[key1][key2]['value'])
+
+def export_values(filePath):
+    combined_dict = {}
+    combined_dict['sections'] = extract_values_from_dict(SECTIONS)
+    combined_dict['ezvars'] = extract_values_from_dict(EZVARS)
+    print("Exporting values to: " + str(filePath))
+    print(combined_dict)
+    write_yaml(filePath, combined_dict)
+    print("Finished exporting")
+    
+def import_values(filePath):
+    print("Importing values from: " +str(filePath))
+    yaml_data = dict(read_yaml(filePath))
+    import_values_from_dict(EZVARS,yaml_data['ezvars'])
+    import_values_from_dict(SECTIONS,yaml_data['sections'])
+    print("Finished importing")
+    print(yaml_data)
+    
+
+def import_values_from_params(self, params):
+    """
+    Import parameter values into their corresponding dictionary entries
+    """             
+    print("Entering parameter values into dictionary entries")
+    map_param_to_dict_entries = self.createMapFromParamsToDictEntry()
+    for p in params:
+        dict_entry = map_param_to_dict_entries[str(p)]
+        add_value_to_dict_entry(dict_entry, params[str(p)])
 
 def save_params(ctsetname, ax, nviews, WH):
     if not EZVARS['inout']['dryrun']['value'] and not os.path.exists(EZVARS['inout']['output-dir']['value']):
@@ -94,8 +168,7 @@ def save_params(ctsetname, ax, nviews, WH):
         # Dump the params .yaml file
         try:
             yaml_output_filepath = os.path.join(tmp, "parameters.yaml")
-            yaml_output = open(yaml_output_filepath, "w")
-            yaml.dump(parameters.params, yaml_output)
+            export_values(yaml_output_filepath)
             
         except FileNotFoundError:
             print("Something went wrong when exporting the .yaml parameters file")

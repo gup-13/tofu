@@ -9,7 +9,6 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
 )
 
-import tofu.ez.params as parameters
 from tofu.ez.params import EZVARS
 from tofu.util import add_value_to_dict_entry, get_int_validator
 

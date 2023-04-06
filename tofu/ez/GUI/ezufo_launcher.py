@@ -10,12 +10,11 @@ from tofu.ez.GUI.Main.phase_retrieval import PhaseRetrievalGroup
 from tofu.ez.GUI.Main.region_and_histogram import ROIandHistGroup
 from tofu.ez.GUI.Main.config import ConfigGroup
 from tofu.ez.main import clean_tmp_dirs
-from tofu.ez.yaml_in_out import Yaml_IO
 from tofu.ez.GUI.image_viewer import ImageViewerGroup
-import tofu.ez.params as parameters # NEED UPDATING
 from tofu.ez.params import EZVARS
 from tofu.config import SECTIONS
 from tofu.util import load_values_from_ezdefault
+from tofu.ez.util import import_values
 from tofu.ez.GUI.Advanced.advanced import AdvancedGroup
 from tofu.ez.GUI.Advanced.optimization import OptimizationGroup
 from tofu.ez.GUI.Advanced.nlmdn import NLMDNGroup
@@ -39,6 +38,10 @@ class GUI(qtw.QWidget):
         self.setWindowTitle("EZ-UFO")
 
         self.setStyleSheet("font: 10pt; font-family: Arial")
+        
+        # initialize dictionary entries
+        load_values_from_ezdefault(EZVARS)
+        load_values_from_ezdefault(SECTIONS)
 
         # Call login dialog
         # self.login_parameters = {}
@@ -47,11 +50,12 @@ class GUI(qtw.QWidget):
         # Read in default parameter settings from yaml file
         try:
             settings_path = os.path.dirname(os.path.abspath(__file__)) + "/default_settings.yaml"
-            self.yaml_io = Yaml_IO()
-            self.yaml_data = self.yaml_io.read_yaml(settings_path)
-            parameters.params = dict(self.yaml_data)
+            print("Loading default values from: " + str(settings_path))
+            import_values(settings_path)
+        except KeyError:
+            print("ERROR: The file does not match the contents of the setting. Using the internal default settings.")
         except FileNotFoundError:
-            print("Could not load default settings from: " + str(settings_path))
+            print("ERROR: Could not load the default settings file. Using the internal default settings.")
 
         # Initialize tab screen
         self.tabs = qtw.QTabWidget()
@@ -59,10 +63,6 @@ class GUI(qtw.QWidget):
         self.tab2 = qtw.QWidget()
         self.tab3 = qtw.QWidget()
         self.tab4 = qtw.QWidget()
-
-        # initialize dictionary entries
-        load_values_from_ezdefault(EZVARS)
-        load_values_from_ezdefault(SECTIONS)
 
         # Create and setup classes for each section of GUI
         # Main Tab
