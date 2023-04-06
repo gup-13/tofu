@@ -104,7 +104,7 @@ def frmt_ufo_cmds(cmds, ctset, out_pattern, ax, Tofu, Ufo, FindCOR, nviews, WH):
 
     ######## PHASE-RETRIEVAL #######
     # Do PR separately if sinograms must be generate or if vertical ROI is defined
-    if SECTIONS['retrieve-phase']['enable-phase']['value'] and EZVARS['RR']['enable']['value']:  # or (SECTIONS['retrieve-phase']['enable-phase']['value'] and EZVARS['inout']['input_ROI']['value']):
+    if SECTIONS['retrieve-phase']['enable-phase']['value'] and EZVARS['RR']['enable-RR']['value']:  # or (SECTIONS['retrieve-phase']['enable-phase']['value'] and EZVARS['inout']['input_ROI']['value']):
         if swiFFC:  # we still need need flat correction #Inpaint No
             cmds.append('echo " - Phase retrieval with flat-correction"')
             if EZVARS['flat-correction']['smart-ffc']['value']:
@@ -123,7 +123,7 @@ def frmt_ufo_cmds(cmds, ctset, out_pattern, ax, Tofu, Ufo, FindCOR, nviews, WH):
     #    ctset = (args.tmpdir, ctset[1])
 
     ################# RING REMOVAL #######################
-    if EZVARS['RR']['enable']['value']:
+    if EZVARS['RR']['enable-RR']['value']:
         # Generate sinograms first
         if swiFFC:  # we still need to do flat-field correction
             if EZVARS['flat-correction']['smart-ffc']['value']:

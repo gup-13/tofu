@@ -36,7 +36,7 @@ class ConfigGroup(QGroupBox):
     # Used to send signal to ezufo_launcher when settings are imported https://stackoverflow.com/questions/2970312/pyqt4-qtcore-pyqtsignal-object-has-no-attribute-connect
     signal_update_vals_from_params = pyqtSignal()
     # Used to send signal when reconstruction is done
-    signal_reco_done = pyqtSignal(dict)
+    signal_reco_done = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -616,7 +616,7 @@ class ConfigGroup(QGroupBox):
         self.set_preproc()
         self.set_preproc_entry()
         #LOG.debug(parameters.params)
-        run_reco = partial(self.run_reconstruction, parameters.params, batch_run=False)
+        run_reco = partial(self.run_reconstruction, batch_run=False)
         QTimer.singleShot(100, run_reco)
         #self.run_reconstruction(parameters.params, batch_run=False)
         
@@ -677,12 +677,15 @@ class ConfigGroup(QGroupBox):
         combined_dict['sections'] = self.extract_values_from_dict(SECTIONS)
         combined_dict['ezvars'] = self.extract_values_from_dict(EZVARS)
         self.yaml_io.write_yaml(filePath, combined_dict)
+        LOG.debug("Exported values:")
+        LOG.debug(combined_dict)
         
     def import_values(self, filePath):
         yaml_data = dict(self.yaml_io.read_yaml(filePath))
         self.import_values_from_dict(EZVARS,yaml_data['ezvars'])
         self.import_values_from_dict(SECTIONS,yaml_data['sections'])
-        print(dict(yaml_data))
+        LOG.debug("Imported values:")
+        LOG.debug(yaml_data)
     
     def import_values_from_params(self, params):
         """
@@ -694,14 +697,14 @@ class ConfigGroup(QGroupBox):
             dict_entry = map_param_to_dict_entries[str(p)]
             add_value_to_dict_entry(dict_entry, params[str(p)])
 
-    def run_reconstruction(self, params, batch_run):
+    def run_reconstruction(self, batch_run):
         try:            
             execute_reconstruction(self.get_fdt_names())
             if batch_run is False:
                 msg = "Done. See output in terminal for details."
                 QMessageBox.information(self, "Finished", msg)
                 if not EZVARS['inout']['dryrun']['value']:
-                    self.signal_reco_done.emit(params)
+                    self.signal_reco_done.emit()
                 EZVARS['inout']['dryrun']['value'] = bool(False)
         except InvalidInputError as err:
             msg = ""

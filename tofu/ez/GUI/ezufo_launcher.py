@@ -50,7 +50,6 @@ class GUI(qtw.QWidget):
             self.yaml_io = Yaml_IO()
             self.yaml_data = self.yaml_io.read_yaml(settings_path)
             parameters.params = dict(self.yaml_data)
-            parameters.params["parameters_type"] = "ez_ufo_reco"
         except FileNotFoundError:
             print("Could not load default settings from: " + str(settings_path))
 
@@ -212,7 +211,7 @@ class GUI(qtw.QWidget):
         when checkbox "Load images and open viewer after reconstruction" is enabled
         Automatically loads images from the output reconstruction directory for viewing
         """
-        if parameters.params["main_config_open_viewer"] is True:
+        if EZVARS['inout']['open-viewer']['value'] is True:
             LOG.debug("Switch to Image Tab")
             self.tabs.setCurrentWidget(self.tab2)
             if os.path.isdir(str(EZVARS['inout']['output-dir']['value'] + '/sli')):

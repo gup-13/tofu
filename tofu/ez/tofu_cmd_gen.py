@@ -323,7 +323,7 @@ class tofu_cmds(object):
         a = -int(WH[0] / 2.0)
         c = 1
         if EZVARS['inout']['input_ROI']['value']:
-            if EZVARS['RR']['enable']['value']:
+            if EZVARS['RR']['enable-RR']['value']:
                 h2 = SECTIONS['reading']['height']['value'] / SECTIONS['reading']['y-step']['value'] / 2.0
                 b = np.ceil(h2)
                 a = -int(h2)
@@ -398,7 +398,7 @@ class tofu_cmds(object):
         a = -int(WH[0] / 2.0)
         c = 1
         if EZVARS['inout']['input_ROI']['value']:
-            if EZVARS['RR']['enable']['value']:
+            if EZVARS['RR']['enable-RR']['value']:
                 h2 = SECTIONS['reading']['height']['value'] / SECTIONS['reading']['y-step']['value'] / 2.0
                 b = np.ceil(h2)
                 a = -int(h2)

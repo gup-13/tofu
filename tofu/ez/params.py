@@ -60,7 +60,7 @@ MAP_TABLE = [
     ['main_filters_remove_spots','ezvars','filters','rm_spots'],                                # EZVARS['filters']['rm_spots'] bool
     ['main_filters_remove_spots_threshold','sections','find-large-spots','spot-threshold'],     # SECTIONS['find-large-spots']['spot-threshold'] int -> float
     ['main_filters_remove_spots_blur_sigma','sections','find-large-spots','gauss-sigma'],       # SECTIONS['find-large-spots']['gauss-sigma'] int -> float
-    ['main_filters_ring_removal','ezvars','RR','enable'],                                       # EZVARS['RR']['enable'] bool
+    ['main_filters_ring_removal','ezvars','RR','enable-RR'],                                       # EZVARS['RR']['enable-RR'] bool
     ['main_filters_ring_removal_ufo_lpf','ezvars','RR','use-ufo'],                              # EZVARS['RR']['use-ufo'] bool
     ['main_filters_ring_removal_ufo_lpf_1d_or_2d','ezvars','RR','ufo-2d'],                      # EZVARS['RR']['ufo-2d'] bool
     ['main_filters_ring_removal_ufo_lpf_sigma_horizontal','ezvars','RR','sx'],                  #EZVARS['RR']['sx'] int
@@ -303,7 +303,7 @@ EZVARS['filters'] = {'rm_spots': {
         'help': "TODO-G"}}
 
 EZVARS['RR'] = {
-    'enable': {
+    'enable-RR': {
         'ezdefault': False, #G
         'type': bool, 
         'help': "TODO-G"},

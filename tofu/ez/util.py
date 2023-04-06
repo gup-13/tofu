@@ -96,6 +96,7 @@ def save_params(ctsetname, ax, nviews, WH):
             yaml_output_filepath = os.path.join(tmp, "parameters.yaml")
             yaml_output = open(yaml_output_filepath, "w")
             yaml.dump(parameters.params, yaml_output)
+            
         except FileNotFoundError:
             print("Something went wrong when exporting the .yaml parameters file")
 
@@ -134,7 +135,7 @@ def save_params(ctsetname, ax, nviews, WH):
         else:
             f.write('  Phase retrieval disabled\n')
         f.write('*** Ring removal ***\n')
-        if EZVARS['RR']['enable']['value']:
+        if EZVARS['RR']['enable-RR']['value']:
             if EZVARS['RR']['use-ufo']['value']:
                 tmp = '2D'
                 if EZVARS['RR']['ufo-2d']['value']:

@@ -183,7 +183,7 @@ class FiltersGroup(QGroupBox):
         self.remove_spots_checkBox.setChecked(EZVARS['filters']['rm_spots']['value'])
         self.threshold_entry.setText(str(SECTIONS['find-large-spots']['spot-threshold']['value']))
         self.spot_blur_entry.setText(str(SECTIONS['find-large-spots']['gauss-sigma']['value']))
-        self.enable_RR_checkbox.setChecked(EZVARS['RR']['enable']['value'])
+        self.enable_RR_checkbox.setChecked(EZVARS['RR']['enable-RR']['value'])
         if EZVARS['RR']['use-ufo']['value'] == True:
             self.use_LPF_rButton.setChecked(True)
         elif EZVARS['RR']['use-ufo']['value'] == False:
@@ -220,7 +220,7 @@ class FiltersGroup(QGroupBox):
 
     def set_ring_removal(self):
         LOG.debug("RR: " + str(self.enable_RR_checkbox.isChecked()))
-        dict_entry = EZVARS['RR']['enable']
+        dict_entry = EZVARS['RR']['enable-RR']
         add_value_to_dict_entry(dict_entry, self.enable_RR_checkbox.isChecked())
 
     def select_rButton(self):
