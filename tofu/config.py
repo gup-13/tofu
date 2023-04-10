@@ -792,7 +792,6 @@ class Params(object):
     def add_parser_args(self, parser):
         for section in self.sections:
             for name in sorted(SECTIONS[section]):
-                print(section, name)
                 opts = without_keys(SECTIONS[section][name], {'ezdefault'})
                 parser.add_argument('--{}'.format(name), **opts)
                 

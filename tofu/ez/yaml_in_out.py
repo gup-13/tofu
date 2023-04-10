@@ -7,6 +7,7 @@ LOG = logging.getLogger(__name__)
 def read_yaml(filePath):
     with open(filePath) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
+        LOG.debug("Imported YAML file:")
         LOG.debug(data)
         return data
 

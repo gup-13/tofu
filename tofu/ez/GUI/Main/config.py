@@ -21,6 +21,7 @@ from tofu.ez.GUI.message_dialog import warning_message
 
 from tofu.ez.params import EZVARS
 from tofu.util import add_value_to_dict_entry
+from tofu.ez.util import get_dict_values_log
 
 LOG = logging.getLogger(__name__)
 
@@ -609,10 +610,9 @@ class ConfigGroup(QGroupBox):
         self.set_temp_dir()
         self.set_preproc()
         self.set_preproc_entry()
-        #LOG.debug(parameters.params)
+        LOG.debug(get_dict_values_log())
         run_reco = partial(self.run_reconstruction, batch_run=False)
         QTimer.singleShot(100, run_reco)
-        #self.run_reconstruction(parameters.params, batch_run=False)
 
     def run_reconstruction(self, batch_run):
         try:            

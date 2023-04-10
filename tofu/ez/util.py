@@ -6,7 +6,7 @@ Created on Apr 20, 2020
 import os
 import tifffile
 from tofu.ez.yaml_in_out import read_yaml, write_yaml
-from tofu.util import get_filenames, get_first_filename, get_image_shape, read_image, reverse_tupleize, add_value_to_dict_entry
+from tofu.util import get_filenames, get_first_filename, get_image_shape, read_image, reverse_tupleize, add_value_to_dict_entry, get_dict_values_string
 
 from tofu.ez.params import EZVARS, MAP_TABLE
 from tofu.config import SECTIONS
@@ -110,7 +110,18 @@ def createMapFromParamsToDictKeys():
             print("Key" + key + "in MAP_TABLE does not have exactly 4 elements.")
     return result
 
+def get_dict_values_log()->str:
+    """Get string of setting values in dictionaries"""
+    s = "\n----Dictionary contents----\n"
+    s += "\n-EZVARS-\n"
+    s += get_dict_values_string(EZVARS)
+    s += "\n-SECTIONS-\n"
+    s += get_dict_values_string(SECTIONS)
+    s += "---------------------------"
+    return s
+
 def extract_values_from_dict(dict):
+    """Return a list of values to be saved as a text file"""
     new_dict = {}
     for key1 in dict.keys():
         new_dict[key1] = {}
@@ -126,11 +137,13 @@ def extract_values_from_dict(dict):
     return new_dict                   
 
 def import_values_from_dict(dict, imported_dict):
+    """Import a list of values from an imported dictionary"""
     for key1 in imported_dict.keys():
         for key2 in imported_dict[key1].keys():
             add_value_to_dict_entry(dict[key1][key2],imported_dict[key1][key2]['value'])
 
 def export_values(filePath):
+    """Export the values of EZVARS and SECTIONS as a YAML file"""
     combined_dict = {}
     combined_dict['sections'] = extract_values_from_dict(SECTIONS)
     combined_dict['ezvars'] = extract_values_from_dict(EZVARS)
@@ -140,13 +153,13 @@ def export_values(filePath):
     print("Finished exporting")
     
 def import_values(filePath):
+    """Import EZVARS and SECTIONS from a YAML file"""
     print("Importing values from: " +str(filePath))
     yaml_data = dict(read_yaml(filePath))
     import_values_from_dict(EZVARS,yaml_data['ezvars'])
     import_values_from_dict(SECTIONS,yaml_data['sections'])
     print("Finished importing")
     print(yaml_data)
-    
 
 def import_values_from_params(self, params):
     """

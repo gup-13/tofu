@@ -275,12 +275,23 @@ def get_dict_without_keys(d, keys):
     return {k: v for k, v in d.items() if k not in keys}
 
 def load_values_from_ezdefault(dict):
-    """Populates a dictionary with values from ezdefault"""
+    """Add or replace values from ezdefault in a dictionary"""
     for key1 in dict.keys():
         for key2 in dict[key1].keys():
             dict_entry = dict[key1][key2]
             if 'ezdefault' in dict_entry:
                 add_value_to_dict_entry(dict_entry, '') # Add default value
+                
+def get_dict_values_string(dict)->str:
+    """Get a string with all the values within a dictionary"""
+    s = ""
+    for key1 in dict.keys():
+        for key2 in dict[key1].keys():
+            dict_entry = dict[key1][key2]
+            if 'value' in dict_entry:
+                s += str(key1) + " " + str(key2) + ": " + str(dict_entry['value']) + "\n"
+    return s
+                
     
 def next_power_of_two(number):
     """Compute the next power of two of the *number*."""
