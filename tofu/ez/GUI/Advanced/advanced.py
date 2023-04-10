@@ -106,7 +106,7 @@ class AdvancedGroup(QGroupBox):
         LOG.debug(self.lamino_angle_entry.text())
         dict_entry = SECTIONS['cone-beam-weight']['axis-angle-x']
         add_value_to_dict_entry(dict_entry, str(self.lamino_angle_entry.text()))
-        self.lamino_angle_entry.setText(str(dict_entry['value']))
+        self.lamino_angle_entry.setText(str(reverse_tupleize()(dict_entry['value'])))
 
     def set_overall_rotation(self):
         LOG.debug(self.overall_rotation_entry.text())
@@ -118,13 +118,13 @@ class AdvancedGroup(QGroupBox):
         LOG.debug(self.center_position_z_entry.text())
         dict_entry = SECTIONS['cone-beam-weight']['center-position-z']
         add_value_to_dict_entry(dict_entry, str(self.center_position_z_entry.text()))
-        self.center_position_z_entry.setText(str(dict_entry['value']))
+        self.center_position_z_entry.setText(str(reverse_tupleize()(dict_entry['value'])))
 
     def set_rotation_about_beam(self):
         LOG.debug(self.axis_rotation_y_entry.text())
         dict_entry = SECTIONS['general-reconstruction']['axis-angle-y']
         add_value_to_dict_entry(dict_entry, str(self.axis_rotation_y_entry.text()))
-        self.axis_rotation_y_entry.setText(str(dict_entry['value']))
+        self.axis_rotation_y_entry.setText(str(reverse_tupleize()(dict_entry['value'])))
 
     def set_dark_scale(self):
         LOG.debug(self.dark_scale_entry.text())

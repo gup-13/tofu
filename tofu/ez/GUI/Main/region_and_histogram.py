@@ -256,4 +256,4 @@ class ROIandHistGroup(QGroupBox):
         LOG.debug(self.rotate_vol_entry.text())
         dict_entry = SECTIONS['general-reconstruction']['volume-angle-z']
         add_value_to_dict_entry(dict_entry, str(self.rotate_vol_entry.text()))
-        self.rotate_vol_entry.setText(str(dict_entry['value']))
+        self.rotate_vol_entry.setText(str(reverse_tupleize()(dict_entry['value'])))
