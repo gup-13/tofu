@@ -297,8 +297,9 @@ class ConfigGroup(QGroupBox):
         """
         dir_explore = QFileDialog(self)
         dir = dir_explore.getExistingDirectory(directory=self.input_dir_entry.text())
-        self.input_dir_entry.setText(dir)
-        self.set_input_dir()
+        if dir:
+            self.input_dir_entry.setText(dir)
+            self.set_input_dir()
 
     def set_input_dir(self):
         LOG.debug(str(self.input_dir_entry.text()))
@@ -310,8 +311,9 @@ class ConfigGroup(QGroupBox):
     def select_output_dir(self):
         dir_explore = QFileDialog(self)
         dir = dir_explore.getExistingDirectory(directory=self.output_dir_entry.text())
-        self.output_dir_entry.setText(dir)
-        self.set_output_dir()
+        if dir:
+            self.output_dir_entry.setText(dir)
+            self.set_output_dir()
 
     def set_output_dir(self):
         LOG.debug(str(self.output_dir_entry.text()))
@@ -395,22 +397,25 @@ class ConfigGroup(QGroupBox):
         LOG.debug("Select path to darks pressed")
         dir_explore = QFileDialog(self)
         directory = dir_explore.getExistingDirectory(directory=EZVARS['inout']['input-dir']['value'])
-        self.darks_absolute_entry.setText(directory)
-        self.set_common_darks()
+        if directory:
+            self.darks_absolute_entry.setText(directory)
+            self.set_common_darks()
 
     def select_flats_button_pressed(self):
         LOG.debug("Select path to flats pressed")
         dir_explore = QFileDialog(self)
         directory = dir_explore.getExistingDirectory(directory=EZVARS['inout']['input-dir']['value'])
-        self.flats_absolute_entry.setText(directory)
-        self.set_common_flats()
+        if directory:
+            self.flats_absolute_entry.setText(directory)
+            self.set_common_flats()
 
     def select_flats2_button_pressed(self):
         LOG.debug("Select path to flats2 pressed")
         dir_explore = QFileDialog(self)
         directory = dir_explore.getExistingDirectory(directory=EZVARS['inout']['input-dir']['value'])
-        self.flats2_absolute_entry.setText(directory)
-        self.set_common_flats2()
+        if directory:
+            self.flats2_absolute_entry.setText(directory)
+            self.set_common_flats2()
 
     def set_common_darks(self):
         LOG.debug("Common darks path: " + str(self.darks_absolute_entry.text()))
@@ -443,8 +448,9 @@ class ConfigGroup(QGroupBox):
     def select_temp_dir(self):
         dir_explore = QFileDialog(self)
         tmp_dir = dir_explore.getExistingDirectory(directory=self.temp_dir_entry.text())
-        self.temp_dir_entry.setText(tmp_dir)
-        self.set_temp_dir()
+        if tmp_dir:
+            self.temp_dir_entry.setText(tmp_dir)
+            self.set_temp_dir()
 
     def set_temp_dir(self):
         LOG.debug(str(self.temp_dir_entry.text()))

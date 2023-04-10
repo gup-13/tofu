@@ -1,14 +1,8 @@
 # This file is used to share params as a global variable
 import yaml
+import os
 from collections import OrderedDict
 from tofu.util import restrict_value
-
-import os #EZVARS[inout][tmp-dir]
-
-#TODO Make good structure to store parameters
-# similar to tofu? and
-# use tofu's structure for existing reco params
-# test comment
 
 params = {}
 
@@ -165,11 +159,11 @@ EZVARS = OrderedDict()
 
 EZVARS['inout'] = {
     'input-dir': {
-        'ezdefault': "/Users/gup/Personal/Documents/Image-Data/Reduced-head-neck-nolmndn/TestCTset/z01", 
+        'ezdefault': os.path.join(os.path.expanduser('~'),""), 
         'type': str, 
         'help': "TODO"},
     'output-dir': {
-        'ezdefault': "/Users/gup/Personal/Documents/Image-Data/output", 
+        'ezdefault': os.path.join(os.path.expanduser('~'),"rec"), 
         'type': str, 
         'help': "TODO"},
     'tmp-dir' : {
@@ -187,7 +181,7 @@ EZVARS['inout'] = {
     'tomo-dir': {
         'ezdefault': "tomo", #G
         'type': str, 
-        'help': "TODOç"},
+        'help': "TODO"},
     'flats2-dir': {
         'ezdefault': "flats2", #G
         'type': str, 

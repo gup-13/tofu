@@ -176,15 +176,15 @@ class NLMDNGroup(QGroupBox):
         LOG.debug("Select input directory pressed")
         dir_explore = QFileDialog(self)
         directory = dir_explore.getExistingDirectory()
+        if directory:
+            self.input_dir_entry.setText(str(directory))
+            self.set_indir_entry()
         
-        self.input_dir_entry.setText(str(directory))
-        self.set_indir_entry()
+            self.output_dir_entry.setText(str(directory + "-nlmfilt"))
+            self.set_outdir_entry()
         
-        self.output_dir_entry.setText(str(directory + "-nlmfilt"))
-        self.set_outdir_entry()
-        
-        dict_entry = EZVARS['nlmdn']['input-is-1file']
-        add_value_to_dict_entry(dict_entry, str(False))
+            dict_entry = EZVARS['nlmdn']['input-is-1file']
+            add_value_to_dict_entry(dict_entry, str(False))
 
     def set_indir_entry(self):
         LOG.debug("Indir entry: " + str(self.input_dir_entry.text()))
@@ -218,8 +218,9 @@ class NLMDNGroup(QGroupBox):
         directory = dir_explore.getExistingDirectory()
         # dict_entry = EZVARS['nlmdn']['output_pattern']
         # add_value_to_dict_entry(dict_entry, directory)
-        self.output_dir_entry.setText(str(directory))
-        self.set_outdir_entry()
+        if directory:
+            self.output_dir_entry.setText(str(directory))
+            self.set_outdir_entry()
 
     def set_save_bigtif(self):
         LOG.debug("Save bigtif checkbox: " + str(self.save_bigtif_checkbox.isChecked()))
