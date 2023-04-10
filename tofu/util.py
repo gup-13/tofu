@@ -207,7 +207,7 @@ def warn_if_value_at_limit(dict_entry):
             minLim = "-inf"
         if maxLim is None:
             maxLim = "inf"
-        msg = "Warning: Set a value within the limits of ("+ str(minLim) + ", " + str(maxLim) + ")"
+        msg = "Warning: The value " + str(dict_entry['value']) + " is on the limits of ("+ str(minLim) + ", " + str(maxLim) + "). This may cause issues during reconstruction."
         print(msg)  #QMessageBox doesn't seem to work from util.py
 
 def add_value_to_dict_entry(dict_entry, value):
@@ -229,7 +229,7 @@ def add_value_to_dict_entry(dict_entry, value):
             dict_entry['value'] = dict_entry['type'](value, clamp=True)
         except ValueError: #int can't convert string with decimal (e.g. "1.0" -> 1)
             dict_entry['value'] = dict_entry['type'](float(value))
-    #warn_if_value_at_limit(dict_entry) # Not sure if all limits are exclusive
+    warn_if_value_at_limit(dict_entry) # Not sure if all limits are exclusive
 
 def get_ascii_validator():
     """Returns a validator that only allows the input of visible ASCII characters"""
