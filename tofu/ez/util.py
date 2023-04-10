@@ -140,7 +140,7 @@ def import_values_from_dict(dict, imported_dict):
     """Import a list of values from an imported dictionary"""
     for key1 in imported_dict.keys():
         for key2 in imported_dict[key1].keys():
-            add_value_to_dict_entry(dict[key1][key2],imported_dict[key1][key2]['value'])
+            add_value_to_dict_entry(dict[key1][key2],imported_dict[key1][key2]['value'], False)
 
 def export_values(filePath):
     """Export the values of EZVARS and SECTIONS as a YAML file"""
@@ -169,7 +169,7 @@ def import_values_from_params(self, params):
     map_param_to_dict_entries = self.createMapFromParamsToDictEntry()
     for p in params:
         dict_entry = map_param_to_dict_entries[str(p)]
-        add_value_to_dict_entry(dict_entry, params[str(p)])
+        add_value_to_dict_entry(dict_entry, params[str(p)], False)
 
 def save_params(ctsetname, ax, nviews, WH):
     if not EZVARS['inout']['dryrun']['value'] and not os.path.exists(EZVARS['inout']['output-dir']['value']):
