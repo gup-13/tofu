@@ -18,7 +18,7 @@ SECTIONS['general'] = {
         'metavar': 'FILE'},
     'verbose': {
         'default': False,
-        'ezdefault': False, #G
+        'ezdefault': False,
         'help': 'Verbose output',
         'action': 'store_true'},
     'output': {
@@ -29,19 +29,19 @@ SECTIONS['general'] = {
         'metavar': 'PATH'},
     'output-bitdepth': {
         'default': 32,
-        'ezdefault': 8, #G
+        'ezdefault': 8,
         'type': restrict_value((0, None), dtype=int),
         'help': "Bit depth of output, either 8, 16 or 32",
         'metavar': 'BITDEPTH'},
     'output-minimum': {
         'default': None,
-        'ezdefault': 0.0, #G
+        'ezdefault': 0.0,
         'type': float,
         'help': "Minimum value that maps to zero",
         'metavar': 'MIN'},
     'output-maximum': {
         'default': None,
-        'ezdefault': 0.0, #G
+        'ezdefault': 0.0,
         'type': float,
         'help': "Maximum input value that maps to largest output value",
         'metavar': 'MAX'},
@@ -68,12 +68,12 @@ SECTIONS['general'] = {
 SECTIONS['reading'] = {
     'y': {
         'default': 0,
-        'ezdefault': 100, #G
+        'ezdefault': 100,
         'type': restrict_value((0, None), dtype=int),
         'help': 'Vertical coordinate from where to start reading the input image'},
     'height': {
         'default': None,
-        'ezdefault': 200, #G
+        'ezdefault': 200,
         'type': restrict_value((0, None), dtype=int),
         'help': "Number of rows which will be read"},
     'bitdepth': {
@@ -82,7 +82,7 @@ SECTIONS['reading'] = {
         'help': "Bit depth of raw files"},
     'y-step': {
         'default': 1,
-        'ezdefault': 20, #G
+        'ezdefault': 20,
         'type': restrict_value((0, None), dtype=int),
         'help': "Read every \"step\" row from the input"},
     'start': {
@@ -158,7 +158,7 @@ SECTIONS['flat-correction'] = {
 SECTIONS['retrieve-phase'] = {
     'enable-phase': {
         'default': False,
-        'ezdefault': False, #G
+        'ezdefault': False,
         'type': bool,
         'help': "Enable phase retrieval"},
     'retrieval-method': {
@@ -167,23 +167,23 @@ SECTIONS['retrieve-phase'] = {
         'help': "Phase retrieval method"},
     'energy': {
         'default': None,
-        'ezdefault': 20, #G
+        'ezdefault': 20,
         'type': float,
         'help': "X-ray energy [keV]"},
     'propagation-distance': {
         'default': None,
-        'ezdefault': "0.1", #G - float
+        'ezdefault': "0.1",
         'type': tupleize(),
         'help': ("Sample <-> detector distance (if one value, then use the same for x and y "
                  "direction, otherwise first specifies x and second y direction) [m]")},
     'pixel-size': {
         'default': 1e-6,
-        'ezdefault': 3.6, #G
+        'ezdefault': 3.6,
         'type': float,
         'help': "Pixel size [m]"},
     'regularization-rate': {
         'default': 2,
-        'ezdefault': 200, #G - (!)WARNING - mismatch from help.
+        'ezdefault': 200, #(!)WARNING - GUI value does not match description from help.
         'type': float,
         'help': "Regularization rate (typical values between [2, 3])"},
     'delta': {
@@ -479,12 +479,12 @@ SECTIONS['cone-beam-weight'] = {
         'help': "X rotation axis position on a projection [pixels]"},
     'center-position-z': {
         'default': None,
-        'ezdefault': "0", #G - float
+        'ezdefault': "0",
         'type': tupleize(),
         'help': "Z rotation axis position on a projection [pixels]"},
     'axis-angle-x': {
         'default': "0",
-        'ezdefault': "30", #G - float
+        'ezdefault': "30",
         'type': tupleize(dtype=list),
         'help': "Rotation axis rotation around the x axis"
                 "(laminographic angle, 0 = tomography) [deg]"}}
@@ -601,7 +601,7 @@ SECTIONS['general-reconstruction'] = {
         'help': "Detector rotation around the z axis (vertical) [deg]"},
     'axis-angle-y': {
         'default': "0",
-        'ezdefault': "0", #G - float
+        'ezdefault': "0",
         'type': tupleize(dtype=list),
         'help': "Rotation axis rotation around the y axis (along beam direction) [deg]"},
     'axis-angle-z': {
@@ -618,7 +618,7 @@ SECTIONS['general-reconstruction'] = {
         'help': "Volume rotation around the y axis (along beam direction) [deg]"},
     'volume-angle-z': {
         'default': "0",
-        'ezdefault': "0.0", #G - float
+        'ezdefault': "0.0",
         'type': tupleize(dtype=list),
         'help': "Volume rotation around the z axis (vertical) [deg]"},
     'compute-type': {
@@ -639,7 +639,7 @@ SECTIONS['general-reconstruction'] = {
         'choices': ['half', 'float', 'double', 'uchar', 'ushort', 'uint']},
     'overall-angle': {
         'default': None,
-        'ezdefault': 360, #G
+        'ezdefault': 360,
         'type': float,
         'help': "The total angle over which projections were taken in degrees"},
     'genreco-padding-mode': {
