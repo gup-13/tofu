@@ -178,12 +178,13 @@ SECTIONS['retrieve-phase'] = {
                  "direction, otherwise first specifies x and second y direction) [m]")},
     'pixel-size': {
         'default': 1e-6,
-        'ezdefault': 3.6,
+        'ezdefault': 3.6e-6,
         'type': float,
         'help': "Pixel size [m]"},
     'regularization-rate': {
         'default': 2,
-        'ezdefault': 200, #(!)WARNING - GUI value does not match description from help.
+        #'ezdefault': 200, #(!)WARNING - GUI value does not match description from help.
+        'ezdefault': 2.30102999566398119521,
         'type': float,
         'help': "Regularization rate (typical values between [2, 3])"},
     'delta': {

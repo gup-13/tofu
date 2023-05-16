@@ -130,7 +130,10 @@ def extract_values_from_dict(dict):
             if 'value' in dict_entry:
                 new_dict[key1][key2] = {}
                 value_type = type(dict_entry['value'])
-                if value_type is list or value_type is tuple:
+                print(key1, key2, dict_entry)
+                if dict_entry['value'] is None:
+                    new_dict[key1][key2]['value'] = None
+                elif value_type is list or value_type is tuple:
                     new_dict[key1][key2]['value'] = str(reverse_tupleize()(dict_entry['value']))
                 else:                      
                     new_dict[key1][key2]['value'] = dict_entry['value']

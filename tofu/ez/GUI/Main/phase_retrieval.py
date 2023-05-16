@@ -1,7 +1,7 @@
 import logging
+import math
 from PyQt5.QtWidgets import QGridLayout, QLabel, QGroupBox, QLineEdit, QCheckBox
 
-from tofu.ez.params import EZVARS
 from tofu.config import SECTIONS
 from tofu.util import add_value_to_dict_entry, reverse_tupleize, get_double_validator, get_tuple_validator
 
@@ -63,13 +63,15 @@ class PhaseRetrievalGroup(QGroupBox):
         layout.addWidget(self.delta_beta_ratio_entry, 4, 1)
 
         self.setLayout(layout)
-
+    
     def load_values(self):
         self.enable_PR_checkBox.setChecked(SECTIONS['retrieve-phase']['enable-phase']['value'])
         self.photon_energy_entry.setText(str(SECTIONS['retrieve-phase']['energy']['value']))
-        self.pixel_size_entry.setText(str(SECTIONS['retrieve-phase']['pixel-size']['value']))
+        self.pixel_size_entry.setText(str(
+            round(self.meters_to_microns(SECTIONS['retrieve-phase']['pixel-size']['value']),6)))
         self.detector_distance_entry.setText(str(reverse_tupleize()(SECTIONS['retrieve-phase']['propagation-distance']['value'])))
-        self.delta_beta_ratio_entry.setText(str(SECTIONS['retrieve-phase']['regularization-rate']['value']))
+        self.delta_beta_ratio_entry.setText(str(
+            round(self.regularization_rate_to_delta_beta_ratio(SECTIONS['retrieve-phase']['regularization-rate']['value']),6)))
 
     def set_PR(self):
         LOG.debug("PR: " + str(self.enable_PR_checkBox.isChecked()))
@@ -85,7 +87,8 @@ class PhaseRetrievalGroup(QGroupBox):
     def set_pixel_size(self):
         LOG.debug(self.pixel_size_entry.text())
         dict_entry = SECTIONS['retrieve-phase']['pixel-size']
-        add_value_to_dict_entry(dict_entry, str(self.pixel_size_entry.text()))
+        add_value_to_dict_entry(dict_entry, 
+                                str(self.microns_to_meters(self.pixel_size_entry.text())))
         self.pixel_size_entry.setText(str(dict_entry['value']))
 
     def set_detector_distance(self):
@@ -97,5 +100,18 @@ class PhaseRetrievalGroup(QGroupBox):
     def set_delta_beta(self):
         LOG.debug(self.delta_beta_ratio_entry.text())
         dict_entry = SECTIONS['retrieve-phase']['regularization-rate']
-        add_value_to_dict_entry(dict_entry, str(self.delta_beta_ratio_entry.text()))
+        add_value_to_dict_entry(dict_entry, 
+                                str(self.delta_beta_ratio_to_regularization_rate(self.delta_beta_ratio_entry.text())))
         self.delta_beta_ratio_entry.setText(str(dict_entry['value']))
+        
+    def meters_to_microns(self,value)->float:
+        return value * 1e6
+    
+    def microns_to_meters(self,value)->float:
+        return value * 1e-6
+    
+    def delta_beta_ratio_to_regularization_rate(self,value)->float:
+        return math.log10(value)
+    
+    def regularization_rate_to_delta_beta_ratio(self,value)->float:
+        return 10**value

@@ -216,8 +216,8 @@ def add_value_to_dict_entry(dict_entry, value, enable_warning = True):
         # no 'type' can be defined in dictionary entries with 'action' key
         dict_entry['value'] = bool(value)
         return
-    elif value == '':
-        # takes default value if empty string
+    elif value == '' or value == None:
+        # takes default value if empty string or null
         if dict_entry['ezdefault'] is None:
             dict_entry['value'] = dict_entry['ezdefault']
         else:    
