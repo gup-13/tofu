@@ -372,17 +372,26 @@ def main_360_mp_depth1(indir, outdir, ax, cro):
             in_fmt = firstfname[:-trnc_len] + '{:0'+str(n_dgts)+'}.tif'
 
             offst = int(num_projs / 2)
-            exec_func = partial(st_mp_idx, offst, ax, cro, in_fmt, out_fmt)
             idxs = range(idx0, idx0+offst)
-            pool = mp.Pool(processes=mp.cpu_count())
+            for idx in idxs:
+                st_mp_idx(offst, ax, cro, in_fmt, out_fmt, idx)
+            ###################
+            ## Old multiprocessing Implementation
+            # exec_func = partial(st_mp_idx, offst, ax, cro, in_fmt, out_fmt)
+            # idxs = range(idx0, idx0+offst)
+            # pool = mp.Pool(processes=mp.cpu_count())
+            ###################
             # double check if names correspond - to remove later
             for nmi in idxs:
                 #print(names[nmi-idx0], in_fmt.format(nmi))
                 if names[nmi-idx0] != in_fmt.format(nmi):
                     print('Something wrong with file name format')
                     continue
-            #pool.map(exec_func, names[0:num_projs/2])
-            pool.map(exec_func, idxs)
+            ###################
+            ## Old multiprocessing implementation
+            # #pool.map(exec_func, names[0:num_projs/2])
+            # pool.map(exec_func, idxs)
+            ###################
         elif len(shape) == 3:
             tfs = TiffSequenceReader(os.path.join(indir, sdir))
             npairs = tfs.num_images//2
@@ -390,11 +399,17 @@ def main_360_mp_depth1(indir, outdir, ax, cro):
 
             os.makedirs(os.path.join(outdir, sdir))
             out_fmt = os.path.join(outdir, sdir, 'sti-{:>04}.tif')
-
-            exec_func = partial(st_mp_bigtiff_pages, npairs, ax, cro, tfs, out_fmt)
             idxs = range(0, npairs)
-            pool = mp.Pool(processes=mp.cpu_count())
-            pool.map(exec_func, idxs)
+            for idx in idxs:
+                st_mp_bigtiff_pages(npairs, ax, cro, tfs, out_fmt, idx)
+            
+            ##################
+            ## Old multiprocessing implementation
+            # exec_func = partial(st_mp_bigtiff_pages, npairs, ax, cro, tfs, out_fmt)
+            # idxs = range(0, npairs)
+            # pool = mp.Pool(processes=mp.cpu_count())
+            # pool.map(exec_func, idxs)
+            ##################
 
             tfs.close()
 
