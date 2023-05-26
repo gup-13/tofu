@@ -23,6 +23,8 @@ from tofu.ez.GUI.Stitch_tools_tab.ezstitch_qt import EZStitchGroup
 from tofu.ez.GUI.Stitch_tools_tab.ezmview_qt import EZMViewGroup
 from tofu.ez.GUI.Stitch_tools_tab.ez_360_overlap_qt import Overlap360Group
 from tofu.ez.GUI.login_dialog import Login
+from tofu.ez.GUI.Main.batch_process import BatchProcessGroup
+from tofu.ez.GUI.Stitch_tools_tab.auto_horizontal_stitch_gui import AutoHorizontalStitchGUI
 
 
 LOG = logging.getLogger(__name__)
@@ -63,6 +65,8 @@ class GUI(qtw.QWidget):
         self.tab2 = qtw.QWidget()
         self.tab3 = qtw.QWidget()
         self.tab4 = qtw.QWidget()
+        self.tab5 = qtw.QWidget()
+        self.tab6 = qtw.QWidget()
 
         # Create and setup classes for each section of GUI
         # Main Tab
@@ -110,6 +114,11 @@ class GUI(qtw.QWidget):
 
         self.overlap_group = Overlap360Group()
         self.overlap_group.init_values()
+        
+        self.auto_horizontal_stitch = AutoHorizontalStitchGUI()
+        self.auto_horizontal_stitch.init_values()
+        
+        self.batch_process_group = BatchProcessGroup()
 
         #######################################################
 
@@ -163,12 +172,20 @@ class GUI(qtw.QWidget):
         helpers_layout.addWidget(self.overlap_group, 0, 1)
         helpers_layout.addWidget(self.multi_stitch_group, 1, 0)
         helpers_layout.addWidget(self.ezstitch_group, 1, 1)
+        
+        stitching2_layout = qtw.QGridLayout()
+        stitching2_layout.addWidget(self.auto_horizontal_stitch, 0, 0)
+        
+        batch_tools_layout = qtw.QGridLayout()
+        batch_tools_layout.addWidget(self.batch_process_group, 0, 0)
 
         # Add tabs
         self.tabs.addTab(self.tab1, "Main")
         self.tabs.addTab(self.tab2, "Advanced")
-        self.tabs.addTab(self.tab3, "Stitching tools")
+        self.tabs.addTab(self.tab3, "Stitching tools 1")
         self.tabs.addTab(self.tab4, "Image Viewer")
+        self.tabs.addTab(self.tab5, "Stitching Tools 2")
+        self.tabs.addTab(self.tab6, "Batch Tools")
 
         # Create main tab
         self.tab1.layout = main_layout
@@ -185,6 +202,14 @@ class GUI(qtw.QWidget):
         # Create helpers tab
         self.tab3.layout = helpers_layout
         self.tab3.setLayout(self.tab3.layout)
+        
+        # Create stitching2 tab
+        self.tab5.layout = stitching2_layout
+        self.tab5.setLayout(self.tab5.layout)
+        
+        # Create batch tools tab
+        self.tab6.layout = batch_tools_layout
+        self.tab6.setLayout(self.tab6.layout)
 
         # Add tabs to widget
         layout.addWidget(self.tabs)

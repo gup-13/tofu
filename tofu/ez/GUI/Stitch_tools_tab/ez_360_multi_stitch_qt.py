@@ -12,7 +12,6 @@ from PyQt5.QtCore import pyqtSignal
 import logging
 from shutil import rmtree
 import os
-import getpass
 import yaml
 from tofu.ez.Helpers.stitch_funcs import main_360_mp_depth2
 from tofu.ez.GUI.message_dialog import warning_message
@@ -261,18 +260,22 @@ class MultiStitch360Group(QGroupBox):
     def input_button_pressed(self):
         LOG.debug("Input button pressed")
         dir_explore = QFileDialog(self)
-        self.parameters['360multi_input_dir'] = dir_explore.getExistingDirectory()
-        self.input_dir_entry.setText(self.parameters['360multi_input_dir'])
+        self.input_dir_entry.setText(dir_explore.getExistingDirectory())
+        self.set_input_entry()
 
     def set_input_entry(self):
         LOG.debug("Input directory: " + str(self.input_dir_entry.text()))
         self.parameters['360multi_input_dir'] = str(self.input_dir_entry.text())
+        
+        # Set output directory to automatically follow the input directory structure
+        self.output_dir_entry.setText(self.parameters['360multi_input_dir'] + "/hor-search")
+        self.set_output_entry()
 
     def temp_button_pressed(self):
         LOG.debug("Temp button pressed")
         dir_explore = QFileDialog(self)
-        self.parameters['360multi_temp_dir'] = dir_explore.getExistingDirectory()
-        self.temp_dir_entry.setText(self.parameters['360multi_temp_dir'])
+        self.temp_dir_entry.setText(dir_explore.getExistingDirectory())
+        self.set_temp_entry()
 
     def set_temp_entry(self):
         LOG.debug("Temp directory: " + str(self.temp_dir_entry.text()))
@@ -281,8 +284,8 @@ class MultiStitch360Group(QGroupBox):
     def output_button_pressed(self):
         LOG.debug("Output button pressed")
         dir_explore = QFileDialog(self)
-        self.parameters['360multi_output_dir'] = dir_explore.getExistingDirectory()
-        self.output_dir_entry.setText(self.parameters['360multi_output_dir'])
+        self.output_dir_entry.setText(dir_explore.getExistingDirectory())
+        self.set_output_entry()
 
     def set_output_entry(self):
         LOG.debug("Output directory: " + str(self.output_dir_entry.text()))
