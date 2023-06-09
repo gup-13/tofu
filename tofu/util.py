@@ -1,16 +1,23 @@
 """Various utility functions."""
 import argparse
+import gi
 import glob
 import logging
 import math
 import os
 from types import FunctionType
 from collections import OrderedDict
+<<<<<<< HEAD
 from PyQt5.QtCore import QRegExp
 from PyQt5.QtGui import QRegExpValidator
 
+=======
+gi.require_version('Ufo', '0.0')
+from gi.repository import Ufo
+>>>>>>> remotes/tomas/master
 
 LOG = logging.getLogger(__name__)
+RESOURCES = None
 
 
 def range_list(value):
@@ -63,6 +70,9 @@ def get_filenames(path):
     Get all filenams from *path*, which could be a directory or a pattern for
     matching files in a directory.
     """
+    if not path:
+        return []
+
     return sorted(glob.glob(os.path.join(path, '*') if os.path.isdir(path) else path))
 
 
@@ -316,6 +326,15 @@ def read_image(filename):
     
 
 
+def write_image(filename, image):
+    import tifffile
+
+    directory = os.path.dirname(filename)
+    os.makedirs(directory, exist_ok=True)
+
+    tifffile.imwrite(filename, image)
+
+
 def get_image_shape(filename):
     """Determine image shape (numpy order) from file *filename*."""
     if filename.lower().endswith('.tif') or filename.lower().endswith('.tiff'):
@@ -345,11 +364,12 @@ def get_first_filename(path):
     return filenames[0]
 
 
-def determine_shape(args, path=None, store=False):
+def determine_shape(args, path=None, store=False, do_raise=False):
     """Determine input shape from *args* which means either width and height are specified in args
     or try to read the *path* and determine the shape from it. The default path is args.projections,
     which is the typical place to find the input. If *store* is True, assign the determined values
-    if they aren't already present in *args*. Return a tuple (width, height).
+    if they aren't already present in *args*. Return a tuple (width, height). If *do_raise* is True,
+    raise an exception if shape cannot be determined.
     """
     width = args.width
     height = args.height
@@ -363,8 +383,10 @@ def determine_shape(args, path=None, store=False):
             # Now set the width and height if not specified
             width = width or shape[-1]
             height = height or shape[-2]
-        except:
+        except Exception as exc:
             LOG.info("Couldn't determine image dimensions from '{}'".format(filename))
+            if do_raise:
+                raise exc
 
     if store:
         if not args.width:
@@ -380,24 +402,36 @@ def get_filtering_padding(width):
     return next_power_of_two(2 * width) - width
 
 
-def setup_padding(pad, width, height, mode, crop=None, pad_width=0, pad_height=0):
-    if not pad_width:
+def setup_padding(pad, width, height, mode, crop=None, pad_width=None, pad_height=0, centered=True):
+    if pad_width is not None and pad_width < 0:
+        raise ValueError("pad_width must be >= 0")
+    if pad_height < 0:
+        raise ValueError("pad_height must be >= 0")
+    if pad_width is None:
         # Default is horizontal padding only
         pad_width = get_filtering_padding(width)
     pad.props.width = width + pad_width
     pad.props.height = height + pad_height
-    pad.props.x = pad_width // 2
-    pad.props.y = pad_height // 2
+    pad.props.x = pad_width // 2 if centered else 0
+    pad.props.y = pad_height // 2 if centered else 0
     pad.props.addressing_mode = mode
-    LOG.debug('Padded size: ({}, {})'.format(width + pad_width, height + pad_height))
-    LOG.debug('Padding mode: {}'.format(mode))
+    LOG.debug(
+        "Padding (x=0, y=0, w=%d, h=%d) -> (x=%d, y=%d, w=%d, h=%d) with mode `%s'",
+        width,
+        height,
+        pad.props.x,
+        pad.props.y,
+        pad.props.width,
+        pad.props.height,
+        mode,
+    )
 
     if crop:
         # crop to original width after filtering
         crop.props.width = width
         crop.props.height = height
-        crop.props.x = pad_width // 2
-        crop.props.y = pad_height // 2
+        crop.props.x = pad_width // 2 if centered else 0
+        crop.props.y = pad_height // 2 if centered else 0
 
     return (pad_width, pad_height)
 
@@ -467,6 +501,11 @@ def get_scarray_value(scarray, index):
 
 def run_scheduler(scheduler, graph):
     from threading import Thread
+    # Reuse resources until https://github.com/ufo-kit/ufo-core/issues/191 is solved.
+    global RESOURCES
+    if not RESOURCES:
+        RESOURCES = Ufo.Resources()
+    scheduler.set_resources(RESOURCES)
 
     thread = Thread(target=scheduler.run, args=(graph,))
     thread.setDaemon(True)
@@ -479,6 +518,18 @@ def run_scheduler(scheduler, graph):
         LOG.info('Processing interrupted')
         scheduler.abort()
         return False
+
+
+def fbp_filtering_in_phase_retrieval(args):
+    if args.energy is None or args.propagation_distance is None:
+        # No phase retrieval at all
+        return False
+    return (
+        args.projection_filter != 'none' and (
+            args.retrieval_method != 'tie' or
+            args.tie_approximate_logarithm
+        )
+    )
 
 
 class Vector(object):

@@ -193,6 +193,22 @@ SECTIONS['retrieve-phase'] = {
         'help': "Real part of the complex refractive index of the material. "
                 "If specified, phase retrieval returns projected thickness, "
                 "if not, it returns phase"},
+    'tie-approximate-logarithm': {
+        'default': False,
+        'help': ("Approximate the logarithm of the tie method by the first order Taylor series "
+                 "expansion [ln(x) ~ ln(a) + (x - a) / a at a, a specified with "
+                 "--tie-approximate-point].  This way we may do the filtering for FBP already "
+                 "by the phase retrieval and save one forward and one backward 1D FFT needed "
+                 "if the filtering occurse separately. This is mostly useful for online reconstruction "
+                 "when one reconstruct only a few slices."),
+        'action': 'store_true'},
+    'tie-approximate-point': {
+        'default': 0.75,
+        'type': float,
+        'help': ("Taylor series point of expansion used by --tie-approximate-logarithm. "
+                 "The error of the approximation will be smallest around this point, "
+                 "so you can tune this for the desired grey level of interest "
+                 "(given by the sample based on e^(-mju * projected_thickness)).")},
     'retrieval-padded-width': {
         'default': 0,
         'type': restrict_value((0, None), dtype=int),
@@ -700,6 +716,44 @@ SECTIONS['find-large-spots'] = {
         'help': "Padded values assignment for the filtered input image"},
     }
 
+SECTIONS['inpaint'] = {
+    'projections': {
+        'default': None,
+        'type': str,
+        'help': "Location with projections",
+        'metavar': 'PATH'},
+    'guidance-image': {
+        'default': None,
+        'type': str,
+        'help': "Guidance image, structure which will be inpainted into input images"},
+    'mask-image': {
+        'default': None,
+        'type': str,
+        'help': "Mask image, pixels with ones will use the guidance image, pixels with zeros \
+                the original image"},
+    'inpaint-padded-width': {
+        'default': 0,
+        'type': restrict_value((0, None), dtype=int),
+        'help': "Padded width used for inpainting"},
+    'inpaint-padded-height': {
+        'default': 0,
+        'type': restrict_value((0, None), dtype=int),
+        'help': "Padded height used for inpainting"},
+    'inpaint-padding-mode': {
+        'choices': ['none', 'clamp', 'clamp_to_edge', 'repeat', 'mirrored_repeat'],
+        'default': 'clamp_to_edge',
+        'help': "Padded values assignment for inpainting"},
+    'preserve-mean': {
+        'default': False,
+        'action': 'store_true',
+        'help': "Mean value of the inpainted result will be the same as the one of the input"},
+    'harmonize-borders': {
+        'default': False,
+        'action': 'store_true',
+        'help': "Harmonize transitions between image borders useful for the removal of the "
+                "cross in the power spectrum"},
+}
+
 TOMO_PARAMS = ('flat-correction', 'reconstruction', 'tomographic-reconstruction', 'fbp', 'dfi', 'ir', 'sart', 'sbtv')
 
 PREPROC_PARAMS = ('preprocess', 'cone-beam-weight', 'flat-correction', 'retrieve-phase')
@@ -711,7 +765,8 @@ NICE_NAMES = ('General', 'Input', 'Flat field correction', 'Phase retrieval',
               'Laminographic reconstruction', 'Filtered backprojection',
               'Direct Fourier Inversion', 'Iterative reconstruction',
               'SART', 'SBTV', 'GUI settings', 'Estimation', 'Performance',
-              'Preprocess', 'Cone beam weight', 'General reconstruction', 'Find large spots')
+              'Preprocess', 'Cone beam weight', 'General reconstruction', 'Find large spots',
+              'Inpaint')
 
 def get_config_name():
     """Get the command line --config option."""
