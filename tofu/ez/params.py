@@ -289,10 +289,16 @@ EZVARS['COR'] = {
         'help': "TODO"},
 }
 
-EZVARS['filters'] = {'rm_spots': {
+EZVARS['filters'] = {
+    'rm_spots': {
         'ezdefault': False,
         'type': bool, 
-        'help': "TODO-G"}}
+        'help': "TODO-G"},
+    'spot-threshold': {
+        'ezdefault': 1000,
+        'type': restrict_value((0,None), dtype=float),
+        'help': "TODO-G"}
+}
 
 EZVARS['RR'] = {
     'enable-RR': {

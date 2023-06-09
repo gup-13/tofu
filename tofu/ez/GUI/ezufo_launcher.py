@@ -49,16 +49,6 @@ class GUI(qtw.QWidget):
         # self.login_parameters = {}
         # QTimer.singleShot(0, self.login)
 
-        # Read in default parameter settings from yaml file
-        try:
-            settings_path = os.path.dirname(os.path.abspath(__file__)) + "/default_settings.yaml"
-            print("Loading default values from: " + str(settings_path))
-            import_values(settings_path)
-        except KeyError:
-            print("ERROR: The file does not match the contents of the setting. Using the internal default settings.")
-        except FileNotFoundError:
-            print("ERROR: Could not load the default settings file. Using the internal default settings.")
-
         # Initialize tab screen
         self.tabs = qtw.QTabWidget()
         self.tab1 = qtw.QWidget()
