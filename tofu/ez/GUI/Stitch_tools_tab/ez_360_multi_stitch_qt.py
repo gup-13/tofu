@@ -373,30 +373,14 @@ class MultiStitch360Group(QGroupBox):
         if os.path.exists(self.parameters['360multi_temp_dir']) and \
                     len(os.listdir(self.parameters['360multi_temp_dir'])) > 0:
             qm = QMessageBox()
-            rep = qm.question(self, '', "Temporary dir exist and not empty. Can I delete it to continue?"
-                              , qm.Yes | qm.No)
-            if rep == qm.Yes:
-                try:
-                    rmtree(self.parameters['360multi_temp_dir'])
-                except:
-                    warning_message("Cannot delete tmp directory")
-                    return
-            else:
-                return
+            rep = qm.warning(self, '', "Temp directory exists and is not empty.")            
+            return
 
         if os.path.exists(self.parameters['360multi_output_dir']) and \
                     len(os.listdir(self.parameters['360multi_output_dir'])) > 0:
             qm = QMessageBox()
-            rep = qm.question(self, '', "Output directory exists and not empty. Can I delete it to continue?",
-                              qm.Yes | qm.No)
-            if rep == qm.Yes:
-                try:
-                    rmtree(self.parameters['360overlap_output_dir'])
-                except:
-                    warning_message(self, "Problem", "Cannot delete existing output dir")
-                    return
-            else:
-                return
+            rep = qm.warning(self, '', "Output directory exists and is not empty.")            
+            return
 
         print("======= Begin 360 Multi-Stitch =======")
         main_360_mp_depth2(self.parameters)
@@ -411,14 +395,29 @@ class MultiStitch360Group(QGroupBox):
         print("---- Deleting Data From Output Directory ----")
         LOG.debug("Delete button pressed")
         qm = QMessageBox()
-        rep = qm.question(self, '', "Is it safe to delete the directory?", qm.Yes | qm.No)
-        if rep == qm.Yes:
+        rep = qm.question(self, '', "Is it safe to delete the output directory?", qm.Yes | qm.No)
+        
+        if not os.path.exists(self.parameters['360multi_output_dir']):
+            warning_message("Output directory does not exist")
+        elif rep == qm.Yes:
             try:
                 rmtree(self.parameters['360multi_output_dir'])
             except:
-                warning_message("Problems with deleting directory")
+                warning_message("Problems with deleting output directory")
         else:
             return
+        
+        rep = qm.question(self, '', "Is it safe to delete the temp directory?", qm.Yes | qm.No)
+        if not os.path.exists(self.parameters['360multi_temp_dir']):
+            warning_message("Temp directory does not exist")
+        elif rep == qm.Yes:
+            try:
+                rmtree(self.parameters['360multi_temp_dir'])
+            except:
+                warning_message("Problems with deleting temp directory")
+        else:
+            return
+        
 
     def help_button_pressed(self):
         LOG.debug("Help button pressed")
