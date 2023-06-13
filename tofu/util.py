@@ -13,7 +13,6 @@ from PyQt5.QtGui import QRegExpValidator
 gi.require_version('Ufo', '0.0')
 from gi.repository import Ufo
 
-
 LOG = logging.getLogger(__name__)
 RESOURCES = None
 

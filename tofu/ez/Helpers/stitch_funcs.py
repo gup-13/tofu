@@ -18,6 +18,7 @@ import warnings
 import time
 
 from tofu.ez.params import EZVARS
+from concurrent import futures
 
 def findCTdirs(root: str, tomo_name: str):
     """
@@ -341,6 +342,8 @@ def main_360_mp_depth1(indir, outdir, ax, cro):
 
     subdirs = [dI for dI in os.listdir(indir) \
             if os.path.isdir(os.path.join(indir, dI))]
+    enableMultiprocessing = True
+    
     for i, sdir in enumerate(subdirs):
         print(f"Stitching images in {sdir}")
         names = sorted(glob.glob(os.path.join(indir, sdir, '*.tif')))
@@ -364,28 +367,25 @@ def main_360_mp_depth1(indir, outdir, ax, cro):
             idx0 = int(firstnum)
             trnc_len = n_dgts + 4 #format + .tif
             in_fmt = firstfname[:-trnc_len] + '{:0'+str(n_dgts)+'}.tif'
-
-            offst = int(num_projs / 2)
-            idxs = range(idx0, idx0+offst)
-            for idx in idxs:
-                st_mp_idx(offst, ax, cro, in_fmt, out_fmt, idx)
-            ###################
-            ## Old multiprocessing Implementation
-            # exec_func = partial(st_mp_idx, offst, ax, cro, in_fmt, out_fmt)
-            # idxs = range(idx0, idx0+offst)
-            # pool = mp.Pool(processes=mp.cpu_count())
-            ###################
+            
             # double check if names correspond - to remove later
             for nmi in idxs:
                 #print(names[nmi-idx0], in_fmt.format(nmi))
                 if names[nmi-idx0] != in_fmt.format(nmi):
                     print('Something wrong with file name format')
                     continue
-            ###################
-            ## Old multiprocessing implementation
-            # #pool.map(exec_func, names[0:num_projs/2])
-            # pool.map(exec_func, idxs)
-            ###################
+                
+            offst = int(num_projs / 2)
+            idxs = range(idx0, idx0+offst)
+
+            if enableMultiprocessing:
+                exec_func = partial(st_mp_idx, offst, ax, cro, in_fmt, out_fmt)
+                with futures.ThreadPoolExecutor(mp.cpu_count()) as executor:
+                    executor.map(exec_func, idxs)
+            else:
+                for idx in idxs:
+                    st_mp_idx(offst, ax, cro, in_fmt, out_fmt, idx)
+                
         elif len(shape) == 3:
             tfs = TiffSequenceReader(os.path.join(indir, sdir))
             npairs = tfs.num_images//2
@@ -394,17 +394,16 @@ def main_360_mp_depth1(indir, outdir, ax, cro):
             os.makedirs(os.path.join(outdir, sdir))
             out_fmt = os.path.join(outdir, sdir, 'sti-{:>04}.tif')
             idxs = range(0, npairs)
-            for idx in idxs:
-                st_mp_bigtiff_pages(npairs, ax, cro, tfs, out_fmt, idx)
             
-            ##################
-            ## Old multiprocessing implementation
-            # exec_func = partial(st_mp_bigtiff_pages, npairs, ax, cro, tfs, out_fmt)
-            # idxs = range(0, npairs)
-            # pool = mp.Pool(processes=mp.cpu_count())
-            # pool.map(exec_func, idxs)
-            ##################
-
+            if enableMultiprocessing:
+                exec_func = partial(st_mp_bigtiff_pages, npairs, ax, cro, tfs, out_fmt)                
+                with futures.ThreadPoolExecutor(mp.cpu_count()) as executor:
+                    executor.map(exec_func, idxs)
+                
+            else:
+                for idx in idxs:
+                    st_mp_bigtiff_pages(npairs, ax, cro, tfs, out_fmt, idx)
+    
             tfs.close()
 
     print("========== Done ==========")
