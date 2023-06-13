@@ -246,6 +246,7 @@ class GUI(qtw.QWidget):
                         str(EZVARS['inout']['output-dir']['value'] + '/sli'))
             else:
                 print("No output directory found")
+                
     def closeEvent(self, event):
         """
         Creates verification message box
