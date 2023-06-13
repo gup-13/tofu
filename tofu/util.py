@@ -7,14 +7,12 @@ import math
 import os
 from types import FunctionType
 from collections import OrderedDict
-<<<<<<< HEAD
 from PyQt5.QtCore import QRegExp
 from PyQt5.QtGui import QRegExpValidator
 
-=======
 gi.require_version('Ufo', '0.0')
 from gi.repository import Ufo
->>>>>>> remotes/tomas/master
+
 
 LOG = logging.getLogger(__name__)
 RESOURCES = None
