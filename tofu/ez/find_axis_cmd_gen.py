@@ -12,6 +12,7 @@ from tofu.ez.util import enquote
 from tofu.util import get_filenames, read_image, determine_shape
 import tifffile
 from tofu.ez.params import EZVARS
+from tofu.ez.tofu_cmd_gen import check_lamino
 
 class findCOR_cmds(object):
     """
@@ -45,10 +46,15 @@ class findCOR_cmds(object):
                 indir.append(EZVARS['inout']['path2-shared-flats-after']['value'])
             return indir
 
-    def find_axis_std(self, ctset, tmpdir, ax_range, p_width, search_row, nviews, WH):
+    def find_axis_std(self, ctset, tmpdir, ax_range, p_width, nviews, WH):
         indir = self.make_inpaths(ctset[0], ctset[1])
         image = read_image(get_filenames(indir[2])[0])
-        cmd = "tofu reco --absorptivity --fix-nan-and-inf --overall-angle 180 --axis-angle-x 0"
+        cmd = 'tofu reco'
+        if EZVARS['advanced']['more-reco-params']['value'] is True:
+            cmd += check_lamino()
+        elif EZVARS['advanced']['more-reco-params']['value'] is False:
+            cmd += " --overall-angle 180"
+        cmd += " --absorptivity --fix-nan-and-inf"
         cmd += " --darks {} --flats {} --projections {}".format(
             indir[0], indir[1], enquote(indir[2])
         )

@@ -170,7 +170,7 @@ class ROIandHistGroup(QGroupBox):
     def set_select_rows(self):
         LOG.debug("Select rows: " + str(self.select_rows_checkbox.isChecked()))
         dict_entry = EZVARS['inout']['input_ROI']
-        add_value_to_dict_entry(dict_entry, str(self.select_rows_checkbox.isChecked()))
+        add_value_to_dict_entry(dict_entry, self.select_rows_checkbox.isChecked())
 
     def set_first_row(self):
         LOG.debug(self.first_row_entry.text())
@@ -193,7 +193,7 @@ class ROIandHistGroup(QGroupBox):
     def set_clip_histo(self):
         LOG.debug("Clip histo: " + str(self.clip_histo_checkbox.isChecked()))
         dict_entry = EZVARS['inout']['clip_hist']
-        add_value_to_dict_entry(dict_entry, str(self.clip_histo_checkbox.isChecked()))
+        add_value_to_dict_entry(dict_entry, self.clip_histo_checkbox.isChecked())
         if EZVARS['inout']['clip_hist']['value']:
             return self.set_bitdepth()
         else:
@@ -226,7 +226,7 @@ class ROIandHistGroup(QGroupBox):
     def set_crop_slices(self):
         LOG.debug("Crop slices: " + str(self.crop_slices_checkbox.isChecked()))
         dict_entry = EZVARS['inout']['output-ROI']
-        add_value_to_dict_entry(dict_entry, str(self.crop_slices_checkbox.isChecked()))
+        add_value_to_dict_entry(dict_entry, self.crop_slices_checkbox.isChecked())
 
     def set_x(self):
         LOG.debug(self.x_val_entry.text())

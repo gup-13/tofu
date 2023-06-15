@@ -263,7 +263,6 @@ def execute_reconstruction(fdt_names):
                                                EZVARS['inout']['tmp-dir']['value'],
                                                EZVARS['COR']['search-interval']['value'],
                                                EZVARS['COR']['patch-size']['value'],
-                                               EZVARS['COR']['search-row']['value'],
                                                nviews, WH)
                 else:
                     ax = EZVARS['COR']['user-defined-ax']['value'] + i * EZVARS['COR']['user-defined-dax']['value']

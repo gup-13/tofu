@@ -100,7 +100,7 @@ class AdvancedGroup(QGroupBox):
     def set_lamino_group(self):
         LOG.debug("Lamino: " + str(self.lamino_group.isChecked()))
         dict_entry = EZVARS['advanced']['more-reco-params']
-        add_value_to_dict_entry(dict_entry, str(self.lamino_group.isChecked()))
+        add_value_to_dict_entry(dict_entry, self.lamino_group.isChecked())
 
     def set_lamino_angle(self):
         LOG.debug(self.lamino_angle_entry.text())

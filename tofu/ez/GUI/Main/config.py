@@ -30,7 +30,8 @@ class ConfigGroup(QGroupBox):
     Setup and configuration settings
     """
 
-    # Used to send signal to ezufo_launcher when settings are imported https://stackoverflow.com/questions/2970312/pyqt4-qtcore-pyqtsignal-object-has-no-attribute-connect
+    # Used to send signal to ezufo_launcher when settings are imported
+    # https://stackoverflow.com/questions/2970312/pyqt4-qtcore-pyqtsignal-object-has-no-attribute-connect
     signal_update_vals_from_params = pyqtSignal()
     # Used to send signal when reconstruction is done
     signal_reco_done = pyqtSignal()
@@ -605,7 +606,7 @@ class ConfigGroup(QGroupBox):
         Gets the settings set by the user in the GUI
         These are then passed to execute_reconstruction
         """
-        LOG.debug("RECO")
+        #LOG.debug("RECO")
         self.set_fdt_names()
         self.set_common_darks()
         self.set_common_flats()
@@ -616,7 +617,7 @@ class ConfigGroup(QGroupBox):
         self.set_temp_dir()
         self.set_preproc()
         self.set_preproc_entry()
-        LOG.debug(get_dict_values_log())
+        #LOG.debug(get_dict_values_log())
         run_reco = partial(self.run_reconstruction, batch_run=False)
         QTimer.singleShot(100, run_reco)
 

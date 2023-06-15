@@ -151,7 +151,7 @@ def export_values(filePath):
     combined_dict['sections'] = extract_values_from_dict(SECTIONS)
     combined_dict['ezvars'] = extract_values_from_dict(EZVARS)
     print("Exporting values to: " + str(filePath))
-    print(combined_dict)
+    #print(combined_dict)
     write_yaml(filePath, combined_dict)
     print("Finished exporting")
     
@@ -162,7 +162,7 @@ def import_values(filePath):
     import_values_from_dict(EZVARS,yaml_data['ezvars'])
     import_values_from_dict(SECTIONS,yaml_data['sections'])
     print("Finished importing")
-    print(yaml_data)
+    #print(yaml_data)
 
 def import_values_from_params(self, params):
     """

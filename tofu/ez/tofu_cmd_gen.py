@@ -10,6 +10,31 @@ from tofu.ez.params import EZVARS
 from tofu.config import SECTIONS
 
 
+def check_lamino():
+    cmd = ''
+    if not SECTIONS['cone-beam-weight']['axis-angle-x']['value'][0] == '':
+        cmd += ' --axis-angle-x {}'.format(SECTIONS['cone-beam-weight']['axis-angle-x']['value'][0])
+    if not SECTIONS['general-reconstruction']['overall-angle']['value'] == '':
+        cmd += ' --overall-angle {}'.format(SECTIONS['general-reconstruction']['overall-angle']['value'])
+    if not SECTIONS['cone-beam-weight']['center-position-z']['value'][0] == '':
+        cmd += ' --center-position-z {}'.format(SECTIONS['cone-beam-weight']['center-position-z']['value'][0])
+    if not SECTIONS['general-reconstruction']['axis-angle-y']['value'][0] == '':
+        cmd += ' --axis-angle-y {}'.format(SECTIONS['general-reconstruction']['axis-angle-y']['value'][0])
+    return cmd
+
+def gpu_optim(cmd):
+    if SECTIONS['general']['verbose']['value']:
+        cmd += ' --verbose'
+    if EZVARS['advanced']['enable-optimization']['value']:
+        print("optimizing")
+        cmd += ' --slice-memory-coeff={}'.format(SECTIONS['general-reconstruction']['slice-memory-coeff']['value'])
+        if not SECTIONS['general-reconstruction']['slices-per-device']['value'] is None:
+            cmd += ' --slices-per-device {}'.format(SECTIONS['general-reconstruction']['slices-per-device']['value'])
+        if not SECTIONS['general-reconstruction']['data-splitting-policy']['value'] is None:
+            cmd += ' --data-splitting-policy {}'.format(
+                SECTIONS['general-reconstruction']['data-splitting-policy']['value'])
+    return cmd
+
 class tofu_cmds(object):
     """
     Generates partially formatted ufo-launch and tofu commands
@@ -41,18 +66,6 @@ class tofu_cmds(object):
                 indir[3] = EZVARS['inout']['path2-shared-flats-after']['value']
             self.common_fd_used = True
         return indir
-
-    def check_lamino(self, cmd):
-        cmd += 'tofu reco'
-        if not SECTIONS['cone-beam-weight']['axis-angle-x']['value'][0] == '':
-            cmd += ' --axis-angle-x {}'.format(SECTIONS['cone-beam-weight']['axis-angle-x']['value'][0])
-        if not SECTIONS['general-reconstruction']['overall-angle']['value'] == '':
-            cmd += ' --overall-angle {}'.format(SECTIONS['general-reconstruction']['overall-angle']['value'])
-        if not SECTIONS['cone-beam-weight']['center-position-z']['value'][0] == '':
-            cmd += ' --center-position-z {}'.format(SECTIONS['cone-beam-weight']['center-position-z']['value'][0])
-        if not SECTIONS['general-reconstruction']['axis-angle-y']['value'][0] == '':
-            cmd += ' --axis-angle-y {}'.format(SECTIONS['general-reconstruction']['axis-angle-y']['value'][0])
-        return cmd
 
     def check_8bit(self, cmd, gray256, bit, hmin, hmax):
         if gray256:
@@ -281,12 +294,11 @@ class tofu_cmds(object):
         # correct location of proj folder in case if prepro was done
         in_proj_dir, quatsch = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'],
                                                ctset[0], self._fdt_names[2], False)
-        # Laminography
-        cmd = ''
+        cmd = 'tofu reco'
+        # Laminography ?
         if EZVARS['advanced']['more-reco-params']['value'] is True:
-            cmd += self.check_lamino(cmd)
+            cmd += check_lamino()
         elif EZVARS['advanced']['more-reco-params']['value'] is False:
-            cmd = "tofu reco"
             cmd += ' --overall-angle 180'
         ##############
         cmd += '  --projections {}'.format(in_proj_dir)
@@ -349,31 +361,18 @@ class tofu_cmds(object):
                               SECTIONS['general']['output-maximum']['value'])
         cmd = self.check_bigtif(cmd, EZVARS['inout']['bigtiff-output']['value'])
         # Optimization
-        if SECTIONS['general']['verbose']['value']:
-            cmd += ' --verbose'
-        if EZVARS['advanced']['enable-optimization']['value']: 
-            print("optimizing")
-            cmd += ' --slice-memory-coeff={}'.format(SECTIONS['general-reconstruction']['slice-memory-coeff']['value'])        
-            if not SECTIONS['general-reconstruction']['slices-per-device']['value'] is None:
-                cmd += ' --slices-per-device {}'.format(SECTIONS['general-reconstruction']['slices-per-device']['value'])
-            if not SECTIONS['general-reconstruction']['data-splitting-policy']['value'] is None:
-                cmd += ' --data-splitting-policy {}'.format(SECTIONS['general-reconstruction']['data-splitting-policy']['value'])
+        cmd += gpu_optim()
         return cmd
 
     def get_reco_cmd_sinFFC(self, ctset, out_pattern, ax, nviews, WH, ffc, PR):
-        # direct CT reconstruction from input dir to output dir;
-        # or CT reconstruction after preprocessing only
-        indir = self.make_inpaths(ctset[0], ctset[1])
+        # Separate command in case if smart intensity normalization (eigen flatfield) method is used
         # correct location of proj folder in case if prepro was done
         in_proj_dir, quatsch = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'],
                                         ctset[0], self._fdt_names[2], False)
-        # in_proj_dir, quatsch = fmt_in_out_path(args.tmpdir,args.indir, self._fdt_names[2], False)
-        # indir[2]=os.path.join(os.path.split(indir[2])[0], os.path.split(in_proj_dir)[1])
-        # format command
         cmd = "tofu reco"
-        # Laminography
+        # Laminography ?
         if EZVARS['advanced']['more-reco-params']['value']:
-            cmd += self.check_lamino(cmd)
+            cmd += check_lamino(cmd)
         else:
             cmd += " --overall-angle 180"
         ##############
@@ -422,13 +421,5 @@ class tofu_cmds(object):
                               SECTIONS['general']['output-maximum']['value'])
         cmd = self.check_bigtif(cmd, EZVARS['inout']['bigtiff-output']['value'])
         # Optimization
-        if SECTIONS['general']['verbose']['value']:
-            cmd += ' --verbose'
-        if EZVARS['advanced']['enable-optimization']['value']: 
-            print("optimizing")
-            cmd += ' --slice-memory-coeff={}'.format(SECTIONS['general-reconstruction']['slice-memory-coeff']['value'])        
-            if not SECTIONS['general-reconstruction']['slices-per-device']['value'] is None:
-                cmd += ' --slices-per-device {}'.format(SECTIONS['general-reconstruction']['slices-per-device']['value'])
-            if not SECTIONS['general-reconstruction']['data-splitting-policy']['value'] is None:
-                cmd += ' --data-splitting-policy {}'.format(SECTIONS['general-reconstruction']['data-splitting-policy']['value'])
+        cmd += gpu_optim()
         return cmd

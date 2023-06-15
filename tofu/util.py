@@ -197,7 +197,7 @@ def is_value_on_limit(dict_entry):
     """Checks if a value is at the limit defined by the functions 'restrict_value' or 'restrict_tupleize'."""
     if type(dict_entry['type']) is FunctionType: #is a custom data type
         limits = dict_entry['type']()
-        if len(limits) is 2: # has a min & max limit
+        if len(limits) == 2: # has a min & max limit
             if limits[0] is not None and dict_entry['value'] == limits[0]:
                 return True
             elif limits[1] is not None and dict_entry['value'] == limits[1]:

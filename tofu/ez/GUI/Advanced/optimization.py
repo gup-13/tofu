@@ -73,7 +73,7 @@ class OptimizationGroup(QGroupBox):
     def set_verbose_switch(self):
         LOG.debug("Verbose: " + str(self.verbose_switch.isChecked()))
         dict_entry = SECTIONS['general']['verbose']
-        add_value_to_dict_entry(dict_entry, str(self.verbose_switch.isChecked()))
+        add_value_to_dict_entry(dict_entry, self.verbose_switch.isChecked())
 
     def set_enable_optimization(self):
         checkbox = self.sender()
