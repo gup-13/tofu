@@ -91,7 +91,7 @@ class ufo_cmds(object):
             cmd += " bytes-per-file=0"
         return cmd
 
-    def get_pr_ufo_cmd(self, args, nviews, WH):
+    def get_pr_ufo_cmd(self, nviews, WH):
         # in_proj_dir, out_pattern = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'],EZVARS['inout']['input-dir']['value'],self._fdt_names[2])
         in_proj_dir, out_pattern = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'],
                                                    "quatsch", self._fdt_names[2])
