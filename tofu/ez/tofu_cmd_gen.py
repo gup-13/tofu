@@ -22,11 +22,11 @@ def check_lamino():
         cmd += ' --axis-angle-y {}'.format(SECTIONS['general-reconstruction']['axis-angle-y']['value'][0])
     return cmd
 
-def gpu_optim(cmd):
+def gpu_optim():
+    cmd = ''
     if SECTIONS['general']['verbose']['value']:
         cmd += ' --verbose'
     if EZVARS['advanced']['enable-optimization']['value']:
-        print("optimizing")
         cmd += ' --slice-memory-coeff={}'.format(SECTIONS['general-reconstruction']['slice-memory-coeff']['value'])
         if not SECTIONS['general-reconstruction']['slices-per-device']['value'] is None:
             cmd += ' --slices-per-device {}'.format(SECTIONS['general-reconstruction']['slices-per-device']['value'])

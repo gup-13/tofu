@@ -12,7 +12,7 @@ from tofu.ez.util import enquote
 from tofu.util import get_filenames, read_image, determine_shape
 import tifffile
 from tofu.ez.params import EZVARS
-from tofu.ez.tofu_cmd_gen import check_lamino
+from tofu.ez.tofu_cmd_gen import check_lamino, gpu_optim
 
 class findCOR_cmds(object):
     """
@@ -76,6 +76,7 @@ class findCOR_cmds(object):
         cmd += " --output-bytes-per-file 0"
         cmd += ' --z-parameter center-position-x'
         cmd += ' --z {}'.format(EZVARS['COR']['search-row']['value'] - int(image_height/2))
+        cmd += gpu_optim()
         print(cmd)
         os.system(cmd)
         points, maximum = evaluate_images_simp(out_pattern + "*.tif", "msag")
