@@ -150,7 +150,7 @@ class NLMDNGroup(QGroupBox):
             + str(self.apply_to_reco_checkbox.isChecked())
         )
         dict_entry = EZVARS['nlmdn']['do-after-reco']
-        add_value_to_dict_entry(dict_entry, str(self.apply_to_reco_checkbox.isChecked()))
+        add_value_to_dict_entry(dict_entry, self.apply_to_reco_checkbox.isChecked())
         
         if self.apply_to_reco_checkbox.isChecked():
             self.input_dir_button.setDisabled(True)
@@ -225,7 +225,7 @@ class NLMDNGroup(QGroupBox):
     def set_save_bigtif(self):
         LOG.debug("Save bigtif checkbox: " + str(self.save_bigtif_checkbox.isChecked()))
         dict_entry = EZVARS['nlmdn']['bigtiff_output']
-        add_value_to_dict_entry(dict_entry, str(self.save_bigtif_checkbox.isChecked()))
+        add_value_to_dict_entry(dict_entry, self.save_bigtif_checkbox.isChecked())
 
     def set_outdir_entry(self):
         LOG.debug("Outdir entry: " + str(self.output_dir_entry.text()))
@@ -267,12 +267,12 @@ class NLMDNGroup(QGroupBox):
     def set_fast_checkbox(self):
         LOG.debug("Fast: " + str(self.fast_checkbox.isChecked()))
         dict_entry = EZVARS['nlmdn']['fast']
-        add_value_to_dict_entry(dict_entry, str(self.fast_checkbox.isChecked()))
+        add_value_to_dict_entry(dict_entry, self.fast_checkbox.isChecked())
 
     def set_sigma_checkbox(self):
         LOG.debug("Estimate sigma: " + str(self.sigma_checkbox.isChecked()))
         dict_entry = EZVARS['nlmdn']['estimate-sigma']
-        add_value_to_dict_entry(dict_entry, str(self.sigma_checkbox.isChecked()))
+        add_value_to_dict_entry(dict_entry, self.sigma_checkbox.isChecked())
 
     def help_button_pressed(self):
         LOG.debug("Help Button Pressed")
