@@ -65,10 +65,10 @@ def get_CTdirs_list(inpath, fdt_names):
         return W.ctsets, W.lvl0
 
 
-def frmt_ufo_cmds(cmds, ctset, out_pattern, ax, Tofu, Ufo, FindCOR, nviews, WH):
+def frmt_ufo_cmds(cmds, ctset, out_pattern, ax, Tofu, Ufo, nviews, WH):
     """formats list of processing commands for a CT set"""
-    # two helper variables to mark that PR/FFC has been done at some step
-    swiFFC = True  # FFC is always required required
+    # two helper variables to note that PR/FFC has been done at some step
+    swiFFC = True  # FFC is always required
     swiPR = SECTIONS['retrieve-phase']['enable-phase']['value']  # PR is an optional operation
 
     ####### PREPROCESSING #########
@@ -208,6 +208,7 @@ def fmt_nlmdn_ufo_cmd(inpath: str, outpath: str):  ### TODO call one function fr
         cmd += f" bits={SECTIONS['general']['output-bitdepth']['value']} rescale=False"
     return cmd
 
+#TODO: get rid of fdt_names everywhere - work directly with EZVARS instead
 def execute_reconstruction(fdt_names):
     # array with the list of commands
     cmds = []
@@ -280,8 +281,7 @@ def execute_reconstruction(fdt_names):
             cmds.append('echo "Cleaning temporary directory"'.format(setid))
             clean_tmp_dirs(EZVARS['inout']['tmp-dir']['value'], fdt_names)
             # call function which formats commands for this data set
-            nviews, WH = frmt_ufo_cmds(cmds, ctset, out_pattern, \
-                                       ax, Tofu, Ufo, FindCOR, nviews, WH)
+            nviews, WH = frmt_ufo_cmds(cmds, ctset, out_pattern, ax, Tofu, Ufo, nviews, WH)
             save_params(setid, ax, nviews, WH)
             print('{}\t{}'.format('CTset:', ctset[0]))
             print('{:>30}\t{}'.format('Axis:', ax))
