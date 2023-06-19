@@ -342,7 +342,7 @@ def main_360_mp_depth1(indir, outdir, ax, cro):
 
     subdirs = [dI for dI in os.listdir(indir) \
             if os.path.isdir(os.path.join(indir, dI))]
-    enableMultiprocessing = True
+    enableMultiprocessing = False
     
     for i, sdir in enumerate(subdirs):
         print(f"Stitching images in {sdir}")
@@ -392,7 +392,8 @@ def main_360_mp_depth1(indir, outdir, ax, cro):
             print(f"{npairs} pairs in {sdir} will be stitched")
 
             os.makedirs(os.path.join(outdir, sdir))
-            out_fmt = os.path.join(outdir, sdir, 'sti-{:>04}.tif')
+            filename = 'sti-axis' + str(ax) + '-{:>04}.tif'
+            out_fmt = os.path.join(outdir, sdir, filename)
             idxs = range(0, npairs)
             
             if enableMultiprocessing:
