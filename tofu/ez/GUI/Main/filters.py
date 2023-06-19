@@ -47,10 +47,12 @@ class FiltersGroup(QGroupBox):
         self.threshold_entry.editingFinished.connect(self.set_threshold)
         
         self.spot_blur_label = QLabel()
-        self.spot_blur_label.setText("Spot blur. sigma [pixels]")
-        self.spot_blur_label.setToolTip(
-            "Regulates extent of the masked region around the detected outlier"
-        )
+        self.spot_blur_label.setText("Low-pass filter sigma [pixels]")
+        # self.spot_blur_label.setToolTip(
+        #     "Regulates extent of the masked region around the detected outlier"
+        # )
+        self.spot_blur_label.setToolTip('Low pass filter will be applied before spots are identified'
+                                        'to remove very low-frequency changes in the flat field')
         self.spot_blur_entry = QLineEdit()
         self.spot_blur_entry.setValidator(get_double_validator())
         self.spot_blur_entry.editingFinished.connect(self.set_spot_blur)
@@ -59,13 +61,17 @@ class FiltersGroup(QGroupBox):
         self.enable_RR_checkbox.setText("Enable ring removal")
         self.remove_spots_checkBox.setToolTip(
             "To suppress ring artifacts"
-            " stemming from intensity fluctuations and detector nonlinearities"
+            " stemming from intensity fluctuations and detector non-linearities"
         )
         self.enable_RR_checkbox.stateChanged.connect(self.set_ring_removal)
 
         self.use_LPF_rButton = QRadioButton()
         self.use_LPF_rButton.setText("Use ufo Fourier-transform based filter")
         self.use_LPF_rButton.clicked.connect(self.select_rButton)
+        self.use_LPF_rButton.setToolTip(
+            "To suppress ring artifacts"
+            " stemming from intensity fluctuations and detector non-linearities"
+        )
 
         self.sarepy_rButton = QRadioButton()
         self.sarepy_rButton.setText("Use sarepy sorting: ")

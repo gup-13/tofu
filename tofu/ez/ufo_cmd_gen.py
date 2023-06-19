@@ -3,239 +3,192 @@
 Created on Apr 6, 2018
 @author: gasilos
 """
-import glob
 import os
 from tofu.util import next_power_of_two
 from tofu.ez.params import EZVARS
 from tofu.config import SECTIONS
-
-from tofu.ez.util import enquote
-
-
-def fmt_in_out_path(tmpdir, indir, raw_proj_dir_name, croutdir=True):
-    # suggests input and output path to directory with proj
-    # depending on number of processing steps applied so far
-    li = sorted(glob.glob(os.path.join(tmpdir, "proj-step*")))
-    proj_dirs = [d for d in li if os.path.isdir(d)]
-    Nsteps = len(proj_dirs)
-    in_proj_dir, out_proj_dir = "qqq", "qqq"
-    if Nsteps == 0:  # no projections in temporary directory
-        in_proj_dir = os.path.join(indir, raw_proj_dir_name)
-        out_proj_dir = "proj-step1"
-    elif Nsteps > 0:  # there are directories proj-stepX in tmp dir
-        in_proj_dir = proj_dirs[-1]
-        out_proj_dir = "{}{}".format(in_proj_dir[:-1], Nsteps + 1)
-    else:
-        raise ValueError("Something is wrong with in/out filenames")
-    # physically create output directory
-    tmp = os.path.join(tmpdir, out_proj_dir)
-    if croutdir and not os.path.exists(tmp):
-        os.makedirs(tmp)
-    # return names of input directory and output pattern with abs path
-    return in_proj_dir, os.path.join(tmp, "proj-%04i.tif")
+from tofu.ez.util import enquote, make_inpaths, fmt_in_out_path
 
 
-class ufo_cmds(object):
+def make_outpaths(lvl0, flats2):
     """
-    Generates partially formatted ufo-launch and tofu commands
-    Parameters are included in the string; pathnames must be added
+    Creates a list of paths to flats/darks/tomo directories in tmp data
+    only used in one place to format paths in the temporary directory
+    :param lvl0: Root of directory containing flats/darks/tomo
+    :param flats2: The type of directory: 3 contains flats/darks/tomo 4 contains flats/darks/tomo/flats2
+    :return: List of paths to the filtered darks/flats/tomo and flats2 (if used)
     """
+    indir = []
+    for i in [EZVARS['inout']['darks-dir']['value'],
+              EZVARS['inout']['flats-dir']['value'],
+              EZVARS['inout']['tomo-dir']['value']]:
+        indir.append(os.path.join(lvl0, i))
+    if flats2 - 3:
+        indir.append(os.path.join(lvl0, EZVARS['inout']['flats2-dir']['value']))
+    return indir
 
-    def __init__(self, fol):
-        self._fdt_names = fol
-        self.common_fd_used = False
+def check_vcrop(cmd, vcrop, y, yheight, ystep):
+    if vcrop:
+        cmd += " --y {} --height {} --y-step {}".format(y, yheight, ystep)
+    return cmd
 
-    def make_inpaths(self, lvl0, flats2):
-        """
-        Creates a list of paths to flats/darks/tomo directories
-        :param lvl0: Root of directory containing flats/darks/tomo
-        :param flats2: The type of directory: 3 contains flats/darks/tomo 4 contains flats/darks/tomo/flats2
-        :return: List of paths to the directories containing darks/flats/tomo and flats2 (if used)
-        """
-        indir = []
-        # If using flats/darks/flats2 in same dir as tomo
-        for i in self._fdt_names[:3]:
-            indir.append(os.path.join(lvl0, i))
-        if flats2 - 3:
-            indir.append(os.path.join(lvl0, self._fdt_names[3]))
-        # If using common flats/darks/flats2 across multiple reconstructions
-        if EZVARS['inout']['shared-flatsdarks']['value'] and not self.common_fd_used:
-            indir[0] = EZVARS['inout']['path2-shared-darks']['value']
-            indir[1] = EZVARS['inout']['path2-shared-flats']['value']
-            if EZVARS['inout']['shared-flats-after']['value']:
-                indir[3] = EZVARS['inout']['path2-shared-flats-after']['value']
-            self.common_fd_used = True
-        return indir
+def check_bigtif(cmd, swi):
+    if not swi:
+        cmd += " bytes-per-file=0"
+    return cmd
 
-    def make_outpaths(self, lvl0, flats2):
-        """
-        Creates a list of paths to flats/darks/tomo directories
-        :param lvl0: Root of directory containing flats/darks/tomo
-        :param flats2: The type of directory: 3 contains flats/darks/tomo 4 contains flats/darks/tomo/flats2
-        :return: List of paths to the directories containing darks/flats/tomo and flats2 (if used)
-        """
-        indir = []
-        for i in self._fdt_names[:3]:
-            indir.append(os.path.join(lvl0, i))
-        if flats2 - 3:
-            indir.append(os.path.join(lvl0, self._fdt_names[3]))
-        return indir
+def get_pr_ufo_cmd(nviews, wh):
+    in_proj_dir, out_pattern = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'], "quatsch",
+                                               EZVARS['inout']['tomo-dir']['value'])
+    cmds = []
+    pad_width = next_power_of_two(wh[1] + 50)
+    pad_height = next_power_of_two(wh[0] + 50)
+    pad_x = (pad_width - wh[1]) / 2
+    pad_y = (pad_height - wh[0]) / 2
+    cmd = 'ufo-launch read path={} height={} number={}'.format(in_proj_dir, wh[0], nviews)
+    cmd += ' ! pad x={} width={} y={} height={}'.format(pad_x, pad_width, pad_y, pad_height)
+    cmd += ' addressing-mode=clamp_to_edge'
+    cmd += ' ! fft dimensions=2 ! retrieve-phase'
+    cmd += ' energy={} distance={} pixel-size={} regularization-rate={:0.2f}' \
+        .format(SECTIONS['retrieve-phase']['energy']['value'],
+                SECTIONS['retrieve-phase']['propagation-distance']['value'][0],
+                SECTIONS['retrieve-phase']['pixel-size']['value'],
+                SECTIONS['retrieve-phase']['regularization-rate']['value'])
+    cmd += ' ! ifft dimensions=2 crop-width={} crop-height={}' \
+        .format(pad_width, pad_height)
+    cmd += ' ! crop x={} width={} y={} height={}'.format(pad_x, wh[1], pad_y, wh[0])
+    cmd += ' ! opencl kernel=\'absorptivity\' ! opencl kernel=\'fix_nan_and_inf\' !'
+    cmd += ' write filename={}'.format(enquote(out_pattern))
+    cmds.append(cmd)
+    if not EZVARS['inout']['keep-tmp']['value']:
+        cmds.append('rm -rf {}'.format(in_proj_dir))
+    return cmds
 
-    def check_vcrop(self, cmd, vcrop, y, yheight, ystep):
-        if vcrop:
-            cmd += " --y {} --height {} --y-step {}".format(y, yheight, ystep)
-        return cmd
+def get_filter1d_sinos_cmd(tmpdir, RR, nviews):
+    sin_in = os.path.join(tmpdir, 'sinos')
+    out_pattern = os.path.join(tmpdir, 'sinos-filt/sin-%04i.tif')
+    pad_height = next_power_of_two(nviews + 500)
+    pad_y = (pad_height - nviews) / 2
+    cmd = 'ufo-launch read path={}'.format(sin_in)
+    cmd += ' ! pad y={} height={}'.format(pad_y, pad_height)
+    cmd += ' addressing-mode=clamp_to_edge'
+    cmd += ' ! transpose ! fft dimensions=1 !  filter-stripes1d strength={}'.format(RR)
+    cmd += ' ! ifft dimensions=1 ! transpose'
+    cmd += ' ! crop y={} height={}'.format(pad_y, nviews)
+    cmd += ' ! write filename={}'.format(enquote(out_pattern))
+    return cmd
 
-    def check_bigtif(self, cmd, swi):
-        if not swi:
-            cmd += " bytes-per-file=0"
-        return cmd
+def get_filter2d_sinos_cmd(tmpdir, sig_hor, sig_ver, nviews, w):
+    sin_in = os.path.join(tmpdir, "sinos")
+    out_pattern = os.path.join(tmpdir, "sinos-filt/sin-%04i.tif")
+    pad_height = next_power_of_two(nviews + 500)
+    pad_y = (pad_height - nviews) / 2
+    pad_width = next_power_of_two(w + 500)
+    pad_x = (pad_width - w) / 2
+    cmd = "ufo-launch read path={}".format(sin_in)
+    cmd += " ! pad x={} width={} y={} height={}".format(pad_x, pad_width, pad_y, pad_height)
+    cmd += " addressing-mode=mirrored_repeat"
+    cmd += " ! fft dimensions=2 ! filter-stripes horizontal-sigma={} vertical-sigma={}".format(
+        sig_hor, sig_ver
+    )
+    cmd += " ! ifft dimensions=2 crop-width={} crop-height={}".format(pad_width, pad_height)
+    cmd += " ! crop x={} width={} y={} height={}".format(pad_x, w, pad_y, nviews)
+    cmd += " ! write filename={}".format(enquote(out_pattern))
+    return cmd
 
-    def get_pr_ufo_cmd(self, nviews, WH):
-        # in_proj_dir, out_pattern = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'],EZVARS['inout']['input-dir']['value'],self._fdt_names[2])
-        in_proj_dir, out_pattern = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'],
-                                                   "quatsch", self._fdt_names[2])
-        cmds = []
-        pad_width = next_power_of_two(WH[1] + 50)
-        pad_height = next_power_of_two(WH[0] + 50)
-        pad_x = (pad_width - WH[1]) / 2
-        pad_y = (pad_height - WH[0]) / 2
-        cmd = 'ufo-launch read path={} height={} number={}'.format(in_proj_dir, WH[0], nviews)
-        cmd += ' ! pad x={} width={} y={} height={}'.format(pad_x, pad_width, pad_y, pad_height)
-        cmd += ' addressing-mode=clamp_to_edge'
-        cmd += ' ! fft dimensions=2 ! retrieve-phase'
-        cmd += ' energy={} distance={} pixel-size={} regularization-rate={:0.2f}' \
-            .format(SECTIONS['retrieve-phase']['energy']['value'], SECTIONS['retrieve-phase']['propagation-distance']['value'][0],
-                    SECTIONS['retrieve-phase']['pixel-size']['value'], SECTIONS['retrieve-phase']['regularization-rate']['value'])
-        cmd += ' ! ifft dimensions=2 crop-width={} crop-height={}' \
-            .format(pad_width, pad_height)
-        cmd += ' ! crop x={} width={} y={} height={}'.format(pad_x, WH[1], pad_y, WH[0])
-        cmd += ' ! opencl kernel=\'absorptivity\' ! opencl kernel=\'fix_nan_and_inf\' !'
-        cmd += ' write filename={}'.format(enquote(out_pattern))
+def get_pre_cmd( ctset, pre_cmd, tmpdir):
+    indir = make_inpaths(ctset[0], ctset[1])
+    outdir = make_outpaths(tmpdir, ctset[1])
+    # add index to the name of the output directory with projections
+    # if enabled preprocessing is always the first step
+    outdir[2] = os.path.join(tmpdir, "proj-step1")
+    # we also must create this directory to format paths correctly
+    if not os.path.exists(outdir[2]):
+        os.makedirs(outdir[2])
+    cmds = []
+    for i, fol in enumerate(indir):
+        in_pattern = os.path.join(fol, "*.tif")
+        out_pattern = os.path.join(outdir[i], "frame-%04i.tif")
+        cmds.append("ufo-launch")
+        cmds[i] += " read path={} ! ".format(enquote(in_pattern))
+        cmds[i] += pre_cmd
+        cmds[i] += " ! write filename={}".format(enquote(out_pattern))
+    return cmds
+
+def get_inp_cmd(ctset, tmpdir, N, nviews):
+    print(ctset)
+    indir = make_inpaths(ctset[0], ctset[1])
+    print(indir)
+    cmds = []
+    ######### CREATE MASK #########
+    flat1_file = os.path.join(tmpdir, "flat1.tif")
+    mask_file = os.path.join(tmpdir, "mask.tif")
+    # generate mask
+    cmd = 'tofu find-large-spots --images {}'.format(flat1_file)
+    cmd += ' --spot-threshold {} --gauss-sigma {}'.format(
+                    SECTIONS['find-large-spots']['spot-threshold']['value'],
+                    SECTIONS['find-large-spots']['gauss-sigma']['value'])
+    cmd += ' --output {} --output-bytes-per-file 0'.format(mask_file)
+    cmds.append(cmd)
+    ######### FLAT-CORRECT #########
+    in_proj_dir, out_pattern = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'], ctset[0],
+                                               EZVARS['inout']['tomo-dir']['value'])
+    if EZVARS['flat-correction']['smart-ffc']['value']:
+        cmd = 'bmit_sin --fix-nan'
+        cmd += ' --darks {} --flats {}'.format(indir[0], indir[1])
+        cmd += ' --projections {}'.format(in_proj_dir)
+        cmd += ' --output {}'.format(os.path.dirname(out_pattern))
+        cmd += ' --multiprocessing'
+        #cmd += ' --output {}'.format(out_pattern)
+        if ctset[1] == 4:
+            cmd += ' --flats2 {}'.format(indir[3])
+        # Add options for eigen-pco-repetitions etc.
+        cmd += ' --eigen-pco-repetitions {}'.format(EZVARS['flat-correction']['eigen-pco-reps']['value'])
+        cmd += ' --eigen-pco-downsample {}'.format(EZVARS['flat-correction']['eigen-pco-downsample']['value'])
+        cmd += ' --downsample {}'.format(EZVARS['flat-correction']['downsample']['value'])
+        #if not SECTIONS['retrieve-phase']['enable-phase']['value']:
+        #    cmd += ' --absorptivity' ????
+        #    Todo: check if takes neglog? or only computes transmission?
+        #    in case of latter add absorptivity and fix nans
         cmds.append(cmd)
-        if not EZVARS['inout']['keep-tmp']['value']:
-            cmds.append('rm -rf {}'.format(in_proj_dir))
-        return cmds
-
-    def get_filter1d_sinos_cmd(self, tmpdir, RR, nviews):
-        sin_in = os.path.join(tmpdir, 'sinos')
-        out_pattern = os.path.join(tmpdir, 'sinos-filt/sin-%04i.tif')
-        pad_height = next_power_of_two(nviews + 500)
-        pad_y = (pad_height - nviews) / 2
-        cmd = 'ufo-launch read path={}'.format(sin_in)
-        cmd += ' ! pad y={} height={}'.format(pad_y, pad_height)
-        cmd += ' addressing-mode=clamp_to_edge'
-        cmd += ' ! transpose ! fft dimensions=1 !  filter-stripes1d strength={}'.format(RR)
-        cmd += ' ! ifft dimensions=1 ! transpose'
-        cmd += ' ! crop y={} height={}'.format(pad_y, nviews)
-        cmd += ' ! write filename={}'.format(enquote(out_pattern))
-        return cmd
-
-    def get_filter2d_sinos_cmd(self, tmpdir, sig_hor, sig_ver, nviews, w):
-        sin_in = os.path.join(tmpdir, "sinos")
-        out_pattern = os.path.join(tmpdir, "sinos-filt/sin-%04i.tif")
-        pad_height = next_power_of_two(nviews + 500)
-        pad_y = (pad_height - nviews) / 2
-        pad_width = next_power_of_two(w + 500)
-        pad_x = (pad_width - w) / 2
-        cmd = "ufo-launch read path={}".format(sin_in)
-        cmd += " ! pad x={} width={} y={} height={}".format(pad_x, pad_width, pad_y, pad_height)
-        cmd += " addressing-mode=mirrored_repeat"
-        cmd += " ! fft dimensions=2 ! filter-stripes horizontal-sigma={} vertical-sigma={}".format(
-            sig_hor, sig_ver
-        )
-        cmd += " ! ifft dimensions=2 crop-width={} crop-height={}".format(pad_width, pad_height)
-        cmd += " ! crop x={} width={} y={} height={}".format(pad_x, w, pad_y, nviews)
-        cmd += " ! write filename={}".format(enquote(out_pattern))
-        return cmd
-
-    def get_pre_cmd(self, ctset, pre_cmd, tmpdir):
-        indir = self.make_inpaths(ctset[0], ctset[1])
-        outdir = self.make_outpaths(tmpdir, ctset[1])
-        # add index to the name of the output directory with projections
-        # if enabled preprocessing is always the first step
-        outdir[2] = os.path.join(tmpdir, "proj-step1")
-        # we also must create this directory to format paths correctly
-        if not os.path.exists(outdir[2]):
-            os.makedirs(outdir[2])
-        cmds = []
-        for i, fol in enumerate(indir):
-            in_pattern = os.path.join(fol, "*.tif")
-            out_pattern = os.path.join(outdir[i], "frame-%04i.tif")
-            cmds.append("ufo-launch")
-            cmds[i] += " read path={} ! ".format(enquote(in_pattern))
-            cmds[i] += pre_cmd
-            cmds[i] += " ! write filename={}".format(enquote(out_pattern))
-        return cmds
-
-    def get_inp_cmd(self, ctset, tmpdir, N, nviews):
-        indir = self.make_inpaths(ctset[0], ctset[1])
-        cmds = []
-        ######### CREATE MASK #########
-        flat1_file = os.path.join(tmpdir, "flat1.tif")
-        mask_file = os.path.join(tmpdir, "mask.tif")
-        # generate mask
-        cmd = 'tofu find-large-spots --images {}'.format(flat1_file)
-        cmd += ' --spot-threshold {} --gauss-sigma {}'.format(
-                        SECTIONS['find-large-spots']['spot-threshold']['value'],
-                        SECTIONS['find-large-spots']['gauss-sigma']['value'])
-        cmd += ' --output {} --output-bytes-per-file 0'.format(mask_file)
+    elif not EZVARS['flat-correction']['smart-ffc']['value']:
+        cmd = 'tofu flatcorrect --fix-nan-and-inf'
+        cmd += ' --darks {} --flats {}'.format(indir[0], indir[1])
+        cmd += ' --projections {}'.format(in_proj_dir)
+        cmd += ' --output {}'.format(out_pattern)
+        if ctset[1] == 4:
+            cmd += ' --flats2 {}'.format(indir[3])
+        if not SECTIONS['retrieve-phase']['enable-phase']['value']:
+            cmd += ' --absorptivity --fix-nan-and-inf'
+        if not EZVARS['flat-correction']['dark-scale']['value'] == "":
+            cmd += ' --dark-scale {}'.format(EZVARS['flat-correction']['dark-scale']['value'])
+        if not EZVARS['flat-correction']['flat-scale']['value'] == "":
+            cmd += ' --flat-scale {}'.format(EZVARS['flat-correction']['flat-scale']['value'])
         cmds.append(cmd)
-        ######### FLAT-CORRECT #########
-        in_proj_dir, out_pattern = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'], ctset[0], self._fdt_names[2])
-        if EZVARS['flat-correction']['smart-ffc']['value']:
-            cmd = 'bmit_sin --fix-nan'
-            cmd += ' --darks {} --flats {}'.format(indir[0], indir[1])
-            cmd += ' --projections {}'.format(in_proj_dir)
-            cmd += ' --output {}'.format(os.path.dirname(out_pattern))
-            cmd += ' --multiprocessing'
-            #cmd += ' --output {}'.format(out_pattern)
-            if ctset[1] == 4:
-                cmd += ' --flats2 {}'.format(indir[3])
-            # Add options for eigen-pco-repetitions etc.
-            cmd += ' --eigen-pco-repetitions {}'.format(EZVARS['flat-correction']['eigen-pco-reps']['value'])
-            cmd += ' --eigen-pco-downsample {}'.format(EZVARS['flat-correction']['eigen-pco-downsample']['value'])
-            cmd += ' --downsample {}'.format(EZVARS['flat-correction']['downsample']['value'])
-            #if not SECTIONS['retrieve-phase']['enable-phase']['value']:
-            #    cmd += ' --absorptivity'
-            cmds.append(cmd)
-        elif not EZVARS['flat-correction']['smart-ffc']['value']:
-            cmd = 'tofu flatcorrect --fix-nan-and-inf'
-            cmd += ' --darks {} --flats {}'.format(indir[0], indir[1])
-            cmd += ' --projections {}'.format(in_proj_dir)
-            cmd += ' --output {}'.format(out_pattern)
-            if ctset[1] == 4:
-                cmd += ' --flats2 {}'.format(indir[3])
-            if not SECTIONS['retrieve-phase']['enable-phase']['value']:
-                cmd += ' --absorptivity'
-            if not EZVARS['flat-correction']['dark-scale']['value'] == "":
-                cmd += ' --dark-scale {}'.format(EZVARS['flat-correction']['dark-scale']['value'])
-            if not EZVARS['flat-correction']['flat-scale']['value'] == "":
-                cmd += ' --flat-scale {}'.format(EZVARS['flat-correction']['flat-scale']['value'])
-            cmds.append(cmd)
-        if not EZVARS['inout']['keep-tmp']['value'] and EZVARS['inout']['preprocess']['value']:
-            cmds.append('rm -rf {}'.format(indir[0]))
-            cmds.append('rm -rf {}'.format(indir[1]))
-            cmds.append('rm -rf {}'.format(in_proj_dir))
-            if len(indir) > 3:
-                cmds.append("rm -rf {}".format(indir[3]))
-        ######### INPAINT #########
-        in_proj_dir, out_pattern = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'], ctset[0], self._fdt_names[2])
-        cmd = "ufo-launch [read path={} height={} number={}".format(in_proj_dir, N, nviews)
-        cmd += ", read path={}]".format(mask_file)
-        cmd += " ! horizontal-interpolate ! "
-        cmd += "write filename={}".format(enquote(out_pattern))
-        cmds.append(cmd)
-        if not EZVARS['inout']['keep-tmp']['value']:
-            cmds.append("rm -rf {}".format(in_proj_dir))
-        return cmds
+    if not EZVARS['inout']['keep-tmp']['value'] and EZVARS['inout']['preprocess']['value']:
+        cmds.append('rm -rf {}'.format(indir[0]))
+        cmds.append('rm -rf {}'.format(indir[1]))
+        cmds.append('rm -rf {}'.format(in_proj_dir))
+        if len(indir) > 3:
+            cmds.append("rm -rf {}".format(indir[3]))
+    ######### INPAINT #########
+    in_proj_dir, out_pattern = fmt_in_out_path(EZVARS['inout']['tmp-dir']['value'], ctset[0],
+                                               EZVARS['inout']['tomo-dir']['value'])
+    cmd = "ufo-launch [read path={} height={} number={}".format(in_proj_dir, N, nviews)
+    cmd += ", read path={}]".format(mask_file)
+    cmd += " ! horizontal-interpolate ! "
+    cmd += "write filename={}".format(enquote(out_pattern))
+    cmds.append(cmd)
+    if not EZVARS['inout']['keep-tmp']['value']:
+        cmds.append("rm -rf {}".format(in_proj_dir))
+    return cmds
 
-    def get_crop_sli(self, out_pattern):
-        cmd = 'ufo-launch read path={}/*.tif ! '.format(os.path.dirname(out_pattern))
-        cmd += 'crop x={} width={} y={} height={} ! '. \
-            format(EZVARS['inout']['output-x']['value'], EZVARS['inout']['output-width']['value'],
-                   EZVARS['inout']['output-y']['value'], EZVARS['inout']['output-height']['value'])
-        cmd += 'write filename={}'.format(out_pattern)
-        if EZVARS['inout']['clip_hist']['value']:
-            cmd += ' bits=8 rescale=False'
-        return cmd
+def get_crop_sli(out_pattern):
+    cmd = 'ufo-launch read path={}/*.tif ! '.format(os.path.dirname(out_pattern))
+    cmd += 'crop x={} width={} y={} height={} ! '. \
+        format(EZVARS['inout']['output-x']['value'], EZVARS['inout']['output-width']['value'],
+               EZVARS['inout']['output-y']['value'], EZVARS['inout']['output-height']['value'])
+    cmd += 'write filename={}'.format(out_pattern)
+    if EZVARS['inout']['clip_hist']['value']:
+        cmd += ' bits=8 rescale=False'
+    return cmd

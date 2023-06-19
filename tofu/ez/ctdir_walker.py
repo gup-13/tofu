@@ -73,7 +73,7 @@ class WalkCTdirs:
                 print(os.path.basename(ctdir))
                 self.typ.append(0)
 
-    def checkCommonFDT(self):
+    def checkcommonfdt(self):
         """
         Verifies that paths to directories specified by common_flats, common_darks, and common_flats2 exist
         :return: True if directories exist, False if they do not exist
@@ -97,24 +97,24 @@ class WalkCTdirs:
                 return True
         return False
 
-    def checkCommonFDTFiles(self):
+    def checkcommonfdtFiles(self):
         """
         Verifies that directories of tomo and common flats/darks/flats contain only .tif files
         :return: True if directories exist, False if they do not exist
         """
         for i, ctdir in enumerate(self.ctdirs):
             ctdir_tomo_path = os.path.join(ctdir, self._fdt_names[2])
-            if not self._checkTifs(ctdir_tomo_path):
+            if not self._checktifs(ctdir_tomo_path):
                 print("Invalid files found in " + str(ctdir_tomo_path))
                 self.typ[i] = 0
                 return False
-            if not self._checkTifs(self.common_flats):
+            if not self._checktifs(self.common_flats):
                 print("Invalid files found in " + str(self.common_flats))
                 return False
-            if not self._checkTifs(self.common_darks):
+            if not self._checktifs(self.common_darks):
                 print("Invalid files found in " + str(self.common_darks))
                 return False
-            if self.use_common_flats2 and not self._checkTifs(self.common_flats2):
+            if self.use_common_flats2 and not self._checktifs(self.common_flats2):
                 print("Invalid files found in " + str(self.common_flats2))
                 return False
             return True
@@ -128,23 +128,23 @@ class WalkCTdirs:
         for i, ctdir in enumerate(self.ctdirs):
             if (
                 self.typ[i] == 3
-                and self._checkTifs(os.path.join(ctdir, self._fdt_names[1]))
-                and self._checkTifs(os.path.join(ctdir, self._fdt_names[0]))
-                and self._checkTifs(os.path.join(ctdir, self._fdt_names[2]))
+                and self._checktifs(os.path.join(ctdir, self._fdt_names[1]))
+                and self._checktifs(os.path.join(ctdir, self._fdt_names[0]))
+                and self._checktifs(os.path.join(ctdir, self._fdt_names[2]))
             ):
                 continue
             elif (
                 self.typ[i] == 4
-                and self._checkTifs(os.path.join(ctdir, self._fdt_names[1]))
-                and self._checkTifs(os.path.join(ctdir, self._fdt_names[0]))
-                and self._checkTifs(os.path.join(ctdir, self._fdt_names[2]))
-                and self._checkTifs(os.path.join(ctdir, self._fdt_names[3]))
+                and self._checktifs(os.path.join(ctdir, self._fdt_names[1]))
+                and self._checktifs(os.path.join(ctdir, self._fdt_names[0]))
+                and self._checktifs(os.path.join(ctdir, self._fdt_names[2]))
+                and self._checktifs(os.path.join(ctdir, self._fdt_names[3]))
             ):
                 continue
             else:
                 self.typ[i] = 0
 
-    def _checkTifs(self, tmpath):
+    def _checktifs(self, tmpath):
         """
         Checks each whether item in directory tmppath is a .tif file
         :param tmpath: Path to directory
@@ -152,12 +152,14 @@ class WalkCTdirs:
         """
         for i in os.listdir(tmpath):
             if os.path.isdir(i):
+                print(f"Directory {tmpath} contains a subdirectory")
                 return 0
             if i.split(".")[-1] != "tif":
+                print(f"Directory {tmpath} has files which are not tif images or containers")
                 return 0
         return 1
 
-    def SortBadGoodSets(self):
+    def sortbadgoodsets(self):
         """
         Reduces type of all directories to either
         Good with flats 2 (1) or good without flats2 (0) or bad (<0)

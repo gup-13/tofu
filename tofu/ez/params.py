@@ -260,6 +260,11 @@ EZVARS['inout'] = {
         'ezdefault': "Absolute path to flats2", 
         'type': str, 
         'help': "TODO"},
+    'shared-df-used': {
+        'ezdefault': False,
+        'type': bool,
+        'help': "Internal variable; must be set to True once "
+                "shared flats/darks were used in the recontruction pipeline"},
 }
 
 EZVARS['COR'] = {
@@ -314,13 +319,13 @@ EZVARS['RR'] = {
         'type': bool, 
         'help': "TODO"},
     'sx': {
-        'ezdefault': 0, 
+        'ezdefault': 3,
         'type': restrict_value((0,None),dtype=int), 
-        'help': "ufo ring-removal sigma horizontal"},
+        'help': "ufo ring-removal sigma horizontal (try 3..31)"},
     'sy': {
-        'ezdefault': 0, 
+        'ezdefault': 1,
         'type': restrict_value((0,None),dtype=int), 
-        'help': "ufo ring-removal sigma vertical"},
+        'help': "ufo ring-removal sigma vertical (try 1..5)"},
     'spy-narrow-window': {
         'ezdefault': 21,
         'type': restrict_value((0,None),dtype=int), 

@@ -88,7 +88,6 @@ class ConfigGroup(QGroupBox):
         self.preproc_entry.editingFinished.connect(self.set_preproc_entry)
 
         # Names of directories with flats/darks/projections frames
-        self.e_DIRTYP = ["darks", "flats", "tomo", "flats2"]
         self.dir_name_label = QLabel()
         self.dir_name_label.setText("Name of flats/darks/tomo subdirectories in each CT data set")
         self.darks_entry = QLineEdit()
@@ -350,7 +349,6 @@ class ConfigGroup(QGroupBox):
 
     def set_darks(self):
         LOG.debug(self.darks_entry.text())
-        self.e_DIRTYP[0] = str(self.darks_entry.text())
         dict_entry = EZVARS['inout']['darks-dir']
         dir = self.darks_entry.text().strip()
         add_value_to_dict_entry(dict_entry, dir)
@@ -358,7 +356,6 @@ class ConfigGroup(QGroupBox):
 
     def set_flats(self):
         LOG.debug(self.flats_entry.text())
-        self.e_DIRTYP[1] = str(self.flats_entry.text())
         dict_entry = EZVARS['inout']['flats-dir']
         dir = self.flats_entry.text().strip()
         add_value_to_dict_entry(dict_entry, dir)
@@ -366,7 +363,6 @@ class ConfigGroup(QGroupBox):
 
     def set_tomo(self):
         LOG.debug(self.tomo_entry.text())
-        self.e_DIRTYP[2] = str(self.tomo_entry.text())
         dict_entry = EZVARS['inout']['tomo-dir']
         dir = self.tomo_entry.text().strip()
         add_value_to_dict_entry(dict_entry, dir)
@@ -374,7 +370,6 @@ class ConfigGroup(QGroupBox):
 
     def set_flats2(self):
         LOG.debug(self.flats2_entry.text())
-        self.e_DIRTYP[3] = str(self.flats2_entry.text())
         dict_entry = EZVARS['inout']['flats2-dir']
         dir = self.flats2_entry.text().strip()
         add_value_to_dict_entry(dict_entry, dir)
@@ -619,6 +614,7 @@ class ConfigGroup(QGroupBox):
         self.set_preproc_entry()
         #LOG.debug(get_dict_values_log())
         run_reco = partial(self.run_reconstruction, batch_run=False)
+        #I had to add a little sleep as on some Linux ditributions params won't fully set before the main() begins
         QTimer.singleShot(100, run_reco)
 
     def run_reconstruction(self, batch_run):
@@ -637,12 +633,11 @@ class ConfigGroup(QGroupBox):
             QMessageBox.information(self, "Invalid Input Error", msg)
 
     def get_fdt_names(self):
-        DIRTYP = []
-        for i in self.e_DIRTYP:
-            DIRTYP.append(i)
-        LOG.debug("Result of get_fdt_names")
-        LOG.debug(DIRTYP)
-        return DIRTYP
+        return [EZVARS['inout']['darks-dir']['value'],
+                EZVARS['inout']['flats-dir']['value'],
+                EZVARS['inout']['tomo-dir']['value'],
+                EZVARS['inout']['flats2-dir']['value']]
+
 
 class InvalidInputError(Exception):
     """
