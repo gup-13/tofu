@@ -12,13 +12,13 @@ from PyQt5.QtWidgets import (
     QFileDialog,
     QMessageBox,
 )
-from PyQt5.QtCore import Qt, pyqtSignal
-
+from PyQt5.QtCore import Qt
+from tofu.ez.ufo_cmd_gen import fmt_nlmdn_ufo_cmd
 from tofu.ez.params import EZVARS
 from tofu.util import add_value_to_dict_entry, get_int_validator, get_double_validator
 
 
-from tofu.ez.main_nlm import main_tk
+
 
 
 LOG = logging.getLogger(__name__)
@@ -179,12 +179,10 @@ class NLMDNGroup(QGroupBox):
         if directory:
             self.input_dir_entry.setText(str(directory))
             self.set_indir_entry()
-        
-            self.output_dir_entry.setText(str(directory + "-nlmfilt"))
+            self.output_dir_entry.setText(str(os.path.join(directory+'-nlmdn', 'im-%05i.tif')))
             self.set_outdir_entry()
-        
             dict_entry = EZVARS['nlmdn']['input-is-1file']
-            add_value_to_dict_entry(dict_entry, str(False))
+            add_value_to_dict_entry(dict_entry, False)
 
     def set_indir_entry(self):
         LOG.debug("Indir entry: " + str(self.input_dir_entry.text()))
@@ -201,7 +199,7 @@ class NLMDNGroup(QGroupBox):
         )
         if file_path:
             img_name, img_ext = os.path.splitext(file_path)
-            tmp = img_name + "-nlmfilt-%05i" + img_ext
+            tmp = img_name + "-nlmfilt" + img_ext
             
             self.input_dir_entry.setText(str(file_path))
             self.set_indir_entry()
@@ -210,7 +208,7 @@ class NLMDNGroup(QGroupBox):
             self.set_outdir_entry()
             
             dict_entry = EZVARS['nlmdn']['input-is-1file']
-            add_value_to_dict_entry(dict_entry, str(True))
+            add_value_to_dict_entry(dict_entry, True)
 
     def set_outdir_button(self):
         LOG.debug("Select output directory pressed")
@@ -219,7 +217,7 @@ class NLMDNGroup(QGroupBox):
         # dict_entry = EZVARS['nlmdn']['output_pattern']
         # add_value_to_dict_entry(dict_entry, directory)
         if directory:
-            self.output_dir_entry.setText(str(directory))
+            self.output_dir_entry.setText(str(os.path.join(directory,'im-nlmdn-%05i.tif')))
             self.set_outdir_entry()
 
     def set_save_bigtif(self):
@@ -297,7 +295,7 @@ class NLMDNGroup(QGroupBox):
                     LOG.debug("Cannot delete: output directory is the same as input")
                 else:
                     rmtree(EZVARS['nlmdn']['output_pattern']['value'])
-                    LOG.debug("Directory with reconstructed data was removed")
+                    LOG.debug("Directory with denoised images was removed")
             else:
                 LOG.debug("Directory does not exist")
         else:
@@ -306,87 +304,27 @@ class NLMDNGroup(QGroupBox):
     def dry_button_pressed(self):
         LOG.debug("Dry Run Button Pressed")
         dict_entry = EZVARS['nlmdn']['dryrun']
-        add_value_to_dict_entry(dict_entry, str(True))
+        add_value_to_dict_entry(dict_entry, True)
         self.apply_button_pressed()
-        add_value_to_dict_entry(dict_entry, str(False))
+        add_value_to_dict_entry(dict_entry, False)
 
     def apply_button_pressed(self):
         LOG.debug("Apply Filter Button Pressed")
-        args = tk_args(EZVARS['nlmdn']['do-after-reco']['value'],
-                       EZVARS['nlmdn']['input-dir']['value'],
-                       EZVARS['nlmdn']['input-is-1file']['value'],
-                       EZVARS['nlmdn']['output_pattern']['value'],
-                       EZVARS['nlmdn']['bigtiff_output']['value'],
-                       EZVARS['nlmdn']['search-radius']['value'],
-                       EZVARS['nlmdn']['patch-radius']['value'],
-                       EZVARS['nlmdn']['h']['value'],
-                       EZVARS['nlmdn']['sigma']['value'],
-                       EZVARS['nlmdn']['window']['value'],
-                       EZVARS['nlmdn']['fast']['value'],
-                       EZVARS['nlmdn']['estimate-sigma']['value'],
-                       EZVARS['nlmdn']['dryrun']['value'])
-        #LOG.debug(args.args)
-        if os.path.exists(args.outdir) and not args.dryrun:
+
+        if os.path.exists(EZVARS['nlmdn']['output_pattern']['value']) and not \
+                EZVARS['nlmdn']['dryrun']['value']:
             title_text = "Warning: files can be overwritten"
             text1 = "Output directory exists. Files can be overwritten. Proceed?"
             dialog = QMessageBox.warning(self, title_text, text1, QMessageBox.Yes | QMessageBox.No)
             if dialog == QMessageBox.Yes:
-                main_tk(args)#, EZVARS['inout']['clip_hist']['value'],
-                             # SECTIONS['general']['output-bitdepth']['value'])
-                QMessageBox.information(self, "Finished", "Finished")
+                cmd = fmt_nlmdn_ufo_cmd(EZVARS['nlmdn']['input-dir']['value'],
+                                        EZVARS['nlmdn']['output_pattern']['value'])
         else:
-            main_tk(args)
+            cmd = fmt_nlmdn_ufo_cmd(EZVARS['nlmdn']['input-dir']['value'],
+                                    EZVARS['nlmdn']['output_pattern']['value'])
+
+        if EZVARS['nlmdn']['dryrun']['value']:
+            print(cmd)
+        else:
+            os.system(cmd)
             QMessageBox.information(self, "Finished", "Finished")
-
-
-class tk_args:
-    def __init__(
-        self,
-        e_apply_after_reco,
-        e_indir,
-        e_input_is_file,
-        e_outdir,
-        e_bigtif,
-        e_r,
-        e_dx,
-        e_h,
-        e_sig,
-        e_w,
-        e_fast,
-        e_autosig,
-        e_dryrun,
-    ):
-
-        self.args = {}
-        # PATHS
-        self.args["apply_after_reco"] = str(e_apply_after_reco)
-        setattr(self, "apply_after_reco", self.args["apply_after_reco"])
-        self.args["indir"] = str(e_indir)
-        setattr(self, "indir", self.args["indir"])
-        self.args["input_is_file"] = e_input_is_file
-        setattr(self, "input_is_file", self.args["input_is_file"])
-        self.args["outdir"] = str(e_outdir)
-        setattr(self, "outdir", self.args["outdir"])
-        # ALG PARAMS - MAIN
-        self.args["search_r"] = int(e_r)
-        setattr(self, "search_r", self.args["search_r"])
-        self.args["patch_r"] = int(e_dx)
-        setattr(self, "patch_r", self.args["patch_r"])
-        self.args["h"] = float(e_h)
-        setattr(self, "h", self.args["h"])
-        self.args["sig"] = float(e_sig)
-        setattr(self, "sig", self.args["sig"])
-        # ALG PARAMS - optional
-        self.args["w"] = float(e_w)
-        setattr(self, "w", self.args["w"])
-        self.args["fast"] = bool(e_fast)
-        setattr(self, "fast", self.args["fast"])
-        self.args["autosig"] = bool(e_autosig)
-        setattr(self, "autosig", self.args["autosig"])
-        # Misc
-        # self.args['inplace'] = bool(e_inplace.get())
-        # setattr(self, 'inplace', self.args['inplace'])
-        self.args["bigtif"] = bool(e_bigtif)
-        setattr(self, "bigtif", self.args["bigtif"])
-        self.args["dryrun"] = bool(e_dryrun)
-        setattr(self, "dryrun", self.args["dryrun"])

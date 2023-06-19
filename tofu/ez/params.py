@@ -114,7 +114,7 @@ MAP_TABLE = [
     ['main_config_darks_path','ezvars','inout','path2-shared-darks'],
     ['main_config_flats_path','ezvars','inout','path2-shared-flats'],
     ['main_config_flats2_checkbox','ezvars','inout','shared-flats-after'],
-    ['main_config_flats2_path','ezvars','inout','path2-shared-flats-after'],
+    ['main_config_flats2_path','ezvars','inout','path2-shared-flats2'],
     
     ## NLMDN Settings
     ['advanced_nlmdn_apply_after_reco','ezvars','nlmdn','do-after-reco'],
@@ -256,7 +256,7 @@ EZVARS['inout'] = {
         'ezdefault': False, 
         'type': bool, 
         'help': "TODO"},
-    'path2-shared-flats-after': {
+    'path2-shared-flats2': {
         'ezdefault': "Absolute path to flats2", 
         'type': str, 
         'help': "TODO"},

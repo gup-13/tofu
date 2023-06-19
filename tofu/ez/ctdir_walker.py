@@ -27,7 +27,7 @@ class WalkCTdirs:
         self._fdt_names = fdt_names
         self.common_flats = EZVARS['inout']['path2-shared-flats']['value']
         self.common_darks = EZVARS['inout']['path2-shared-darks']['value']
-        self.common_flats2 = EZVARS['inout']['path2-shared-flats-after']['value']
+        self.common_flats2 = EZVARS['inout']['path2-shared-flats2']['value']
         self.use_common_flats2 = EZVARS['inout']['shared-flats-after']['value']
 
     def print_tree(self):

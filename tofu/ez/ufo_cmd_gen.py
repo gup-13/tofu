@@ -116,9 +116,7 @@ def get_pre_cmd( ctset, pre_cmd, tmpdir):
     return cmds
 
 def get_inp_cmd(ctset, tmpdir, N, nviews):
-    print(ctset)
     indir = make_inpaths(ctset[0], ctset[1])
-    print(indir)
     cmds = []
     ######### CREATE MASK #########
     flat1_file = os.path.join(tmpdir, "flat1.tif")
@@ -191,4 +189,25 @@ def get_crop_sli(out_pattern):
     cmd += 'write filename={}'.format(out_pattern)
     if EZVARS['inout']['clip_hist']['value']:
         cmd += ' bits=8 rescale=False'
+    return cmd
+
+def fmt_nlmdn_ufo_cmd(inpath: str, outpath: str):
+    """
+    :param inp: Path to input directory before NLMDN applied
+    :param out: Path to output directory after NLMDN applied
+    :return:
+    """
+    cmd = 'ufo-launch read path={}'.format(inpath)
+    cmd += ' ! non-local-means patch-radius={}'.format(EZVARS['nlmdn']['patch-radius']['value'])
+    cmd += ' search-radius={}'.format(EZVARS['nlmdn']['search-radius']['value'])
+    cmd += ' h={}'.format(EZVARS['nlmdn']['h']['value'])
+    cmd += ' sigma={}'.format(EZVARS['nlmdn']['sigma']['value'])
+    cmd += ' window={}'.format(EZVARS['nlmdn']['window']['value'])
+    cmd += ' fast={}'.format(EZVARS['nlmdn']['fast']['value'])
+    cmd += ' estimate-sigma={}'.format(EZVARS['nlmdn']['estimate-sigma']['value'])
+    cmd += ' ! write filename={}'.format(enquote(outpath))
+    if not EZVARS['nlmdn']['bigtiff_output']['value']:
+        cmd += " bytes-per-file=0 tiff-bigtiff=False"
+    if EZVARS['inout']['clip_hist']['value']:
+        cmd += f" bits={SECTIONS['general']['output-bitdepth']['value']} rescale=False"
     return cmd

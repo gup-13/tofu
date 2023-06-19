@@ -83,10 +83,6 @@ def make_inpaths(lvl0, flats2):
     indir = []
     # If using flats/darks/flats2 in same dir as tomo
     # or darks/flats were processed and are already in temporary directory
-    tmp1=EZVARS['inout']['shared-flatsdarks']['value']
-    tmp2=EZVARS['inout']['shared-df-used']['value']
-    print(f'Shared flag: {tmp1}')
-    print(f'Shared df used? flag: {tmp2}')
     if not EZVARS['inout']['shared-flatsdarks']['value'] or \
                 EZVARS['inout']['shared-df-used']['value']:
         for i in [EZVARS['inout']['darks-dir']['value'],
@@ -95,7 +91,6 @@ def make_inpaths(lvl0, flats2):
             indir.append(os.path.join(lvl0, i))
         if flats2 - 3:
             indir.append(os.path.join(lvl0, EZVARS['inout']['flats2-dir']['value']))
-        print(f'Formatted in no shared {indir}')
         return indir
     # If using common flats/darks/flats2 across multiple reconstructions
     # and that is the first occasion when they are required
@@ -105,8 +100,7 @@ def make_inpaths(lvl0, flats2):
         indir.append(EZVARS['inout']['path2-shared-flats']['value'])
         indir.append(os.path.join(lvl0, EZVARS['inout']['tomo-dir']['value']))
         if EZVARS['inout']['shared-flats-after']['value']:
-            indir.append(EZVARS['inout']['path2-shared-flats-after']['value'])
-        print(f'Shared were used: {indir}')
+            indir.append(EZVARS['inout']['path2-shared-flats2']['value'])
         add_value_to_dict_entry(EZVARS['inout']['shared-df-used'], True)
         return indir
 
