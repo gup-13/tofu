@@ -3,13 +3,12 @@ Created on Apr 20, 2020
 
 @author: gasilos
 """
-import os
-import tifffile
-from tofu.ez.yaml_in_out import read_yaml, write_yaml
-from tofu.util import get_filenames, get_first_filename, get_image_shape, read_image, reverse_tupleize, add_value_to_dict_entry, get_dict_values_string
-
-from tofu.ez.params import EZVARS, MAP_TABLE
+import os, glob, tifffile
+from tofu.ez.params import EZVARS
 from tofu.config import SECTIONS
+from tofu.ez.yaml_in_out import read_yaml, write_yaml
+from tofu.util import get_filenames, get_first_filename, get_image_shape, read_image, \
+    reverse_tupleize, add_value_to_dict_entry, get_dict_values_string
 
 def get_dims(pth):
     # get number of projections and projections dimensions
@@ -74,6 +73,64 @@ def clean_tmp_dirs(tmpdir, fdt_names):
             if filename[:4] in tmp_pattern:
                 os.system("rm -rf {}".format(os.path.join(tmpdir, filename)))
 
+def make_inpaths(lvl0, flats2):
+    """
+    Creates a list of paths to flats/darks/tomo directories
+    :param lvl0: Root of directory containing flats/darks/tomo
+    :param flats2: The type of directory: 3 contains flats/darks/tomo 4 contains flats/darks/tomo/flats2
+    :return: List of abs paths to the directories containing darks/flats/tomo and flats2 (if used)
+    """
+    indir = []
+    # If using flats/darks/flats2 in same dir as tomo
+    # or darks/flats were processed and are already in temporary directory
+    tmp1=EZVARS['inout']['shared-flatsdarks']['value']
+    tmp2=EZVARS['inout']['shared-df-used']['value']
+    print(f'Shared flag: {tmp1}')
+    print(f'Shared df used? flag: {tmp2}')
+    if not EZVARS['inout']['shared-flatsdarks']['value'] or \
+                EZVARS['inout']['shared-df-used']['value']:
+        for i in [EZVARS['inout']['darks-dir']['value'],
+                  EZVARS['inout']['flats-dir']['value'],
+                  EZVARS['inout']['tomo-dir']['value']]:
+            indir.append(os.path.join(lvl0, i))
+        if flats2 - 3:
+            indir.append(os.path.join(lvl0, EZVARS['inout']['flats2-dir']['value']))
+        print(f'Formatted in no shared {indir}')
+        return indir
+    # If using common flats/darks/flats2 across multiple reconstructions
+    # and that is the first occasion when they are required
+    elif EZVARS['inout']['shared-flatsdarks']['value'] and \
+            not EZVARS['inout']['shared-df-used']['value']:
+        indir.append(EZVARS['inout']['path2-shared-darks']['value'])
+        indir.append(EZVARS['inout']['path2-shared-flats']['value'])
+        indir.append(os.path.join(lvl0, EZVARS['inout']['tomo-dir']['value']))
+        if EZVARS['inout']['shared-flats-after']['value']:
+            indir.append(EZVARS['inout']['path2-shared-flats-after']['value'])
+        print(f'Shared were used: {indir}')
+        add_value_to_dict_entry(EZVARS['inout']['shared-df-used'], True)
+        return indir
+
+def fmt_in_out_path(tmpdir, indir, raw_proj_dir_name, croutdir=True):
+    # suggests input and output path to directory with proj
+    # depending on number of processing steps applied so far
+    li = sorted(glob.glob(os.path.join(tmpdir, "proj-step*")))
+    proj_dirs = [d for d in li if os.path.isdir(d)]
+    Nsteps = len(proj_dirs)
+    in_proj_dir, out_proj_dir = "qqq", "qqq"
+    if Nsteps == 0:  # no projections in temporary directory
+        in_proj_dir = os.path.join(indir, raw_proj_dir_name)
+        out_proj_dir = "proj-step1"
+    elif Nsteps > 0:  # there are directories proj-stepX in tmp dir
+        in_proj_dir = proj_dirs[-1]
+        out_proj_dir = "{}{}".format(in_proj_dir[:-1], Nsteps + 1)
+    else:
+        raise ValueError("Something is wrong with in/out filenames")
+    # physically create output directory
+    tmp = os.path.join(tmpdir, out_proj_dir)
+    if croutdir and not os.path.exists(tmp):
+        os.makedirs(tmp)
+    # return names of input directory and output pattern with abs path
+    return in_proj_dir, os.path.join(tmp, "proj-%04i.tif")
 
 def enquote(string, escape=False):
     addition = '\\"' if escape else '"'
@@ -174,7 +231,7 @@ def import_values_from_params(self, params):
         dict_entry = map_param_to_dict_entries[str(p)]
         add_value_to_dict_entry(dict_entry, params[str(p)], False)
 
-def save_params(ctsetname, ax, nviews, WH):
+def save_params(ctsetname, ax, nviews, wh):
     if not EZVARS['inout']['dryrun']['value'] and not os.path.exists(EZVARS['inout']['output-dir']['value']):
         os.makedirs(EZVARS['inout']['output-dir']['value'])
     tmp = os.path.join(EZVARS['inout']['output-dir']['value'], ctsetname)
@@ -201,7 +258,7 @@ def save_params(ctsetname, ax, nviews, WH):
             f.write('Center of rotation {} (auto estimate)\n'.format(ax))
         else:
             f.write('Center of rotation {} (user defined)\n'.format(ax))
-        f.write('Dimensions of projections {} x {} (height x width)\n'.format(WH[0], WH[1]))
+        f.write('Dimensions of projections {} x {} (height x width)\n'.format(wh[0], wh[1]))
         f.write('Number of projections {}\n'.format(nviews))
         f.write('*** Preprocessing ***\n')
         tmp = 'None'

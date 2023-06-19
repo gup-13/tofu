@@ -15,7 +15,7 @@ from tofu.ez.image_read_write import TiffSequenceReader
 from tofu.ez.params import EZVARS
 from tofu.ez.Helpers.stitch_funcs import findCTdirs, stitch_float32_output
 from tofu.util import get_filenames, get_image_shape
-from tofu.ez.ufo_cmd_gen import ufo_cmds
+from tofu.ez.ufo_cmd_gen import get_filter2d_sinos_cmd
 from tofu.ez.find_axis_cmd_gen import evaluate_images_simp
 
 
@@ -43,9 +43,10 @@ def find_overlap(parameters):
                               EZVARS['inout']['tomo-dir']['value'])
     print(ctdirs)
 
-    if parameters['360overlap_doRR']:
-        ufoRRcmdgen = ufo_cmds('blah')
-
+    if EZVARS['inout']['shared-flatsdarks']['value']:
+        dirdark = EZVARS['inout']['path2-shared-darks']['value']
+    else:
+        dirdark = EZVARS['inout']['darks-dir']['value']
     # concatenate images end-to-end and generate a sinogram
     for ctset in ctdirs:
         print("Working on ctset:" + str(ctset))
@@ -60,6 +61,7 @@ def find_overlap(parameters):
             print(f"Problem loading flats in {ctset}")
             continue
         try:
+
             row_dark = np.mean(extract_row(
                 os.path.join(ctset, EZVARS['inout']['darks-dir']['value']),
                                        parameters['360overlap_row']))
@@ -130,7 +132,7 @@ def find_overlap(parameters):
         if parameters['360overlap_doRR']:
             print("Applying ring removal filter")
             tmpdir = os.path.join(parameters['360overlap_temp_dir'], index_dir)
-            rrcmd = ufoRRcmdgen.get_filter2d_sinos_cmd(tmpdir,
+            rrcmd = get_filter2d_sinos_cmd(tmpdir,
                                    EZVARS['RR']['sx']['value'],
                                    EZVARS['RR']['sy']['value'],
                                    sin_height, sin_width)
