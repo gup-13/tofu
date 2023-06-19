@@ -43,28 +43,27 @@ def find_overlap(parameters):
                               EZVARS['inout']['tomo-dir']['value'])
     print(ctdirs)
 
+    dirdark = EZVARS['inout']['darks-dir']['value']
+    dirflats = EZVARS['inout']['flats-dir']['value']
+    dirflats2 = EZVARS['inout']['flats2-dir']['value']
     if EZVARS['inout']['shared-flatsdarks']['value']:
         dirdark = EZVARS['inout']['path2-shared-darks']['value']
-    else:
-        dirdark = EZVARS['inout']['darks-dir']['value']
-    # concatenate images end-to-end and generate a sinogram
+        dirflats = EZVARS['inout']['path2-shared-flats']['value']
+        dirflats2 = EZVARS['inout']['path2-shared-flats2']['value']
+    # concatenate images with various overlap and generate sinograms
     for ctset in ctdirs:
         print("Working on ctset:" + str(ctset))
         index_dir = os.path.basename(os.path.normpath(ctset))
-
         # loading:
         try:
             row_flat = np.mean(extract_row(
-                os.path.join(ctset, EZVARS['inout']['flats-dir']['value']),
-                           parameters['360overlap_row']))
+                os.path.join(ctset, dirflats), parameters['360overlap_row']))
         except:
             print(f"Problem loading flats in {ctset}")
             continue
         try:
-
             row_dark = np.mean(extract_row(
-                os.path.join(ctset, EZVARS['inout']['darks-dir']['value']),
-                                       parameters['360overlap_row']))
+                os.path.join(ctset, dirdark), parameters['360overlap_row']))
         except:
             print(f"Problem loading darks in {ctset}")
             continue
@@ -76,15 +75,13 @@ def find_overlap(parameters):
             print(f"Problem loading projections from "
                   f"{os.path.join(ctset, EZVARS['inout']['tomo-dir']['value'])}")
             continue
-
         row_flat2 = None
-        tmpstr = os.path.join(ctset, EZVARS['inout']['flats2-dir']['value'])
+        tmpstr = os.path.join(ctset, dirflats2)
         if os.path.exists(tmpstr):
             try:
                 row_flat2 = np.mean(extract_row(tmpstr, parameters['360overlap_row']))
             except:
                 print(f"Problem loading flats2 in {ctset}")
-
 
         (num_proj, M) = row_tomo.shape
 

@@ -289,7 +289,7 @@ class ConfigGroup(QGroupBox):
         self.darks_absolute_entry.setText(EZVARS['inout']['path2-shared-darks']['value'])
         self.flats_absolute_entry.setText(EZVARS['inout']['path2-shared-flats']['value'])
         self.use_flats2_checkbox.setChecked(EZVARS['inout']['shared-flats-after']['value'])
-        self.flats2_absolute_entry.setText(EZVARS['inout']['path2-shared-flats-after']['value'])
+        self.flats2_absolute_entry.setText(EZVARS['inout']['path2-shared-flats2']['value'])
 
     def select_input_dir(self):
         """
@@ -436,7 +436,7 @@ class ConfigGroup(QGroupBox):
 
     def set_common_flats2(self):
         LOG.debug("Common flats2 path: " + str(self.flats2_absolute_entry.text()))
-        dict_entry = EZVARS['inout']['path2-shared-flats-after']
+        dict_entry = EZVARS['inout']['path2-shared-flats2']
         text = self.flats2_absolute_entry.text().strip()
         add_value_to_dict_entry(dict_entry, text)
         self.flats2_absolute_entry.setText(text)

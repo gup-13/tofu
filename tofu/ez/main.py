@@ -39,7 +39,7 @@ def get_CTdirs_list(inpath, fdt_names):
         logging.debug("Use common darks/flats")
         logging.debug("Path to darks: " + str(EZVARS['inout']['path2-shared-darks']['value']))
         logging.debug("Path to flats: " + str(EZVARS['inout']['path2-shared-flats']['value']))
-        logging.debug("Path to flats2: " + str(EZVARS['inout']['path2-shared-flats-after']['value']))
+        logging.debug("Path to flats2: " + str(EZVARS['inout']['path2-shared-flats2']['value']))
         logging.debug("Use flats2: " + str(EZVARS['inout']['shared-flats-after']['value']))
         # Determine whether paths to common flats/darks/flats2 exist
         if not W.checkcommonfdt():
@@ -185,28 +185,6 @@ def frmt_ufo_cmds(cmds, ctset, out_pattern, ax, nviews, wh):
         cmds.append(get_reco_cmd(ctset, out_pattern, ax, nviews, wh, swiFFC, swiPR))
 
     return nviews, wh
-
-
-def fmt_nlmdn_ufo_cmd(inpath: str, outpath: str):  ### TODO call one function from nlmdn module!!
-    """
-    :param inp: Path to input directory before NLMDN applied
-    :param out: Path to output directory after NLMDN applied
-    :return:
-    """
-    cmd = 'ufo-launch read path={}'.format(inpath)
-    cmd += ' ! non-local-means patch-radius={}'.format(EZVARS['nlmdn']['patch-radius']['value'])
-    cmd += ' search-radius={}'.format(EZVARS['nlmdn']['search-radius']['value'])
-    cmd += ' h={}'.format(EZVARS['nlmdn']['h']['value'])
-    cmd += ' sigma={}'.format(EZVARS['nlmdn']['sigma']['value'])
-    cmd += ' window={}'.format(EZVARS['nlmdn']['window']['value'])
-    cmd += ' fast={}'.format(EZVARS['nlmdn']['fast']['value'])
-    cmd += ' estimate-sigma={}'.format(EZVARS['nlmdn']['estimate-sigma']['value'])
-    cmd += ' ! write filename={}'.format(enquote(outpath))
-    if not EZVARS['nlmdn']['bigtiff_output']['value']:
-        cmd += " bytes-per-file=0 tiff-bigtiff=False"
-    if EZVARS['inout']['clip_hist']['value']:
-        cmd += f" bits={SECTIONS['general']['output-bitdepth']['value']} rescale=False"
-    return cmd
 
 #TODO: get rid of fdt_names everywhere - work directly with EZVARS instead
 def execute_reconstruction(fdt_names):
