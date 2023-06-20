@@ -392,9 +392,9 @@ def main_360_mp_depth1(indir, outdir, ax, cro):
             print(f"{npairs} pairs in {sdir} will be stitched")
 
             os.makedirs(os.path.join(outdir, sdir))
-            filename = 'sti-axis' + str(ax) + '-{:>04}.tif'
+            filename = 'sti-{:>04}.tif'
             out_fmt = os.path.join(outdir, sdir, filename)
-            idxs = range(0, npairs)
+            idxs = range(0, npairs) 
             
             if enableMultiprocessing:
                 exec_func = partial(st_mp_bigtiff_pages, npairs, ax, cro, tfs, out_fmt)                
