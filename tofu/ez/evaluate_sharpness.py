@@ -3,6 +3,7 @@ import glob
 import multiprocessing
 import os
 import time
+import sys
 import numpy as np
 from functools import partial
 from tofu.util import read_image
@@ -136,6 +137,7 @@ def evaluate_metrics(images, out_prefix, *args, **kwargs):
     passed to :func:`evaluate`. Except for *fwhm* in *kwargs* which is used to filter low
     frequencies from the results.
     """
+    sys.modules['__main__'].__spec__ = 0
     fwhm = kwargs.pop("fwhm") if "fwhm" in kwargs else None
     pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
     exec_func = partial(evaluate, *args, **kwargs)

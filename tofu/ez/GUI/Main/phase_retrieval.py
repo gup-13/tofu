@@ -105,10 +105,10 @@ class PhaseRetrievalGroup(QGroupBox):
         self.delta_beta_ratio_entry.setText(str(dict_entry['value']))
         
     def meters_to_microns(self,value)->float:
-        return value * 1e6
+        return float(value) * float(1e6)
     
     def microns_to_meters(self,value)->float:
-        return value * 1e-6
+        return float(value) * float(1e-6)
     
     def delta_beta_ratio_to_regularization_rate(self,value)->float:
         return math.log10(value)

@@ -201,6 +201,8 @@ def execute_reconstruction(fdt_names):
     # get list of all good CT directories to be reconstructed
 
     print('*********** Analyzing input directory ************')
+    root_folder = EZVARS['inout']['input-dir']['value']
+    
     W, lvl0 = get_CTdirs_list(EZVARS['inout']['input-dir']['value'], fdt_names)
     # W is an array of tuples (path, type)
     # get list of already reconstructed sets
@@ -237,6 +239,13 @@ def execute_reconstruction(fdt_names):
                                                EZVARS['COR']['search-interval']['value'],
                                                EZVARS['COR']['patch-size']['value'],
                                                nviews, wh)
+                    
+                    move_axis_images(                        
+                        ctset[0][len(root_folder):],
+                        os.path.join(EZVARS['inout']['tmp-dir']['value'], "axis-search"),
+                        os.path.join(EZVARS['inout']['output-dir']['value'], "axis-search"),
+                        EZVARS['COR']['search-interval']['value'])
+                    
                 else:
                     ax = EZVARS['COR']['user-defined-ax']['value'] + i * EZVARS['COR']['user-defined-dax']['value']
             # If EZVARS['COR']['search-method']['value'] == 4 then bypass axis search and use image midpoint

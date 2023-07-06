@@ -6,6 +6,8 @@ Created on Apr 6, 2018
 """
 import glob, os, tifffile
 import numpy as np
+import os
+import shutil           ## move files
 from tofu.ez.evaluate_sharpness import process as process_metrics
 from tofu.ez.util import enquote, make_inpaths
 from tofu.util import get_filenames, read_image, determine_shape
@@ -47,6 +49,37 @@ def find_axis_std(ctset, tmpdir, ax_range, p_width, nviews, wh):
     points, maximum = evaluate_images_simp(out_pattern + "*.tif", "msag")
     return res[0] + res[2] * maximum
 
+def move_axis_images(slice_dir, tmp_axis_dir, output_dir, ax_range):
+    
+    # Get a list of files in directory
+    names = sorted(glob.glob(tmp_axis_dir + "/sli*.tif"))
+    
+    # Get the number of axes
+    image_count = len(names)
+    ax_range_list = ax_range.split(",")
+    range_min = float(ax_range_list[0])
+    range_max = float(ax_range_list[1])
+    step = float(ax_range_list[2])
+    range_count = int((range_max - range_min) / step)
+    
+    if (image_count != range_count):
+        print("The number of images in temp folder is not the same as the number of axis.")
+        return
+
+    output_path = output_dir + slice_dir
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+    
+    # Move the images in tmp directory to the corresponding output directory
+    for i in range(0, range_count):
+        curr_axis = range_min + (i * range_count)
+        
+        old_image_dir = names[i]
+        new_image_name = "axis-{}".format(str(curr_axis)) + ".tif"
+        new_image_dir = os.path.join(output_path, new_image_name)
+        
+        shutil.move(old_image_dir, new_image_dir)
+        
 def find_axis_corr(ctset, vcrop, y, height, multipage):
     indir = make_inpaths(ctset[0], ctset[1])
     """Use correlation to estimate center of rotation for tomography."""

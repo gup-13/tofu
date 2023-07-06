@@ -266,9 +266,6 @@ class MultiStitch360Group(QGroupBox):
     def set_input_entry(self):
         LOG.debug("Input directory: " + str(self.input_dir_entry.text()))
         self.parameters['360multi_input_dir'] = str(self.input_dir_entry.text())
-        
-        # Set output directory to automatically follow the input directory structure
-        self.output_dir_entry.setText(self.parameters['360multi_input_dir'] + "/hor-search")
         self.set_output_entry()
 
     def temp_button_pressed(self):

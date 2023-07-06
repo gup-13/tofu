@@ -4,7 +4,7 @@ Created on Apr 20, 2020
 @author: gasilos
 """
 import os, glob, tifffile
-from tofu.ez.params import EZVARS
+from tofu.ez.params import EZVARS, MAP_TABLE
 from tofu.config import SECTIONS
 from tofu.ez.yaml_in_out import read_yaml, write_yaml
 from tofu.util import get_filenames, get_first_filename, get_image_shape, read_image, \
@@ -131,7 +131,7 @@ def enquote(string, escape=False):
 
     return addition + string + addition
 
-def createMapFromParamsToDictEntry():
+def create_map_from_params_to_dict_entry():
     """
     Creates a map from parameters to dictionary entry 
     (e.g. result['<parameter name>'] -> dictionary entry
@@ -148,7 +148,7 @@ def createMapFromParamsToDictEntry():
             print("Key" + key + "in MAP_TABLE does not have exactly 4 elements.")
     return result
 
-def createMapFromParamsToDictKeys():
+def create_map_from_params_to_dict_keys():
     """
     Creates a map from parameters to dictionary entry 
     (e.g. result['<parameter name>'] -> {dict name, key1 in dict, key2 in dict[key1]}
