@@ -3,7 +3,8 @@ import math
 from PyQt5.QtWidgets import QGridLayout, QLabel, QGroupBox, QLineEdit, QCheckBox
 
 from tofu.config import SECTIONS
-from tofu.util import add_value_to_dict_entry, reverse_tupleize, get_double_validator, get_tuple_validator
+from tofu.util import add_value_to_dict_entry, reverse_tupleize, get_double_validator, get_tuple_validator, \
+    meters_to_microns, microns_to_meters, delta_beta_ratio_to_regularization_rate, regularization_rate_to_delta_beta_ratio
 
 LOG = logging.getLogger(__name__)
 
@@ -68,10 +69,10 @@ class PhaseRetrievalGroup(QGroupBox):
         self.enable_PR_checkBox.setChecked(SECTIONS['retrieve-phase']['enable-phase']['value'])
         self.photon_energy_entry.setText(str(SECTIONS['retrieve-phase']['energy']['value']))
         self.pixel_size_entry.setText(str(
-            round(self.meters_to_microns(SECTIONS['retrieve-phase']['pixel-size']['value']),6)))
+            round(meters_to_microns(SECTIONS['retrieve-phase']['pixel-size']['value']),6)))
         self.detector_distance_entry.setText(str(reverse_tupleize()(SECTIONS['retrieve-phase']['propagation-distance']['value'])))
         self.delta_beta_ratio_entry.setText(str(
-            round(self.regularization_rate_to_delta_beta_ratio(SECTIONS['retrieve-phase']['regularization-rate']['value']),6)))
+            round(regularization_rate_to_delta_beta_ratio(SECTIONS['retrieve-phase']['regularization-rate']['value']),6)))
 
     def set_PR(self):
         LOG.debug("PR: " + str(self.enable_PR_checkBox.isChecked()))
@@ -88,8 +89,9 @@ class PhaseRetrievalGroup(QGroupBox):
         LOG.debug(self.pixel_size_entry.text())
         dict_entry = SECTIONS['retrieve-phase']['pixel-size']
         add_value_to_dict_entry(dict_entry, 
-                                str(self.microns_to_meters(self.pixel_size_entry.text())))
-        self.pixel_size_entry.setText(str(dict_entry['value']))
+            str(microns_to_meters(self.pixel_size_entry.text())))
+        self.pixel_size_entry.setText(str(
+            round(meters_to_microns(dict_entry['value']),6)))
 
     def set_detector_distance(self):
         LOG.debug(self.detector_distance_entry.text())
@@ -100,18 +102,7 @@ class PhaseRetrievalGroup(QGroupBox):
     def set_delta_beta(self):
         LOG.debug(self.delta_beta_ratio_entry.text())
         dict_entry = SECTIONS['retrieve-phase']['regularization-rate']
-        add_value_to_dict_entry(dict_entry, 
-                                str(self.delta_beta_ratio_to_regularization_rate(self.delta_beta_ratio_entry.text())))
-        self.delta_beta_ratio_entry.setText(str(dict_entry['value']))
-        
-    def meters_to_microns(self,value)->float:
-        return float(value) * float(1e6)
-    
-    def microns_to_meters(self,value)->float:
-        return float(value) * float(1e-6)
-    
-    def delta_beta_ratio_to_regularization_rate(self,value)->float:
-        return math.log10(value)
-    
-    def regularization_rate_to_delta_beta_ratio(self,value)->float:
-        return 10**value
+        add_value_to_dict_entry(dict_entry, str(
+            delta_beta_ratio_to_regularization_rate(float(self.delta_beta_ratio_entry.text()))))
+        self.delta_beta_ratio_entry.setText(str(
+            round(regularization_rate_to_delta_beta_ratio(dict_entry['value']),6)))

@@ -6,8 +6,8 @@ Created on Apr 6, 2018
 """
 import glob, os, tifffile
 import numpy as np
-import os
-import shutil           ## move files
+import os               # create directories
+import shutil           # move files
 from tofu.ez.evaluate_sharpness import process as process_metrics
 from tofu.ez.util import enquote, make_inpaths
 from tofu.util import get_filenames, read_image, determine_shape

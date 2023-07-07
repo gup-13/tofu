@@ -8,7 +8,8 @@ from tofu.ez.params import EZVARS, MAP_TABLE
 from tofu.config import SECTIONS
 from tofu.ez.yaml_in_out import read_yaml, write_yaml
 from tofu.util import get_filenames, get_first_filename, get_image_shape, read_image, \
-    reverse_tupleize, add_value_to_dict_entry, get_dict_values_string
+    reverse_tupleize, add_value_to_dict_entry, get_dict_values_string, \
+    regularization_rate_to_delta_beta_ratio, meters_to_microns
 
 def get_dims(pth):
     # get number of projections and projections dimensions
@@ -269,9 +270,11 @@ def save_params(ctsetname, ax, nviews, wh):
         if SECTIONS['retrieve-phase']['enable-phase']['value']:
             f.write(' Phase retrieval enabled\n')
             f.write('  energy {} keV\n'.format(SECTIONS['retrieve-phase']['energy']['value']))
-            f.write('  pixel size {:0.1f} um\n'.format(SECTIONS['retrieve-phase']['pixel-size']['value'] * 1e6))
+            f.write('  pixel size {:0.1f} um\n'.format(
+                round(meters_to_microns(SECTIONS['retrieve-phase']['pixel-size']['value']),6)))
             f.write('  sample-detector distance {} m\n'.format(SECTIONS['retrieve-phase']['propagation-distance']['value'][0]))
-            f.write('  delta/beta ratio {}\n'.format(SECTIONS['retrieve-phase']['regularization-rate']['value']))
+            f.write('  delta/beta ratio {}\n'.format(
+                round(regularization_rate_to_delta_beta_ratio(SECTIONS['retrieve-phase']['regularization-rate']['value'])),6))
         else:
             f.write('  Phase retrieval disabled\n')
         f.write('*** Ring removal ***\n')

@@ -258,7 +258,7 @@ def get_int_validator():
 def get_double_validator():
     """Returns a validator that only allows the input of floating point number"""
     # Note: QDoubleValidator allows commas before period, which is undesirable
-    regexp = "[\-]?[0-9]*[.]?[0-9]*"
+    regexp = "[\-]?[0-9]*[.]?[0-9]*[e]?[-]?[0-9]*"
     return QRegExpValidator(QRegExp(regexp))
 
 def get_tuple_validator():
@@ -299,7 +299,18 @@ def get_dict_values_string(dict)->str:
             if 'value' in dict_entry:
                 s += str(key1) + " " + str(key2) + ": " + str(dict_entry['value']) + "\n"
     return s
-                
+
+def meters_to_microns(value)->float:
+    return float(value) * float(1e6)
+
+def microns_to_meters(value)->float:
+    return float(value) * float(1e-6)
+
+def delta_beta_ratio_to_regularization_rate(value)->float:
+    return math.log10(value)
+
+def regularization_rate_to_delta_beta_ratio(value)->float:
+    return 10**value
     
 def next_power_of_two(number):
     """Compute the next power of two of the *number*."""
