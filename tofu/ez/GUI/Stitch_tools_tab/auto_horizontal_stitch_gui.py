@@ -6,7 +6,7 @@ import yaml
 from PyQt5.QtWidgets import QPushButton, QLabel, QLineEdit, QGridLayout, QFileDialog, QCheckBox,\
                             QMessageBox, QGroupBox
 from tofu.ez.GUI.Stitch_tools_tab.auto_horizontal_stitch_funcs import AutoHorizontalStitchFunctions
-
+from tofu.util import get_tuple_validator
 
 class AutoHorizontalStitchGUI(QGroupBox):
     def __init__(self):
@@ -23,6 +23,11 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.input_button.clicked.connect(self.input_button_pressed)
         self.input_entry = QLineEdit()
         self.input_entry.textChanged.connect(self.set_input_entry)
+        
+        self.temp_button = QPushButton("Select Temp Path")
+        self.temp_button.clicked.connect(self.temp_button_pressed)
+        self.temp_entry = QLineEdit()
+        self.temp_entry.textChanged.connect(self.set_temp_entry)
 
         self.output_button = QPushButton("Select Output Path")
         self.output_button.clicked.connect(self.output_button_pressed)
@@ -42,10 +47,11 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.darks_entry = QLineEdit()
         self.darks_entry.textChanged.connect(self.set_darks_entry)
 
-        self.overlap_region_label = QLabel("Overlapping Pixels")
-        self.overlap_region_entry = QLineEdit()
-        self.overlap_region_entry.textChanged.connect(self.set_overlap_region_entry)
-
+        self.search_interval_label = QLabel("Search rotation axis in [start, stop, step] interval")
+        self.search_interval_entry = QLineEdit()
+        self.search_interval_entry.setValidator(get_tuple_validator())
+        self.search_interval_entry.textChanged.connect(self.set_search_interval_entry)
+        
         self.sample_on_right_checkbox = QCheckBox("Is the sample on the right side of the image?")
         self.sample_on_right_checkbox.stateChanged.connect(self.set_sample_on_right_checkbox)
 
@@ -73,13 +79,15 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.show()
 
     def set_layout(self):
-        self.setMaximumSize(800, 300)
+        self.setMaximumSize(800, 400)
 
         layout = QGridLayout()
         layout.addWidget(self.input_button, 0, 0, 1, 2)
         layout.addWidget(self.input_entry, 0, 2, 1, 4)
-        layout.addWidget(self.output_button, 1, 0, 1, 2)
-        layout.addWidget(self.output_entry, 1, 2, 1, 4)
+        layout.addWidget(self.temp_button, 1, 0, 1, 2)
+        layout.addWidget(self.temp_entry, 1, 2, 1, 4)
+        layout.addWidget(self.output_button, 2, 0, 1, 2)
+        layout.addWidget(self.output_entry, 2, 2, 1, 4)
 
         self.flats_darks_group.setCheckable(True)
         self.flats_darks_group.setChecked(False)
@@ -89,31 +97,32 @@ class AutoHorizontalStitchGUI(QGroupBox):
         flats_darks_layout.addWidget(self.darks_button, 1, 0, 1, 2)
         flats_darks_layout.addWidget(self.darks_entry, 1, 2, 1, 2)
         self.flats_darks_group.setLayout(flats_darks_layout)
-        layout.addWidget(self.flats_darks_group, 2, 0, 1, 4)
+        layout.addWidget(self.flats_darks_group, 3, 0, 1, 4)
 
-        layout.addWidget(self.overlap_region_label, 3, 2)
-        layout.addWidget(self.overlap_region_entry, 3, 3)
-        layout.addWidget(self.sample_on_right_checkbox, 3, 0, 1, 2)
+        layout.addWidget(self.search_interval_label, 4, 2)
+        layout.addWidget(self.search_interval_entry, 4, 3)
+        layout.addWidget(self.sample_on_right_checkbox, 4, 0, 1, 2)
 
-        layout.addWidget(self.save_params_button, 4, 0, 1, 2)
-        layout.addWidget(self.import_params_button, 4, 3, 1, 1)
-        layout.addWidget(self.help_button, 4, 2, 1, 1)
+        layout.addWidget(self.save_params_button, 5, 0, 1, 2)
+        layout.addWidget(self.import_params_button, 5, 3, 1, 1)
+        layout.addWidget(self.help_button, 5, 2, 1, 1)
 
-        layout.addWidget(self.stitch_button, 5, 0, 1, 2)
-        layout.addWidget(self.dry_run_checkbox, 5, 2, 1, 1)
-        layout.addWidget(self.delete_temp_button, 5, 3, 1, 1)
+        layout.addWidget(self.stitch_button, 6, 0, 1, 2)
+        layout.addWidget(self.dry_run_checkbox, 6, 2, 1, 1)
+        layout.addWidget(self.delete_temp_button, 6, 3, 1, 1)
         self.setLayout(layout)
 
     def init_values(self):
         self.input_entry.setText("...enter input directory")
+        self.temp_entry.setText("...enter temp directory")
         self.output_entry.setText("...enter output directory")
         self.flats_entry.setText("...enter flats directory")
         self.parameters['common_flats_darks'] = False
         self.parameters['flats_dir'] = ""
         self.darks_entry.setText("...enter darks directory")
         self.parameters['darks_dir'] = ""
-        self.overlap_region_entry.setText("1540")
-        self.parameters['overlap_region'] = "1540"
+        self.search_interval_entry.setText("1010,1030,0.5")
+        self.parameters['search_interval'] = "1010,1030,0.5"
         self.sample_on_right_checkbox.setChecked(False)
         self.parameters['sample_on_right'] = False
         self.dry_run_checkbox.setChecked(False)
@@ -125,12 +134,13 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.parameters = new_parameters
         # Update displayed parameters for GUI
         self.input_entry.setText(self.parameters['input_dir'])
+        self.temp_entry.setText(self.parameters['temp_dir'])
         self.output_entry.setText(self.parameters['output_dir'])
         self.flats_darks_group.setChecked(bool(self.parameters['common_flats_darks']))
         self.flats_entry.setText(self.parameters['flats_dir'])
         self.darks_entry.setText(self.parameters['darks_dir'])
         self.sample_on_right_checkbox.setChecked(bool(self.parameters['sample_on_right']))
-        self.overlap_region_entry.setText(self.parameters['overlap_region'])
+        self.search_interval_entry.setText(self.parameters['search-interval'])
         self.dry_run_checkbox.setChecked(bool(self.parameters['dry_run']))
 
     def input_button_pressed(self):
@@ -142,7 +152,18 @@ class AutoHorizontalStitchGUI(QGroupBox):
 
     def set_input_entry(self):
         logging.debug("Input Entry: " + str(self.input_entry.text()))
-        self.parameters['input_dir'] = str(self.input_entry.text())
+        self.parameters['input_dir'] = str(self.input_entry.text())    
+    
+    def temp_button_pressed(self):
+        logging.debug("Temp Button Pressed")
+        dir_explore = QFileDialog(self)
+        temp_dir = dir_explore.getExistingDirectory()
+        self.temp_entry.setText(temp_dir)
+        self.parameters['temp_dir'] = temp_dir
+            
+    def set_temp_entry(self):
+        logging.debug("Temp Entry: " + str(self.temp_entry.text()))
+        self.parameters['temp_dir'] = str(self.temp_entry.text())
 
     def output_button_pressed(self):
         logging.debug("Output Button Pressed")
@@ -184,9 +205,9 @@ class AutoHorizontalStitchGUI(QGroupBox):
         logging.debug("Darks Entry: " + str(self.darks_entry.text()))
         self.parameters['darks_dir'] = str(self.darks_entry.text())
 
-    def set_overlap_region_entry(self):
-        logging.debug("Overlap Region: " + str(self.overlap_region_entry.text()))
-        self.parameters['overlap_region'] = str(self.overlap_region_entry.text())
+    def set_search_interval_entry(self):
+        logging.debug("Search Interval: " + str(self.search_interval_entry.text()))
+        self.parameters['search-interval'] = str(self.search_interval_entry.text())
 
     def set_sample_on_right_checkbox(self):
         logging.debug("Sample is on right side of the image: " + str(self.sample_on_right_checkbox.isChecked()))
@@ -236,8 +257,8 @@ class AutoHorizontalStitchGUI(QGroupBox):
              " auto_stitch will automatically use these for flat-field correction and stitching.\n\n"
         h += "In most cases of half-acquisition the sample is positioned on the left-side of the image." \
              " Select the 'Is sample on the right side of the image?' checkbox if it is on the right.\n\n"
-        h += "The 'Overlapping Pixels' entry determines the region of" \
-             " the images which will be used to determine the axis of rotation.\n\n"
+        # h += "The 'Overlapping Pixels' entry determines the region of" \
+        #      " the images which will be used to determine the axis of rotation.\n\n"
         h += "Parameters can be saved to and loaded from .yaml files of the user's choice.\n\n"
         h += "If the dry run button is selected the program will find the axis values without stitching the images.\n\n"
         QMessageBox.information(self, "Help", h)
