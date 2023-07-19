@@ -7,7 +7,10 @@ from functools import partial
 from scipy.stats import gmean
 import math
 import yaml
-
+import sys
+from tofu.ez.util import get_dims
+from tofu.ez.find_axis_cmd_gen import find_axis_std, move_axis_images
+from tofu.ez.main import get_CTdirs_list
 
 class AutoHorizontalStitchFunctions:
     def __init__(self, parameters):
@@ -38,7 +41,7 @@ class AutoHorizontalStitchFunctions:
 
         # For each zview we compute the axis of rotation
         print("--> Finding Axis of Rotation for each Z-View")
-        self.find_images_and_compute_centre()
+        self.compute_centers()
         print("\n ==> Found the following z-views and their corresponding axis of rotation <==")
 
         # Check the axis values and adjust for any outliers
@@ -83,167 +86,34 @@ class AutoHorizontalStitchFunctions:
                 if name == "tomo":
                     self.ct_dirs.append(root)
         self.ct_dirs = sorted(list(set(self.ct_dirs)))
-
-    def find_images_and_compute_centre(self):
+        
+    def compute_centers(self):
         """
-        We use multiprocessing across all CPU cores to determine the axis values for each zview in parallel
-        We get a dictionary of z-directory and axis of rotation key-value pairs in self.ct_axis_dict at the end
+        Computes the rotational axis for each image in half-acquisition mode by minimizing STD of a slice
         """
-        index = range(len(self.ct_dirs))
-        pool = mp.Pool(processes=mp.cpu_count())
-        exec_func = partial(self.find_center_parallel_proc)
-        temp_axis_list = pool.map(exec_func, index)
-        # Flatten list of dicts to just be a dictionary of key:value pairs
-        for item in temp_axis_list:
-            self.ct_axis_dict.update(item)
-
-    def find_center_parallel_proc(self, index):
-        """
-        Finds the images corresponding to the 0-180, 90-270, 180-360 degree pairs
-        These are used to compute the average axis of rotation for each zview in a ct directory
-        :return: A key value pair corresponding to the z-view path and its axis of rotation
-        """
-        zview_path = self.ct_dirs[index]
-        # Get list of image names in the directory
-        try:
-            tomo_path = os.path.join(zview_path, "tomo")
-            image_list = sorted(os.listdir(tomo_path))
-            num_images = len(image_list)
-
-            # If the number of images is divisible by eight we do eight 180 degree pairs in 45 degree increments
-            if num_images % 8 == 0:
-                # Get the names of the images in 45 degree increments starting from 0
-                zero_degree_image_name = image_list[0]
-                one_eighty_degree_image_name = image_list[int(num_images / 2) - 1]
-                forty_five_degree_image_name = image_list[int(num_images / 8) - 1]
-                two_twenty_five_degree_image_name = image_list[int(num_images * 5 / 8) - 1]
-                ninety_degree_image_name = image_list[int(num_images / 4) - 1]
-                two_seventy_degree_image_name = image_list[int(num_images * 3 / 4) - 1]
-                one_thirty_five_degree_image_name = image_list[int(num_images * 3 / 8) - 1]
-                three_fifteen_degree_image_name = image_list[int(num_images * 7 / 8) - 1]
-                three_sixty_degree_image_name = image_list[-1]
-
-                # Get the paths for the images
-                zero_degree_image_path = os.path.join(tomo_path, zero_degree_image_name)
-                forty_five_degree_image_path = os.path.join(tomo_path, forty_five_degree_image_name)
-                ninety_degree_image_path = os.path.join(tomo_path, ninety_degree_image_name)
-                one_thirty_five_degree_image_path = os.path.join(tomo_path, one_thirty_five_degree_image_name)
-                one_eighty_degree_image_path = os.path.join(tomo_path, one_eighty_degree_image_name)
-                two_twenty_five_degree_image_path = os.path.join(tomo_path, two_twenty_five_degree_image_name)
-                two_seventy_degree_image_path = os.path.join(tomo_path, two_seventy_degree_image_name)
-                three_fifteen_degree_image_path = os.path.join(tomo_path, three_fifteen_degree_image_name)
-                three_sixty_degree_image_path = os.path.join(tomo_path, three_sixty_degree_image_name)
-
-                axis_list = [self.compute_center(zero_degree_image_path, one_eighty_degree_image_path),
-                             self.compute_center(forty_five_degree_image_path, two_twenty_five_degree_image_path),
-                             self.compute_center(ninety_degree_image_path, two_seventy_degree_image_path),
-                             self.compute_center(one_thirty_five_degree_image_path, three_fifteen_degree_image_path),
-                             self.compute_center(one_eighty_degree_image_path, three_sixty_degree_image_path),
-                             self.compute_center(two_twenty_five_degree_image_path, forty_five_degree_image_path),
-                             self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path),
-                             self.compute_center(three_fifteen_degree_image_path, one_thirty_five_degree_image_path)]
-
-            # If the number of images is not divisible by eight we do four 180 degree pairs in 90 degree increments
-            elif num_images % 4 == 0:
-                # Get the images corresponding to 0, 90, 180, and 270 degree rotations in half-acquisition mode -
-                zero_degree_image_name = image_list[0]
-                one_eighty_degree_image_name = image_list[int(num_images / 2) - 1]
-                ninety_degree_image_name = image_list[int(num_images / 4) - 1]
-                two_seventy_degree_image_name = image_list[int(num_images * 3 / 4) - 1]
-                three_sixty_degree_image_name = image_list[-1]
-
-                # Get the paths for the images
-                zero_degree_image_path = os.path.join(tomo_path, zero_degree_image_name)
-                one_eighty_degree_image_path = os.path.join(tomo_path, one_eighty_degree_image_name)
-                ninety_degree_image_path = os.path.join(tomo_path, ninety_degree_image_name)
-                two_seventy_degree_image_path = os.path.join(tomo_path, two_seventy_degree_image_name)
-                three_sixty_degree_image_path = os.path.join(tomo_path, three_sixty_degree_image_name)
-
-                # Determine the axis of rotation for pairs at 0-180, 90-270, 180-360 and 270-90 degrees
-                axis_list = [self.compute_center(zero_degree_image_path, one_eighty_degree_image_path),
-                             self.compute_center(ninety_degree_image_path, two_seventy_degree_image_path),
-                             self.compute_center(one_eighty_degree_image_path, three_sixty_degree_image_path),
-                             self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path)]
-            # Otherwise, we compute the centre based on 0-180 and 180-360 pairs
-            else:
-                # Get the images corresponding to 0, 180 and 360 degree rotations in half-acquisition mode -
-                zero_degree_image_name = image_list[0]
-                one_eighty_degree_image_name = image_list[int(num_images / 2) - 1]
-                three_sixty_degree_image_name = image_list[-1]
-
-                # Get the paths for the images
-                zero_degree_image_path = os.path.join(tomo_path, zero_degree_image_name)
-                one_eighty_degree_image_path = os.path.join(tomo_path, one_eighty_degree_image_name)
-                three_sixty_degree_image_path = os.path.join(tomo_path, three_sixty_degree_image_name)
-
-                # Determine the axis of rotation for pairs at 0-180, 90-270, 180-360 and 270-90 degrees
-                axis_list = [self.compute_center(zero_degree_image_path, one_eighty_degree_image_path),
-                             self.compute_center(one_eighty_degree_image_path, three_sixty_degree_image_path)]
-
-            # Find the average of 180 degree rotation pairs
-            print("--> " + str(zview_path))
-            print(axis_list)
-
-            # If mode occurs more than 4 times then pick it as axis value, otherwise use geometric mean
-            most_common_value = max(set(axis_list), key=axis_list.count)
-            if axis_list.count(most_common_value) > 4:
-                axis_value = self.col_round(most_common_value)
-            else:
-                axis_value = self.col_round(gmean(axis_list))
-
-            print("Axis value: " + str(axis_value))
-            # Return each zview and its axis of rotation value as key-value pair
-            return {zview_path: axis_value}
-
-        except NotADirectoryError:
-            print("Skipped - Not a Directory: " + tomo_path)
-
-    def compute_center(self, zero_degree_image_path, one_eighty_degree_image_path):
-        """
-        Takes two pairs of images in half-acquisition mode separated by a full 180 degree rotation of the sample
-        The images are then flat-corrected and cropped to the overlap region
-        They are then correlated using fft to determine the axis of rotation
-        :param zero_degree_image_path: First sample scan
-        :param one_eighty_degree_image_path: Second sample scan rotated 180 degree from first sample scan
-        :return: The axis of rotation based on the correlation of two 180 degree image pairs
-        """
-        if self.parameters['sample_on_right'] is False:
-            # Read each image into a numpy array
-            first = self.read_image(zero_degree_image_path, False)
-            second = self.read_image(one_eighty_degree_image_path, False)
-        elif self.parameters['sample_on_right'] is True:
-            # Read each image into a numpy array - flip both images
-            first = self.read_image(zero_degree_image_path, True)
-            second = self.read_image(one_eighty_degree_image_path, True)
-
-        # Do flat field correction on the images
-        # Case 1: Using darks/flats/flats2 in each CTdir alongside tomo
-        if self.parameters['common_flats_darks'] is False:
-            tomo_path, filename = os.path.split(zero_degree_image_path)
-            zdir_path, tomo_name = os.path.split(tomo_path)
-            flats_path = os.path.join(zdir_path, "flats")
-            darks_path = os.path.join(zdir_path, "darks")
-            flat_files = self.get_filtered_filenames(flats_path)
-            dark_files = self.get_filtered_filenames(darks_path)
-        # Case 2: Using common set of flats and darks
-        elif self.parameters['common_flats_darks'] is True:
-            flat_files = self.get_filtered_filenames(self.parameters['flats_dir'])
-            dark_files = self.get_filtered_filenames(self.parameters['darks_dir'])
-
-        flats = np.array([tifffile.TiffFile(x).asarray().astype(np.float) for x in flat_files])
-        darks = np.array([tifffile.TiffFile(x).asarray().astype(np.float) for x in dark_files])
-        dark = np.mean(darks, axis=0)
-        flat = np.mean(flats, axis=0) - dark
-        first = (first - dark) / flat
-        second = (second - dark) / flat
-
-        # We must crop the first image from first pixel column up until overlap
-        first_cropped = first[:, :int(self.parameters['overlap_region'])]
-        # We must crop the 180 degree rotation (which has been flipped 180) from width-overlap until last pixel column
-        second_cropped = second[:, :int(self.parameters['overlap_region'])]
-
-        axis = self.compute_rotation_axis(first_cropped, second_cropped)
-        return axis
+        W, lvl0 = get_CTdirs_list(self.parameters['input_dir']) # using EZVARS tomo, flats, flats2, and dark dir
+        for i, ctset in enumerate(W):          
+            search_row = 100 #TODO add a GUI box
+            nviews, wh, multipage = get_dims(os.path.join(ctset[0], "tomo"))
+            patch_size = wh[0] # should be width of the image? -> is the image guaranteed to be a square?
+            axis_folder = 'axis-search'
+            os.system('rm -rf {}'.format(os.path.join(self.parameters['temp_dir'], axis_folder)))
+            ax = find_axis_std(
+                ctset,
+                self.parameters['temp_dir'],
+                self.parameters['search_interval'],
+                search_row,
+                patch_size,
+                False,
+                nviews, wh
+            )
+                        
+            move_axis_images(                        
+                ctset[0][len(lvl0):],
+                os.path.join(self.parameters['temp_dir'], axis_folder),
+                os.path.join(self.parameters['output_dir'], axis_folder),
+                self.parameters['search_interval'])
+            self.ct_axis_dict[ctset[0]] = ax
 
     def get_filtered_filenames(self, path, exts=['.tif', '.edf']):
         result = []
@@ -294,7 +164,7 @@ class AutoHorizontalStitchFunctions:
             file_handle.write("Using common set of flats and darks: " + str(self.parameters['common_flats_darks']) + "\n")
             file_handle.write("Flats Directory: " + self.parameters['flats_dir'] + "\n")
             file_handle.write("Darks Directory: " + self.parameters['darks_dir'] + "\n")
-            file_handle.write("Overlap Region Size: " + self.parameters['overlap_region'] + "\n")
+            file_handle.write("Search Interval:" + str(self.parameters['search_interval']) + "\n")
             file_handle.write("Sample on right: " + str(self.parameters['sample_on_right']) + "\n")
 
             # Print z-directory and corresponding axis value
@@ -434,7 +304,7 @@ class AutoHorizontalStitchFunctions:
         print("Using common set of flats and darks: " + str(self.parameters['common_flats_darks']))
         print("Flats Directory: " + self.parameters['flats_dir'])
         print("Darks Directory: " + self.parameters['darks_dir'])
-        print("Overlap Region Size: " + self.parameters['overlap_region'])
+        print("Search Interval:", str(self.parameters['search_interval']))
         print("Sample on right: " + str(self.parameters['sample_on_right']))
         print("============================================================")
 

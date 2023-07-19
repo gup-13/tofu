@@ -140,7 +140,7 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.flats_entry.setText(self.parameters['flats_dir'])
         self.darks_entry.setText(self.parameters['darks_dir'])
         self.sample_on_right_checkbox.setChecked(bool(self.parameters['sample_on_right']))
-        self.search_interval_entry.setText(self.parameters['search-interval'])
+        self.search_interval_entry.setText(self.parameters['search_interval'])
         self.dry_run_checkbox.setChecked(bool(self.parameters['dry_run']))
 
     def input_button_pressed(self):
@@ -207,7 +207,7 @@ class AutoHorizontalStitchGUI(QGroupBox):
 
     def set_search_interval_entry(self):
         logging.debug("Search Interval: " + str(self.search_interval_entry.text()))
-        self.parameters['search-interval'] = str(self.search_interval_entry.text())
+        self.parameters['search_interval'] = str(self.search_interval_entry.text())
 
     def set_sample_on_right_checkbox(self):
         logging.debug("Sample is on right side of the image: " + str(self.sample_on_right_checkbox.isChecked()))

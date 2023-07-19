@@ -474,7 +474,7 @@ class ConfigGroup(QGroupBox):
         )
         if reply == QMessageBox.Yes:
             # remove all directories with projections
-            clean_tmp_dirs(EZVARS['inout']['tmp-dir']['value'], self.get_fdt_names())
+            clean_tmp_dirs(EZVARS['inout']['tmp-dir']['value'])
             # remove axis-search dir too
             tmp = os.path.join(EZVARS['inout']['tmp-dir']['value'], 'axis-search')
             QCoreApplication.instance().quit()
@@ -619,7 +619,7 @@ class ConfigGroup(QGroupBox):
 
     def run_reconstruction(self, batch_run):
         try:            
-            execute_reconstruction(self.get_fdt_names())
+            execute_reconstruction()
             if batch_run is False:
                 msg = "Done. See output in terminal for details."
                 QMessageBox.information(self, "Finished", msg)
@@ -631,13 +631,6 @@ class ConfigGroup(QGroupBox):
             err_arg = err.args
             msg += err.args[0]
             QMessageBox.information(self, "Invalid Input Error", msg)
-
-    def get_fdt_names(self):
-        return [EZVARS['inout']['darks-dir']['value'],
-                EZVARS['inout']['flats-dir']['value'],
-                EZVARS['inout']['tomo-dir']['value'],
-                EZVARS['inout']['flats2-dir']['value']]
-
 
 class InvalidInputError(Exception):
     """

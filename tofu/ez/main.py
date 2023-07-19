@@ -22,7 +22,7 @@ from tofu.config import SECTIONS
 LOG = logging.getLogger(__name__)
 
 
-def get_CTdirs_list(inpath, fdt_names):
+def get_CTdirs_list(inpath):
     """
     Determines whether directories containing CT data are valid.
     Returns list of subdirectories with valid CT data
@@ -31,7 +31,7 @@ def get_CTdirs_list(inpath, fdt_names):
     :return: W.ctsets: List of "good" CTSets and W.lvl0: Path to root of CT sets
     """
     # Constructor call to create WalkCTDirs object
-    W = WalkCTdirs(inpath, fdt_names)
+    W = WalkCTdirs(inpath)
     # Find any directories containing "tomo" directory
     W.findCTdirs()
     # If "Use common flats/darks across multiple experiments" is enabled
@@ -186,8 +186,7 @@ def frmt_ufo_cmds(cmds, ctset, out_pattern, ax, nviews, wh):
 
     return nviews, wh
 
-#TODO: get rid of fdt_names everywhere - work directly with EZVARS instead
-def execute_reconstruction(fdt_names):
+def execute_reconstruction():
     # array with the list of commands
     cmds = []
     # create temporary directory
@@ -201,9 +200,7 @@ def execute_reconstruction(fdt_names):
     # get list of all good CT directories to be reconstructed
 
     print('*********** Analyzing input directory ************')
-    root_folder = EZVARS['inout']['input-dir']['value']
-    
-    W, lvl0 = get_CTdirs_list(EZVARS['inout']['input-dir']['value'], fdt_names)
+    W, lvl0 = get_CTdirs_list(EZVARS['inout']['input-dir']['value'])
     # W is an array of tuples (path, type)
     # get list of already reconstructed sets
     recd_sets = findSlicesDirs(EZVARS['inout']['output-dir']['value'])
@@ -214,7 +211,7 @@ def execute_reconstruction(fdt_names):
         # ctset is a tuple containing a path and a type (3 or 4)
         if not already_recd(ctset[0], lvl0, recd_sets):
             # determine initial number of projections and their shape
-            path2proj = os.path.join(ctset[0], fdt_names[2])
+            path2proj = os.path.join(ctset[0], EZVARS['inout']['tomo-dir']['value'])
             nviews, wh, multipage = get_dims(path2proj)
             # If EZVARS['COR']['search-method']['value'] == 4 then bypass axis search and use image midpoint
             if EZVARS['COR']['search-method']['value'] != 4:
@@ -234,16 +231,19 @@ def execute_reconstruction(fdt_names):
                 # Find axis of rotation using auto: minimize STD of a slice
                 elif EZVARS['COR']['search-method']['value'] == 2:
                     cmds.append("echo \"Cleaning axis-search in tmp directory\"")
-                    os.system('rm -rf {}'.format(os.path.join(EZVARS['inout']['tmp-dir']['value'], 'axis-search')))
+                    axis_folder = 'axis-search'
+                    os.system('rm -rf {}'.format(os.path.join(EZVARS['inout']['tmp-dir']['value'], axis_folder)))
                     ax = find_axis_std(ctset,  EZVARS['inout']['tmp-dir']['value'],
                                                EZVARS['COR']['search-interval']['value'],
+                                               EZVARS['COR']['search-row']['value'],
                                                EZVARS['COR']['patch-size']['value'],
+                                               EZVARS['advanced']['more-reco-params']['value'],
                                                nviews, wh)
                     
                     move_axis_images(                        
-                        ctset[0][len(root_folder):],
-                        os.path.join(EZVARS['inout']['tmp-dir']['value'], "axis-search"),
-                        os.path.join(EZVARS['inout']['output-dir']['value'], "axis-search"),
+                        ctset[0][len(lvl0):],
+                        os.path.join(EZVARS['inout']['tmp-dir']['value'], axis_folder),
+                        os.path.join(EZVARS['inout']['output-dir']['value'], axis_folder),
                         EZVARS['COR']['search-interval']['value'])
                     
                 else:
@@ -260,7 +260,7 @@ def execute_reconstruction(fdt_names):
             # format paths correctly and to avoid problems
             # when reconstructing ct sets with variable number of rows or projections
             cmds.append('echo "Cleaning temporary directory"'.format(setid))
-            clean_tmp_dirs(EZVARS['inout']['tmp-dir']['value'], fdt_names)
+            clean_tmp_dirs(EZVARS['inout']['tmp-dir']['value'])
             # call function which formats commands for this data set
             nviews, wh = frmt_ufo_cmds(cmds, ctset, out_pattern, ax, nviews, wh)
             save_params(setid, ax, nviews, wh)
@@ -286,7 +286,7 @@ def execute_reconstruction(fdt_names):
         else:
             print(cmd)
     if not EZVARS['inout']['keep-tmp']['value']:
-        clean_tmp_dirs(EZVARS['inout']['tmp-dir']['value'], fdt_names)
+        clean_tmp_dirs(EZVARS['inout']['tmp-dir']['value'])
 
     print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
     print("*** Done. Total processing time {} sec.".format(int(time.time() - start)))

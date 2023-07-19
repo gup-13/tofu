@@ -15,7 +15,7 @@ class WalkCTdirs:
     fdt_names = flats/darks/tomo directory names
     """
 
-    def __init__(self, inpath, fdt_names, verb=True):
+    def __init__(self, inpath, verb=True):
         self.lvl0 = os.path.abspath(inpath)
         self.ctdirs = []
         self.types = []
@@ -24,7 +24,10 @@ class WalkCTdirs:
         self.total = 0
         self.good = 0
         self.verb = verb
-        self._fdt_names = fdt_names
+        self.darks = EZVARS['inout']['darks-dir']['value']
+        self.flats = EZVARS['inout']['flats-dir']['value']
+        self.tomo = EZVARS['inout']['tomo-dir']['value']
+        self.flats2 = EZVARS['inout']['flats2-dir']['value']
         self.common_flats = EZVARS['inout']['path2-shared-flats']['value']
         self.common_darks = EZVARS['inout']['path2-shared-darks']['value']
         self.common_flats2 = EZVARS['inout']['path2-shared-flats2']['value']
@@ -40,7 +43,7 @@ class WalkCTdirs:
         """
         for root, dirs, files in os.walk(self.lvl0):
             for name in dirs:
-                if name == self._fdt_names[2]:
+                if name == self.tomo:
                     self.ctdirs.append(root)
         self.ctdirs = list(set(self.ctdirs))
         self.ctdirs.sort()
@@ -54,19 +57,19 @@ class WalkCTdirs:
         for ctdir in self.ctdirs:
             # flats/darks and no flats2 or flats2==flats -> type 3
             if (
-                os.path.exists(os.path.join(ctdir, self._fdt_names[1]))
-                and os.path.exists(os.path.join(ctdir, self._fdt_names[0]))
+                os.path.exists(os.path.join(ctdir, self.flats))
+                and os.path.exists(os.path.join(ctdir, self.darks))
                 and (
-                    not os.path.exists(os.path.join(ctdir, self._fdt_names[3]))
-                    or self._fdt_names[1] == self._fdt_names[3]
+                    not os.path.exists(os.path.join(ctdir, self.flats2))
+                    or self.flats == self.flats2
                 )
             ):
                 self.typ.append(3)
             # flats/darks/flats2 -> type4
             elif (
-                os.path.exists(os.path.join(ctdir, self._fdt_names[1]))
-                and os.path.exists(os.path.join(ctdir, self._fdt_names[0]))
-                and os.path.exists(os.path.join(ctdir, self._fdt_names[3]))
+                os.path.exists(os.path.join(ctdir, self.flats))
+                and os.path.exists(os.path.join(ctdir, self.darks))
+                and os.path.exists(os.path.join(ctdir, self.flats2))
             ):
                 self.typ.append(4)
             else:
@@ -103,7 +106,7 @@ class WalkCTdirs:
         :return: True if directories exist, False if they do not exist
         """
         for i, ctdir in enumerate(self.ctdirs):
-            ctdir_tomo_path = os.path.join(ctdir, self._fdt_names[2])
+            ctdir_tomo_path = os.path.join(ctdir, self.tomo)
             if not self._checktifs(ctdir_tomo_path):
                 print("Invalid files found in " + str(ctdir_tomo_path))
                 self.typ[i] = 0
@@ -128,17 +131,17 @@ class WalkCTdirs:
         for i, ctdir in enumerate(self.ctdirs):
             if (
                 self.typ[i] == 3
-                and self._checktifs(os.path.join(ctdir, self._fdt_names[1]))
-                and self._checktifs(os.path.join(ctdir, self._fdt_names[0]))
-                and self._checktifs(os.path.join(ctdir, self._fdt_names[2]))
+                and self._checktifs(os.path.join(ctdir, self.flats))
+                and self._checktifs(os.path.join(ctdir, self.darks))
+                and self._checktifs(os.path.join(ctdir, self.tomo))
             ):
                 continue
             elif (
                 self.typ[i] == 4
-                and self._checktifs(os.path.join(ctdir, self._fdt_names[1]))
-                and self._checktifs(os.path.join(ctdir, self._fdt_names[0]))
-                and self._checktifs(os.path.join(ctdir, self._fdt_names[2]))
-                and self._checktifs(os.path.join(ctdir, self._fdt_names[3]))
+                and self._checktifs(os.path.join(ctdir, self.flats))
+                and self._checktifs(os.path.join(ctdir, self.darks))
+                and self._checktifs(os.path.join(ctdir, self.tomo))
+                and self._checktifs(os.path.join(ctdir, self.flats2))
             ):
                 continue
             else:

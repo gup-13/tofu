@@ -14,12 +14,12 @@ from tofu.util import get_filenames, read_image, determine_shape
 from tofu.ez.params import EZVARS
 from tofu.ez.tofu_cmd_gen import check_lamino, gpu_optim
 
-def find_axis_std(ctset, tmpdir, ax_range, p_width, nviews, wh):
+def find_axis_std(ctset, tmpdir, ax_range, search_row, p_width, use_lamino, nviews, wh):
     indir = make_inpaths(ctset[0], ctset[1])
     cmd = 'tofu reco'
-    if EZVARS['advanced']['more-reco-params']['value'] is True:
+    if use_lamino:
         cmd += check_lamino()
-    elif EZVARS['advanced']['more-reco-params']['value'] is False:
+    else:
         cmd += " --overall-angle 180"
     cmd += " --absorptivity --fix-nan-and-inf"
     cmd += " --darks {} --flats {} --projections {}".format(
@@ -42,9 +42,8 @@ def find_axis_std(ctset, tmpdir, ax_range, p_width, nviews, wh):
     res = [float(num) for num in ax_range.split(",")]
     cmd += " --output-bytes-per-file 0"
     cmd += ' --z-parameter center-position-x'
-    cmd += ' --z {}'.format(EZVARS['COR']['search-row']['value'] - int(image_height/2))
+    cmd += ' --z {}'.format(search_row - int(image_height/2))
     cmd += gpu_optim()
-    print(cmd)
     os.system(cmd)
     points, maximum = evaluate_images_simp(out_pattern + "*.tif", "msag")
     return res[0] + res[2] * maximum
@@ -66,14 +65,19 @@ def move_axis_images(slice_dir, tmp_axis_dir, output_dir, ax_range):
         print("The number of images in temp folder is not the same as the number of axis.")
         return
 
-    output_path = output_dir + slice_dir
+    if len(slice_dir) > 0 and (slice_dir[0] == '/' or slice_dir[0] == "\\"):
+        slice_dir = slice_dir[1:]   # Remove absolute path character
+    output_path = os.path.join(output_dir, slice_dir)
     if not os.path.exists(output_path):
         os.makedirs(output_path)
+    else:
+        print("File path already exists. Files will not be moved to the output folder.")
     
     # Move the images in tmp directory to the corresponding output directory
     for i in range(0, range_count):
-        curr_axis = range_min + (i * range_count)
+        curr_axis = range_min + (i * step)
         
+        # rename image name to match the axis
         old_image_dir = names[i]
         new_image_name = "axis-{}".format(str(curr_axis)) + ".tif"
         new_image_dir = os.path.join(output_path, new_image_name)

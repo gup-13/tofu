@@ -65,9 +65,13 @@ def make_copy_of_flat(flatdir, flat_copy_name, dryrun):
     return cmd
 
 
-def clean_tmp_dirs(tmpdir, fdt_names):
+def clean_tmp_dirs(tmpdir):
     tmp_pattern = ["proj", "sino", "mask", "flat", "dark", "radi"]
-    tmp_pattern += fdt_names
+    tmp_pattern.append(EZVARS['inout']['darks-dir']['value'])
+    tmp_pattern.append(EZVARS['inout']['flats-dir']['value'])
+    tmp_pattern.append(EZVARS['inout']['tomo-dir']['value'])
+    tmp_pattern.append(EZVARS['inout']['flats2-dir']['value'])
+    
     # clean directories in tmpdir if their names match pattern
     if os.path.exists(tmpdir):
         for filename in os.listdir(tmpdir):
@@ -182,7 +186,7 @@ def extract_values_from_dict(dict):
             if 'value' in dict_entry:
                 new_dict[key1][key2] = {}
                 value_type = type(dict_entry['value'])
-                print(key1, key2, dict_entry)
+                # print(key1, key2, dict_entry)
                 if dict_entry['value'] is None:
                     new_dict[key1][key2]['value'] = None
                 elif value_type is list or value_type is tuple:

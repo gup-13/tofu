@@ -257,7 +257,7 @@ class GUI(qtw.QWidget):
                         qtw.QMessageBox.Yes | qtw.QMessageBox.No, qtw.QMessageBox.No)
         if reply == qtw.QMessageBox.Yes:
             # remove all directories with projections
-            clean_tmp_dirs(EZVARS['inout']['tmp-dir']['value'], self.config_group.get_fdt_names())
+            clean_tmp_dirs(EZVARS['inout']['tmp-dir']['value'])
             # remove axis-search dir too
             tmp = os.path.join(EZVARS['inout']['tmp-dir']['value'], 'axis-search')
             event.accept()
