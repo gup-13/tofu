@@ -28,13 +28,30 @@ class WalkCTdirs:
         self.flats = EZVARS['inout']['flats-dir']['value']
         self.tomo = EZVARS['inout']['tomo-dir']['value']
         self.flats2 = EZVARS['inout']['flats2-dir']['value']
-        self.common_flats = EZVARS['inout']['path2-shared-flats']['value']
         self.common_darks = EZVARS['inout']['path2-shared-darks']['value']
+        self.common_flats = EZVARS['inout']['path2-shared-flats']['value']
         self.common_flats2 = EZVARS['inout']['path2-shared-flats2']['value']
         self.use_common_flats2 = EZVARS['inout']['shared-flats-after']['value']
+        self.use_shared_flatsdarks = EZVARS['inout']['shared-flatsdarks']['value']
 
     def print_tree(self):
         print("We start in {}".format(self.lvl0))
+        
+    def update_fdt_names(self, fdt_names):
+        if(len(fdt_names) != 9):
+            print("Too many directory names. Using default darks and flat directories.")
+            return
+        
+        else:
+            self.darks = fdt_names['darks']
+            self.flats = fdt_names['flats']
+            self.tomo = fdt_names['tomo']
+            self.flats2 = fdt_names['flats2']
+            self.common_darks = fdt_names['common_darks']
+            self.common_flats = fdt_names['common_flats']
+            self.common_flats2 = fdt_names['common_flats2']
+            self.use_common_flats2 = fdt_names['use_common_flats2']
+            self.use_shared_flatsdarks = fdt_names['use_shared_flatsdarks']
 
     def findCTdirs(self):
         """

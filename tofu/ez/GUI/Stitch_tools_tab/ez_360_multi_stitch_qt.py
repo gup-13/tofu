@@ -294,11 +294,11 @@ class MultiStitch360Group(QGroupBox):
 
     def set_axis_bottom(self):
         LOG.debug("Axis Bottom : " + str(self.axis_bottom_entry.text()))
-        self.parameters['360multi_bottom_axis'] = int(self.axis_bottom_entry.text())
+        self.parameters['360multi_bottom_axis'] = float(self.axis_bottom_entry.text())
 
     def set_axis_top(self):
         LOG.debug("Axis Top: " + str(self.axis_top_entry.text()))
-        self.parameters['360multi_top_axis'] = int(self.axis_top_entry.text())
+        self.parameters['360multi_top_axis'] = float(self.axis_top_entry.text())
 
     def set_axis_group(self):
         if self.axis_group.isChecked():
@@ -318,51 +318,51 @@ class MultiStitch360Group(QGroupBox):
 
     def set_z000(self):
         LOG.debug("z000 axis: " + str(self.axis_z000_entry.text()))
-        self.parameters['360multi_axis_dict']['z000'] = int(self.axis_z000_entry.text())
+        self.parameters['360multi_axis_dict']['z000'] = float(self.axis_z000_entry.text())
 
     def set_z001(self):
         LOG.debug("z001 axis: " + str(self.axis_z001_entry.text()))
-        self.parameters['360multi_axis_dict']['z001'] = int(self.axis_z001_entry.text())
+        self.parameters['360multi_axis_dict']['z001'] = float(self.axis_z001_entry.text())
 
     def set_z002(self):
         LOG.debug("z002 axis: " + str(self.axis_z002_entry.text()))
-        self.parameters['360multi_axis_dict']['z002'] = int(self.axis_z002_entry.text())
+        self.parameters['360multi_axis_dict']['z002'] = float(self.axis_z002_entry.text())
 
     def set_z003(self):
         LOG.debug("z003 axis: " + str(self.axis_z003_entry.text()))
-        self.parameters['360multi_axis_dict']['z003'] = int(self.axis_z003_entry.text())
+        self.parameters['360multi_axis_dict']['z003'] = float(self.axis_z003_entry.text())
 
     def set_z004(self):
         LOG.debug("z004 axis: " + str(self.axis_z004_entry.text()))
-        self.parameters['360multi_axis_dict']['z004'] = int(self.axis_z004_entry.text())
+        self.parameters['360multi_axis_dict']['z004'] = float(self.axis_z004_entry.text())
 
     def set_z005(self):
         LOG.debug("z005 axis: " + str(self.axis_z005_entry.text()))
-        self.parameters['360multi_axis_dict']['z005'] = int(self.axis_z005_entry.text())
+        self.parameters['360multi_axis_dict']['z005'] = float(self.axis_z005_entry.text())
 
     def set_z006(self):
         LOG.debug("z006 axis: " + str(self.axis_z006_entry.text()))
-        self.parameters['360multi_axis_dict']['z006'] = int(self.axis_z006_entry.text())
+        self.parameters['360multi_axis_dict']['z006'] = float(self.axis_z006_entry.text())
 
     def set_z007(self):
         LOG.debug("z007 axis: " + str(self.axis_z007_entry.text()))
-        self.parameters['360multi_axis_dict']['z007'] = int(self.axis_z007_entry.text())
+        self.parameters['360multi_axis_dict']['z007'] = float(self.axis_z007_entry.text())
 
     def set_z008(self):
         LOG.debug("z008 axis: " + str(self.axis_z008_entry.text()))
-        self.parameters['360multi_axis_dict']['z008'] = int(self.axis_z008_entry.text())
+        self.parameters['360multi_axis_dict']['z008'] = float(self.axis_z008_entry.text())
 
     def set_z009(self):
         LOG.debug("z009 axis: " + str(self.axis_z009_entry.text()))
-        self.parameters['360multi_axis_dict']['z009'] = int(self.axis_z009_entry.text())
+        self.parameters['360multi_axis_dict']['z009'] = float(self.axis_z009_entry.text())
 
     def set_z010(self):
         LOG.debug("z010 axis: " + str(self.axis_z010_entry.text()))
-        self.parameters['360multi_axis_dict']['z010'] = int(self.axis_z010_entry.text())
+        self.parameters['360multi_axis_dict']['z010'] = float(self.axis_z010_entry.text())
 
     def set_z011(self):
         LOG.debug("z011 axis: " + str(self.axis_z011_entry.text()))
-        self.parameters['360multi_axis_dict']['z011'] = int(self.axis_z011_entry.text())
+        self.parameters['360multi_axis_dict']['z011'] = float(self.axis_z011_entry.text())
 
     def stitch_button_pressed(self):
         LOG.debug("Stitch button pressed")

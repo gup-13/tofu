@@ -22,7 +22,7 @@ from tofu.config import SECTIONS
 LOG = logging.getLogger(__name__)
 
 
-def get_CTdirs_list(inpath):
+def get_CTdirs_list(inpath, fdt_names = {}):
     """
     Determines whether directories containing CT data are valid.
     Returns list of subdirectories with valid CT data
@@ -32,15 +32,20 @@ def get_CTdirs_list(inpath):
     """
     # Constructor call to create WalkCTDirs object
     W = WalkCTdirs(inpath)
+    
+    #Update fdt directories with different names
+    if(len(fdt_names) > 0):
+        W.update_fdt_names(fdt_names)
+        
     # Find any directories containing "tomo" directory
     W.findCTdirs()
     # If "Use common flats/darks across multiple experiments" is enabled
-    if EZVARS['inout']['shared-flatsdarks']['value']:
+    if W.use_shared_flatsdarks:
         logging.debug("Use common darks/flats")
-        logging.debug("Path to darks: " + str(EZVARS['inout']['path2-shared-darks']['value']))
-        logging.debug("Path to flats: " + str(EZVARS['inout']['path2-shared-flats']['value']))
-        logging.debug("Path to flats2: " + str(EZVARS['inout']['path2-shared-flats2']['value']))
-        logging.debug("Use flats2: " + str(EZVARS['inout']['shared-flats-after']['value']))
+        logging.debug("Path to darks: " + str(W.common_darks))
+        logging.debug("Path to flats: " + str(W.common_flats))
+        logging.debug("Path to flats2: " + str(W.common_flats2))
+        logging.debug("Use flats2: " + str(W.use_common_flats2))
         # Determine whether paths to common flats/darks/flats2 exist
         if not W.checkcommonfdt():
             print("Invalid path to common flats/darks")

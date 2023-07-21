@@ -6,7 +6,7 @@ import yaml
 from PyQt5.QtWidgets import QPushButton, QLabel, QLineEdit, QGridLayout, QFileDialog, QCheckBox,\
                             QMessageBox, QGroupBox
 from tofu.ez.GUI.Stitch_tools_tab.auto_horizontal_stitch_funcs import AutoHorizontalStitchFunctions
-from tofu.util import get_tuple_validator
+from tofu.util import get_tuple_validator, get_int_validator
 
 class AutoHorizontalStitchGUI(QGroupBox):
     def __init__(self):
@@ -47,13 +47,15 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.darks_entry = QLineEdit()
         self.darks_entry.textChanged.connect(self.set_darks_entry)
 
-        self.search_interval_label = QLabel("Search rotation axis in [start, stop, step] interval")
+        self.search_interval_label = QLabel("Search rotation axis in\n[start, stop, step] interval")
         self.search_interval_entry = QLineEdit()
         self.search_interval_entry.setValidator(get_tuple_validator())
         self.search_interval_entry.textChanged.connect(self.set_search_interval_entry)
         
-        self.sample_on_right_checkbox = QCheckBox("Is the sample on the right side of the image?")
-        self.sample_on_right_checkbox.stateChanged.connect(self.set_sample_on_right_checkbox)
+        self.search_slice_label = QLabel("Search in Slice Number")
+        self.search_slice_entry = QLineEdit()
+        self.search_slice_entry.setValidator(get_int_validator())
+        self.search_slice_entry.textChanged.connect(self.set_search_slice_entry)
 
         self.save_params_button = QPushButton("Save parameters")
         self.save_params_button.clicked.connect(self.save_params_button_clicked)
@@ -82,30 +84,31 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.setMaximumSize(800, 400)
 
         layout = QGridLayout()
-        layout.addWidget(self.input_button, 0, 0, 1, 2)
-        layout.addWidget(self.input_entry, 0, 2, 1, 4)
-        layout.addWidget(self.temp_button, 1, 0, 1, 2)
-        layout.addWidget(self.temp_entry, 1, 2, 1, 4)
-        layout.addWidget(self.output_button, 2, 0, 1, 2)
-        layout.addWidget(self.output_entry, 2, 2, 1, 4)
+        layout.addWidget(self.input_button, 0, 0, 1, 1)
+        layout.addWidget(self.input_entry, 0, 1, 1, 3)
+        layout.addWidget(self.temp_button, 1, 0, 1, 1)
+        layout.addWidget(self.temp_entry, 1, 1, 1, 3)
+        layout.addWidget(self.output_button, 2, 0, 1, 1)
+        layout.addWidget(self.output_entry, 2, 1, 1, 3)
 
         self.flats_darks_group.setCheckable(True)
         self.flats_darks_group.setChecked(False)
         flats_darks_layout = QGridLayout()
-        flats_darks_layout.addWidget(self.flats_button, 0, 0, 1, 2)
-        flats_darks_layout.addWidget(self.flats_entry, 0, 2, 1, 2)
-        flats_darks_layout.addWidget(self.darks_button, 1, 0, 1, 2)
-        flats_darks_layout.addWidget(self.darks_entry, 1, 2, 1, 2)
+        flats_darks_layout.addWidget(self.flats_button, 0, 0, 1, 1)
+        flats_darks_layout.addWidget(self.flats_entry, 0, 1, 1, 2)
+        flats_darks_layout.addWidget(self.darks_button, 1, 0, 1, 1)
+        flats_darks_layout.addWidget(self.darks_entry, 1, 1, 1, 2)
         self.flats_darks_group.setLayout(flats_darks_layout)
-        layout.addWidget(self.flats_darks_group, 3, 0, 1, 4)
+        layout.addWidget(self.flats_darks_group, 3, 0, 1, 5)
 
-        layout.addWidget(self.search_interval_label, 4, 2)
-        layout.addWidget(self.search_interval_entry, 4, 3)
-        layout.addWidget(self.sample_on_right_checkbox, 4, 0, 1, 2)
+        layout.addWidget(self.search_interval_label, 4, 0)
+        layout.addWidget(self.search_interval_entry, 4, 1)
+        layout.addWidget(self.search_slice_label, 4, 2)
+        layout.addWidget(self.search_slice_entry, 4, 3)
 
         layout.addWidget(self.save_params_button, 5, 0, 1, 2)
-        layout.addWidget(self.import_params_button, 5, 3, 1, 1)
         layout.addWidget(self.help_button, 5, 2, 1, 1)
+        layout.addWidget(self.import_params_button, 5, 3, 1, 1)
 
         layout.addWidget(self.stitch_button, 6, 0, 1, 2)
         layout.addWidget(self.dry_run_checkbox, 6, 2, 1, 1)
@@ -123,8 +126,8 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.parameters['darks_dir'] = ""
         self.search_interval_entry.setText("1010,1030,0.5")
         self.parameters['search_interval'] = "1010,1030,0.5"
-        self.sample_on_right_checkbox.setChecked(False)
-        self.parameters['sample_on_right'] = False
+        self.search_slice_entry.setText("100")
+        self.parameters['search_slice'] = "100"
         self.dry_run_checkbox.setChecked(False)
         self.parameters['dry_run'] = False
 
@@ -139,8 +142,8 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.flats_darks_group.setChecked(bool(self.parameters['common_flats_darks']))
         self.flats_entry.setText(self.parameters['flats_dir'])
         self.darks_entry.setText(self.parameters['darks_dir'])
-        self.sample_on_right_checkbox.setChecked(bool(self.parameters['sample_on_right']))
         self.search_interval_entry.setText(self.parameters['search_interval'])
+        self.search_slice_entry.setText(self.parameters['search_slice'])
         self.dry_run_checkbox.setChecked(bool(self.parameters['dry_run']))
 
     def input_button_pressed(self):
@@ -208,10 +211,10 @@ class AutoHorizontalStitchGUI(QGroupBox):
     def set_search_interval_entry(self):
         logging.debug("Search Interval: " + str(self.search_interval_entry.text()))
         self.parameters['search_interval'] = str(self.search_interval_entry.text())
-
-    def set_sample_on_right_checkbox(self):
-        logging.debug("Sample is on right side of the image: " + str(self.sample_on_right_checkbox.isChecked()))
-        self.parameters['sample_on_right'] = self.sample_on_right_checkbox.isChecked()
+        
+    def set_search_slice_entry(self):
+        logging.debug("Search Slice: " + str(self.search_slice_entry.text()))
+        self.parameters['search_slice'] = self.search_slice_entry.text()
 
     def save_params_button_clicked(self):
         logging.debug("Save params button clicked")
@@ -255,10 +258,6 @@ class AutoHorizontalStitchGUI(QGroupBox):
              " These will then be copied and stitched according to the axis of rotation of each z-view.\n\n"
         h += "If each z-view contains its own set of flats/darks then" \
              " auto_stitch will automatically use these for flat-field correction and stitching.\n\n"
-        h += "In most cases of half-acquisition the sample is positioned on the left-side of the image." \
-             " Select the 'Is sample on the right side of the image?' checkbox if it is on the right.\n\n"
-        # h += "The 'Overlapping Pixels' entry determines the region of" \
-        #      " the images which will be used to determine the axis of rotation.\n\n"
         h += "Parameters can be saved to and loaded from .yaml files of the user's choice.\n\n"
         h += "If the dry run button is selected the program will find the axis values without stitching the images.\n\n"
         QMessageBox.information(self, "Help", h)

@@ -48,7 +48,7 @@ def find_axis_std(ctset, tmpdir, ax_range, search_row, p_width, use_lamino, nvie
     points, maximum = evaluate_images_simp(out_pattern + "*.tif", "msag")
     return res[0] + res[2] * maximum
 
-def move_axis_images(slice_dir, tmp_axis_dir, output_dir, ax_range):
+def move_axis_images(stack_folder, tmp_axis_dir, output_dir, ax_range):
     
     # Get a list of files in directory
     names = sorted(glob.glob(tmp_axis_dir + "/sli*.tif"))
@@ -65,9 +65,9 @@ def move_axis_images(slice_dir, tmp_axis_dir, output_dir, ax_range):
         print("The number of images in temp folder is not the same as the number of axis.")
         return
 
-    if len(slice_dir) > 0 and (slice_dir[0] == '/' or slice_dir[0] == "\\"):
-        slice_dir = slice_dir[1:]   # Remove absolute path character
-    output_path = os.path.join(output_dir, slice_dir)
+    if len(stack_folder) > 0 and (stack_folder[0] == '/' or stack_folder[0] == "\\"):
+        stack_folder = stack_folder[1:]   # Remove absolute path character
+    output_path = os.path.join(output_dir, stack_folder)
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     else:

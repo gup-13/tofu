@@ -342,7 +342,8 @@ def main_360_mp_depth1(indir, outdir, ax, cro):
 
     subdirs = [dI for dI in os.listdir(indir) \
             if os.path.isdir(os.path.join(indir, dI))]
-    enableMultiprocessing = False
+    enableMultiprocessing = False #Note: Enabling multiprocessing does not speed up 
+                                    #process due to serial reading and writing
     
     for i, sdir in enumerate(subdirs):
         print(f"Stitching images in {sdir}")
@@ -368,6 +369,9 @@ def main_360_mp_depth1(indir, outdir, ax, cro):
             trnc_len = n_dgts + 4 #format + .tif
             in_fmt = firstfname[:-trnc_len] + '{:0'+str(n_dgts)+'}.tif'
             
+            offst = int(num_projs / 2)
+            idxs = range(idx0, idx0+offst)
+            
             # double check if names correspond - to remove later
             for nmi in idxs:
                 #print(names[nmi-idx0], in_fmt.format(nmi))
@@ -375,9 +379,6 @@ def main_360_mp_depth1(indir, outdir, ax, cro):
                     print('Something wrong with file name format')
                     continue
                 
-            offst = int(num_projs / 2)
-            idxs = range(idx0, idx0+offst)
-
             if enableMultiprocessing:
                 exec_func = partial(st_mp_idx, offst, ax, cro, in_fmt, out_fmt)
                 with futures.ThreadPoolExecutor(mp.cpu_count()) as executor:
