@@ -10,7 +10,8 @@ from PyQt5.QtWidgets import (
 )
 
 from tofu.ez.params import EZVARS
-from tofu.util import add_value_to_dict_entry, get_int_validator
+from tofu.ez.util import add_value_to_dict_entry
+from tofu.util import get_int_validator
 
 LOG = logging.getLogger(__name__)
 

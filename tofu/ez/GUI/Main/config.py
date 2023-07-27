@@ -20,8 +20,7 @@ from tofu.ez.util import import_values, export_values
 from tofu.ez.GUI.message_dialog import warning_message
 
 from tofu.ez.params import EZVARS
-from tofu.util import add_value_to_dict_entry
-from tofu.ez.util import get_dict_values_log
+from tofu.ez.util import add_value_to_dict_entry, get_dict_values_log
 
 LOG = logging.getLogger(__name__)
 

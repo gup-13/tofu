@@ -15,7 +15,8 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 from tofu.ez.ufo_cmd_gen import fmt_nlmdn_ufo_cmd
 from tofu.ez.params import EZVARS
-from tofu.util import add_value_to_dict_entry, get_int_validator, get_double_validator
+from tofu.ez.util import add_value_to_dict_entry
+from tofu.util import get_int_validator, get_double_validator
 
 
 

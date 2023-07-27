@@ -3,13 +3,14 @@ Created on Apr 20, 2020
 
 @author: gasilos
 """
+import argparse
 import os, glob, tifffile
+from types import FunctionType
 from tofu.ez.params import EZVARS, MAP_TABLE
 from tofu.config import SECTIONS
 from tofu.ez.yaml_in_out import read_yaml, write_yaml
 from tofu.util import get_filenames, get_first_filename, get_image_shape, read_image, \
-    reverse_tupleize, add_value_to_dict_entry, get_dict_values_string, \
-    regularization_rate_to_delta_beta_ratio, meters_to_microns
+    reverse_tupleize, regularization_rate_to_delta_beta_ratio, meters_to_microns
 
 def get_dims(pth):
     # get number of projections and projections dimensions
@@ -77,6 +78,29 @@ def clean_tmp_dirs(tmpdir):
         for filename in os.listdir(tmpdir):
             if filename[:4] in tmp_pattern:
                 os.system("rm -rf {}".format(os.path.join(tmpdir, filename)))
+
+
+def add_value_to_dict_entry(dict_entry, value, enable_warning = True):
+    """Add a value to a dictionary entry. An empty string will insert the ezdefault value"""
+    if 'action' in dict_entry:
+        # no 'type' can be defined in dictionary entries with 'action' key
+        dict_entry['value'] = bool(value)
+        return
+    elif value == '' or value == None:
+        # takes default value if empty string or null
+        if dict_entry['ezdefault'] is None:
+            dict_entry['value'] = dict_entry['ezdefault']
+        else:
+            dict_entry['value'] = dict_entry['type'](dict_entry['ezdefault'])
+    else:
+        try:
+            dict_entry['value'] = dict_entry['type'](value)
+        except argparse.ArgumentTypeError: #Outside of range of type
+            dict_entry['value'] = dict_entry['type'](value, clamp=True)
+        except ValueError: #int can't convert string with decimal (e.g. "1.0" -> 1)
+            dict_entry['value'] = dict_entry['type'](float(value))
+    if enable_warning:
+        warn_if_value_at_limit(dict_entry)
 
 def make_inpaths(lvl0, flats2):
     """
@@ -165,6 +189,17 @@ def create_map_from_params_to_dict_keys():
         else:
             print("Key" + key + "in MAP_TABLE does not have exactly 4 elements.")
     return result
+
+
+def get_dict_values_string(dict)->str:
+    """Get a string with all the values within a dictionary"""
+    s = ""
+    for key1 in dict.keys():
+        for key2 in dict[key1].keys():
+            dict_entry = dict[key1][key2]
+            if 'value' in dict_entry:
+                s += str(key1) + " " + str(key2) + ": " + str(dict_entry['value']) + "\n"
+    return s
 
 def get_dict_values_log()->str:
     """Get string of setting values in dictionaries"""
@@ -330,3 +365,56 @@ def save_params(ctsetname, ax, nviews, wh):
         if SECTIONS['general-reconstruction']['volume-angle-z']['value'][0] > 0:
             f.write('  Rotate volume by: {:0.3f} deg\n'.format(SECTIONS['general-reconstruction']['volume-angle-z']['value'][0]))
         f.close()
+
+
+def get_dict_without_keys(d, keys):
+    """Returns a new dictionary entry without the selected group of keys"""
+    return {k: v for k, v in d.items() if k not in keys}
+
+
+def load_values_from_ezdefault(dict):
+    """Add or replace values from ezdefault in a dictionary"""
+    for key1 in dict.keys():
+        for key2 in dict[key1].keys():
+            dict_entry = dict[key1][key2]
+            if 'ezdefault' in dict_entry:
+                add_value_to_dict_entry(dict_entry, '', False) # Add default value
+
+
+def warn_if_value_at_limit(dict_entry):
+    """Display a message in terminal if the set value is at the limit"""
+    if is_value_at_limit(dict_entry):
+        limits = dict_entry['type']()
+        minLim = limits[0]
+        maxLim = limits[1]
+        if minLim is None:
+            minLim = "-inf"
+        if maxLim is None:
+            maxLim = "inf"
+        msg = "Warning: The value " + str(dict_entry['value']) + " is on the limits of ("+ str(minLim) + ", " + str(maxLim) + "). This may cause issues during reconstruction."
+        print(msg)  #QMessageBox doesn't seem to work from util.py
+
+
+def is_value_at_limit(dict_entry):
+    """Checks if a value is at the limit defined by the functions 'restrict_value' or 'restrict_tupleize'."""
+    if type(dict_entry['type']) is FunctionType: #is a custom data type
+        limits = dict_entry['type']()
+        if len(limits) == 2: # has a min & max limit
+            if limits[0] is not None and dict_entry['value'] == limits[0]:
+                return True
+            elif limits[1] is not None and dict_entry['value'] == limits[1]:
+                return True
+    return False
+                
+
+# ---Potential replacements for GUI widgets---
+# def set_dict_entry_to_line_edit(line_edit, dict_entry, debug_tag = "line_edit"):
+#     """Generalized function for QLineEdit widgets that store values in a dictionary entry"""
+#     text = line_edit.text().strip()
+#     LOG.debug(debug_tag + ": " + text)
+#     add_value_to_dict_entry(dict_entry, str(text))
+#     line_edit.setText(str(dict_entry['value']))
+# def set_dict_entry_to_checkbox(checkbox, dict_entry, debug_tag = "checkbox"):
+#     """Generalized function for QCheckbox widgets that store values in a dictionary entry"""
+#     LOG.debug(debug_tag + ": " + str(checkbox.isChecked()))
+#     add_value_to_dict_entry(dict_entry, checkbox.isChecked())

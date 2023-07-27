@@ -3,7 +3,8 @@ import math
 from PyQt5.QtWidgets import QGridLayout, QLabel, QGroupBox, QLineEdit, QCheckBox
 
 from tofu.config import SECTIONS
-from tofu.util import add_value_to_dict_entry, reverse_tupleize, get_double_validator, get_tuple_validator, \
+from tofu.ez.util import add_value_to_dict_entry
+from tofu.util import reverse_tupleize, get_double_validator, get_tuple_validator, \
     meters_to_microns, microns_to_meters, delta_beta_ratio_to_regularization_rate, regularization_rate_to_delta_beta_ratio
 
 LOG = logging.getLogger(__name__)
