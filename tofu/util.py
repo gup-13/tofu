@@ -211,7 +211,7 @@ def get_int_validator():
 def get_double_validator():
     """Returns a validator that only allows the input of floating point number"""
     # Note: QDoubleValidator allows commas before period, which is undesirable
-    regexp = "[\-]?[0-9]*[.]?[0-9]*[e]?[-]?[0-9]*"
+    regexp = "[\-]?[0-9]*[.]?[0-9]*[eE]?[-]?[0-9]*"
     return QRegExpValidator(QRegExp(regexp))
 
 def get_tuple_validator():
