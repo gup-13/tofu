@@ -15,7 +15,7 @@ import yaml
 import os
 from tofu.ez.Helpers.find_360_overlap import find_overlap
 import tofu.ez.params as params
-import getpass
+from tofu.ez.params import EZVARS
 
 #TODO Make all stitching tools compatible with the bigtiffs
 
@@ -227,7 +227,20 @@ class Overlap360Group(QGroupBox):
             os.makedirs(self.parameters['360overlap_temp_dir'])
         if not os.path.exists(self.parameters['360overlap_output_dir']):
             os.makedirs(self.parameters['360overlap_output_dir'])
-        find_overlap(self.parameters)
+        
+        fdt_settings = {
+            'darks': EZVARS['inout']['darks-dir']['value'],
+            'flats': EZVARS['inout']['flats-dir']['value'],
+            'tomo': EZVARS['inout']['tomo-dir']['value'],
+            'flats2': EZVARS['inout']['flats2-dir']['value'],
+            'common_darks': EZVARS['inout']['path2-shared-darks']['value'],
+            'common_flats': EZVARS['inout']['path2-shared-flats']['value'],
+            'common_flats2': EZVARS['inout']['path2-shared-flats2']['value'],
+            'use_common_flats2': True,
+            'use_shared_flatsdarks': EZVARS['inout']['shared-flatsdarks']['value']
+        }
+            
+        find_overlap(self.parameters, fdt_settings)
         if os.path.exists(self.parameters['360overlap_output_dir']):
             params_file_path = os.path.join(self.parameters['360overlap_output_dir'], '360_overlap_params.yaml')
             params.save_parameters(self.parameters, params_file_path)

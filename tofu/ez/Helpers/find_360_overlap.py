@@ -37,19 +37,20 @@ def extract_row(dir_name, row):
     tsr.close()
     return A
 
-def find_overlap(parameters):
+def find_overlap(parameters, fdt_settings):
     print("Finding CTDirs...")
     ctdirs, lvl0 = findCTdirs(parameters['360overlap_input_dir'],
-                              EZVARS['inout']['tomo-dir']['value'])
+                              fdt_settings['tomo'])
     print(ctdirs)
-
-    dirdark = EZVARS['inout']['darks-dir']['value']
-    dirflats = EZVARS['inout']['flats-dir']['value']
-    dirflats2 = EZVARS['inout']['flats2-dir']['value']
-    if EZVARS['inout']['shared-flatsdarks']['value']:
-        dirdark = EZVARS['inout']['path2-shared-darks']['value']
-        dirflats = EZVARS['inout']['path2-shared-flats']['value']
-        dirflats2 = EZVARS['inout']['path2-shared-flats2']['value']
+    
+    dirdark = fdt_settings['darks']
+    dirflats = fdt_settings['flats']
+    dirflats2 = fdt_settings['flats2']
+    if fdt_settings['use_shared_flatsdarks']:
+        dirdark = fdt_settings['common_darks']
+        dirflats = fdt_settings['common_flats']
+        dirflats2 = fdt_settings['common_flats2']
+    
     # concatenate images with various overlap and generate sinograms
     for ctset in ctdirs:
         print("Working on ctset:" + str(ctset))
@@ -69,11 +70,11 @@ def find_overlap(parameters):
             continue
         try:
             row_tomo = extract_row(
-                os.path.join(ctset, EZVARS['inout']['tomo-dir']['value']),
+                os.path.join(ctset, fdt_settings['tomo']),
                                    parameters['360overlap_row'])
         except:
             print(f"Problem loading projections from "
-                  f"{os.path.join(ctset, EZVARS['inout']['tomo-dir']['value'])}")
+                  f"{os.path.join(ctset, fdt_settings['tomo'])}")
             continue
         row_flat2 = None
         tmpstr = os.path.join(ctset, dirflats2)
@@ -144,14 +145,17 @@ def find_overlap(parameters):
         cmd +=' --output ' + os.path.join(outname)
         print(cmd)
         os.system(cmd)
-
+        
+        print('Calculating overlap...')
         points, maximum = evaluate_images_simp(outname, "msag")
-        print(f"Estimated overlap:" 
-            f"{parameters['360overlap_lower_limit'] + parameters['360overlap_increment'] * maximum}")
+        overlap = parameters['360overlap_lower_limit'] + parameters['360overlap_increment'] * maximum
+        print(f"Estimated overlap:", f"{overlap}")
 
         print("Finished processing: " + str(index_dir))
         print("********************DONE********************")
 
     #shutil.rmtree(parameters['360overlap_temp_dir'])
     print("Finished processing: " + str(parameters['360overlap_input_dir']))
+    return overlap
+    
 

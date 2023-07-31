@@ -37,20 +37,36 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.flats_darks_group = QGroupBox("Use Common Set of Flats and Darks")
         self.flats_darks_group.clicked.connect(self.set_flats_darks_group)
 
-        self.flats_button = QPushButton("Select Flats Path")
-        self.flats_button.clicked.connect(self.flats_button_pressed)
-        self.flats_entry = QLineEdit()
-        self.flats_entry.textChanged.connect(self.set_flats_entry)
-
         self.darks_button = QPushButton("Select Darks Path")
         self.darks_button.clicked.connect(self.darks_button_pressed)
         self.darks_entry = QLineEdit()
         self.darks_entry.textChanged.connect(self.set_darks_entry)
+        
+        self.flats_button = QPushButton("Select Flats Path")
+        self.flats_button.clicked.connect(self.flats_button_pressed)
+        self.flats_entry = QLineEdit()
+        self.flats_entry.textChanged.connect(self.set_flats_entry)
+        
+        self.flats2_button = QPushButton("Select Flats2 Path")
+        self.flats2_button.clicked.connect(self.flats2_button_pressed)
+        self.flats2_entry = QLineEdit()
+        self.flats2_entry.textChanged.connect(self.set_flats2_entry)
+        
+        self.search_half_acquisition_axis_label = QLabel("Search half-acquisition axis in\n[start, stop, step] interval")
+        self.search_half_acquisition_axis_entry = QLineEdit()
+        self.search_half_acquisition_axis_entry.setValidator(get_tuple_validator())
+        self.search_half_acquisition_axis_entry.textChanged.connect(self.set_search_half_acquisition_axis_entry)
+        
+        self.enable_ring_removal_checkbox = QCheckBox("Enable ring removal")
+        self.enable_ring_removal_checkbox.stateChanged.connect(self.set_enable_ring_removal_checkbox)
+        
+        self.enable_half_acquisition_checkbox = QCheckBox("Enable half-acquisition axis search")
+        self.enable_half_acquisition_checkbox.stateChanged.connect(self.set_enable_half_acquisition_axis_checkbox)
 
-        self.search_interval_label = QLabel("Search rotation axis in\n[start, stop, step] interval")
-        self.search_interval_entry = QLineEdit()
-        self.search_interval_entry.setValidator(get_tuple_validator())
-        self.search_interval_entry.textChanged.connect(self.set_search_interval_entry)
+        self.search_rotational_axis_label = QLabel("Search rotation axis in\n[start, stop, step] interval")
+        self.search_rotational_axis_entry = QLineEdit()
+        self.search_rotational_axis_entry.setValidator(get_tuple_validator())
+        self.search_rotational_axis_entry.textChanged.connect(self.set_search_rotational_axis_entry)
         
         self.search_slice_label = QLabel("Search in Slice Number")
         self.search_slice_entry = QLineEdit()
@@ -81,7 +97,7 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.show()
 
     def set_layout(self):
-        self.setMaximumSize(800, 400)
+        self.setMaximumSize(800, 500)
 
         layout = QGridLayout()
         layout.addWidget(self.input_button, 0, 0, 1, 1)
@@ -94,38 +110,53 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.flats_darks_group.setCheckable(True)
         self.flats_darks_group.setChecked(False)
         flats_darks_layout = QGridLayout()
-        flats_darks_layout.addWidget(self.flats_button, 0, 0, 1, 1)
-        flats_darks_layout.addWidget(self.flats_entry, 0, 1, 1, 2)
-        flats_darks_layout.addWidget(self.darks_button, 1, 0, 1, 1)
-        flats_darks_layout.addWidget(self.darks_entry, 1, 1, 1, 2)
+        flats_darks_layout.addWidget(self.darks_button, 0, 0, 1, 1)
+        flats_darks_layout.addWidget(self.darks_entry, 0, 1, 1, 2)
+        flats_darks_layout.addWidget(self.flats_button, 1, 0, 1, 1)
+        flats_darks_layout.addWidget(self.flats_entry, 1, 1, 1, 2)
+        flats_darks_layout.addWidget(self.flats2_button, 2, 0, 1, 1)
+        flats_darks_layout.addWidget(self.flats2_entry, 2, 1, 1, 2)
         self.flats_darks_group.setLayout(flats_darks_layout)
         layout.addWidget(self.flats_darks_group, 3, 0, 1, 5)
+        
+        layout.addWidget(self.search_half_acquisition_axis_label, 4, 0)
+        layout.addWidget(self.search_half_acquisition_axis_entry, 4, 1)
+        layout.addWidget(self.enable_ring_removal_checkbox, 4, 2)
+        layout.addWidget(self.enable_half_acquisition_checkbox, 4, 3)
 
-        layout.addWidget(self.search_interval_label, 4, 0)
-        layout.addWidget(self.search_interval_entry, 4, 1)
-        layout.addWidget(self.search_slice_label, 4, 2)
-        layout.addWidget(self.search_slice_entry, 4, 3)
+        layout.addWidget(self.search_rotational_axis_label, 5, 0)
+        layout.addWidget(self.search_rotational_axis_entry, 5, 1)
+        layout.addWidget(self.search_slice_label, 5, 2)
+        layout.addWidget(self.search_slice_entry, 5, 3)
 
-        layout.addWidget(self.save_params_button, 5, 0, 1, 2)
-        layout.addWidget(self.help_button, 5, 2, 1, 1)
-        layout.addWidget(self.import_params_button, 5, 3, 1, 1)
+        layout.addWidget(self.save_params_button, 6, 0, 1, 2)
+        layout.addWidget(self.help_button, 6, 2, 1, 1)
+        layout.addWidget(self.import_params_button, 6, 3, 1, 1)
 
-        layout.addWidget(self.stitch_button, 6, 0, 1, 2)
-        layout.addWidget(self.dry_run_checkbox, 6, 2, 1, 1)
-        layout.addWidget(self.delete_temp_button, 6, 3, 1, 1)
+        layout.addWidget(self.stitch_button, 7, 0, 1, 2)
+        layout.addWidget(self.dry_run_checkbox, 7, 2, 1, 1)
+        layout.addWidget(self.delete_temp_button, 7, 3, 1, 1)
         self.setLayout(layout)
 
     def init_values(self):
         self.input_entry.setText("...enter input directory")
         self.temp_entry.setText("...enter temp directory")
         self.output_entry.setText("...enter output directory")
-        self.flats_entry.setText("...enter flats directory")
         self.parameters['common_flats_darks'] = False
-        self.parameters['flats_dir'] = ""
         self.darks_entry.setText("...enter darks directory")
         self.parameters['darks_dir'] = ""
-        self.search_interval_entry.setText("1010,1030,0.5")
-        self.parameters['search_interval'] = "1010,1030,0.5"
+        self.flats_entry.setText("...enter flats directory")
+        self.parameters['flats_dir'] = ""
+        self.flats2_entry.setText("...enter flats2 directory")
+        self.parameters['flats2_dir'] = ""
+        self.search_half_acquisition_axis_entry.setText("100,200,1")
+        self.parameters['search_half_acquisition_axis'] = "100,200,1"
+        self.enable_ring_removal_checkbox.setChecked(False)
+        self.parameters['enable_ring_removal'] = False
+        self.enable_half_acquisition_checkbox.setChecked(True)
+        self.parameters['enable_half_acquisition_axis'] = True
+        self.search_rotational_axis_entry.setText("1010,1030,0.5")
+        self.parameters['search_rotational_axis'] = "1010,1030,0.5"
         self.search_slice_entry.setText("100")
         self.parameters['search_slice'] = "100"
         self.dry_run_checkbox.setChecked(False)
@@ -140,9 +171,13 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.temp_entry.setText(self.parameters['temp_dir'])
         self.output_entry.setText(self.parameters['output_dir'])
         self.flats_darks_group.setChecked(bool(self.parameters['common_flats_darks']))
-        self.flats_entry.setText(self.parameters['flats_dir'])
         self.darks_entry.setText(self.parameters['darks_dir'])
-        self.search_interval_entry.setText(self.parameters['search_interval'])
+        self.flats_entry.setText(self.parameters['flats_dir'])
+        self.flats_entry.setText(self.parameters['flats2_dir'])
+        self.search_half_acqusition_axis_entry.setText(self.parameters['search_half_acqusition_axis'])
+        self.enable_ring_removal_checkbox.setChecked(bool(self.parameters['enable_ring_removal']))
+        self.enable_half_acquisition_checkbox.setChecked(bool(self.parameters['enable_half_acqusition_axis']))
+        self.search_rotational_axis_entry.setText(self.parameters['search_rotational_axis'])
         self.search_slice_entry.setText(self.parameters['search_slice'])
         self.dry_run_checkbox.setChecked(bool(self.parameters['dry_run']))
 
@@ -186,17 +221,6 @@ class AutoHorizontalStitchGUI(QGroupBox):
         else:
             self.parameters['common_flats_darks'] = True
 
-    def flats_button_pressed(self):
-        logging.debug("Flats Button Pressed")
-        dir_explore = QFileDialog(self)
-        flats_dir = dir_explore.getExistingDirectory()
-        self.flats_entry.setText(flats_dir)
-        self.parameters['flats_dir'] = flats_dir
-
-    def set_flats_entry(self):
-        logging.debug("Flats Entry: " + str(self.flats_entry.text()))
-        self.parameters['flats_dir'] = str(self.flats_entry.text())
-
     def darks_button_pressed(self):
         logging.debug("Darks Button Pressed")
         dir_explore = QFileDialog(self)
@@ -207,10 +231,46 @@ class AutoHorizontalStitchGUI(QGroupBox):
     def set_darks_entry(self):
         logging.debug("Darks Entry: " + str(self.darks_entry.text()))
         self.parameters['darks_dir'] = str(self.darks_entry.text())
+        
+    def flats_button_pressed(self):
+        logging.debug("Flats Button Pressed")
+        dir_explore = QFileDialog(self)
+        flats_dir = dir_explore.getExistingDirectory()
+        self.flats_entry.setText(flats_dir)
+        self.parameters['flats_dir'] = flats_dir
 
-    def set_search_interval_entry(self):
-        logging.debug("Search Interval: " + str(self.search_interval_entry.text()))
-        self.parameters['search_interval'] = str(self.search_interval_entry.text())
+    def set_flats_entry(self):
+        logging.debug("Flats Entry: " + str(self.flats_entry.text()))
+        self.parameters['flats_dir'] = str(self.flats_entry.text())
+        
+    def flats2_button_pressed(self):
+        logging.debug("Flats2 Button Pressed")
+        dir_explore = QFileDialog(self)
+        flats2_dir = dir_explore.getExistingDirectory()
+        self.flats2_entry.setText(flats2_dir)
+        self.parameters['flats2_dir'] = flats2_dir
+
+    def set_flats2_entry(self):
+        logging.debug("Flats2 Entry: " + str(self.flats2_entry.text()))
+        self.parameters['flats2_dir'] = str(self.flats2_entry.text())
+            
+    def set_search_half_acquisition_axis_entry(self):
+        logging.debug("Search Half-Acquisition Axis: " + str(self.search_half_acquisition_axis_entry.text()))
+        self.parameters['search_half_acquisition_axis'] = str(self.search_half_acquisition_axis_entry.text())
+        
+    def set_enable_ring_removal_checkbox(self):
+        logging.debug("Enable ring removal Checkbox: " + str(self.enable_ring_removal_checkbox.isChecked()))
+        self.parameters['enable_ring_removal'] = self.enable_ring_removal_checkbox.isChecked()
+    
+    def set_enable_half_acquisition_axis_checkbox(self):
+        logging.debug("Enable half-acqusition Checkbox: " + str(self.enable_half_acquisition_checkbox.isChecked()))
+        self.parameters['enable_half_acquisition_axis'] = self.enable_half_acquisition_checkbox.isChecked()
+        self.search_half_acquisition_axis_entry.setEnabled(self.parameters['enable_half_acquisition_axis'])
+        self.enable_ring_removal_checkbox.setEnabled(self.parameters['enable_half_acquisition_axis'])
+
+    def set_search_rotational_axis_entry(self):
+        logging.debug("Search Rotational Axis: " + str(self.search_rotational_axis_entry.text()))
+        self.parameters['search_rotational_axis'] = str(self.search_rotational_axis_entry.text())
         
     def set_search_slice_entry(self):
         logging.debug("Search Slice: " + str(self.search_slice_entry.text()))
