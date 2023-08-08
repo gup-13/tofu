@@ -38,12 +38,6 @@ class MultiStitch360Group(QGroupBox):
         self.input_dir_entry = QLineEdit()
         self.input_dir_entry.editingFinished.connect(self.set_input_entry)
 
-        self.temp_dir_button = QPushButton("Select temporary directory - default value recommended")
-        self.temp_dir_button.clicked.connect(self.temp_button_pressed)
-
-        self.temp_dir_entry = QLineEdit()
-        self.temp_dir_entry.editingFinished.connect(self.set_temp_entry)
-
         self.output_dir_button = QPushButton("Directory to save stitched images")
         self.output_dir_button.clicked.connect(self.output_button_pressed)
 
@@ -138,16 +132,14 @@ class MultiStitch360Group(QGroupBox):
 
         layout.addWidget(self.input_dir_button, 0, 0, 1, 4)
         layout.addWidget(self.input_dir_entry, 1, 0, 1, 4)
-        layout.addWidget(self.temp_dir_button, 2, 0, 1, 4)
-        layout.addWidget(self.temp_dir_entry, 3, 0, 1, 4)
-        layout.addWidget(self.output_dir_button, 4, 0, 1, 4)
-        layout.addWidget(self.output_dir_entry, 5, 0, 1, 4)
-        layout.addWidget(self.crop_checkbox, 6, 0, 1, 4)
+        layout.addWidget(self.output_dir_button, 2, 0, 1, 4)
+        layout.addWidget(self.output_dir_entry, 3, 0, 1, 4)
+        layout.addWidget(self.crop_checkbox, 4, 0, 1, 4)
 
-        layout.addWidget(self.axis_bottom_label, 7, 0)
-        layout.addWidget(self.axis_bottom_entry, 7, 1)
-        layout.addWidget(self.axis_top_label, 7, 2)
-        layout.addWidget(self.axis_top_entry, 7, 3)
+        layout.addWidget(self.axis_bottom_label, 5, 0)
+        layout.addWidget(self.axis_bottom_entry, 5, 1)
+        layout.addWidget(self.axis_top_label, 5, 2)
+        layout.addWidget(self.axis_top_entry, 5, 3)
 
         self.axis_group.setCheckable(True)
         self.axis_group.setChecked(False)
@@ -196,14 +188,14 @@ class MultiStitch360Group(QGroupBox):
         self.axis_group.setTabOrder(self.axis_z009_entry, self.axis_z010_entry)
         self.axis_group.setTabOrder(self.axis_z010_entry, self.axis_z011_entry)
 
-        layout.addWidget(self.axis_group, 8, 0, 1, 4)
+        layout.addWidget(self.axis_group, 6, 0, 1, 4)
 
-        layout.addWidget(self.help_button, 9, 0)
-        layout.addWidget(self.delete_button, 9, 1)
-        layout.addWidget(self.stitch_button, 9, 2, 1, 2)
+        layout.addWidget(self.help_button, 7, 0)
+        layout.addWidget(self.delete_button, 7, 1)
+        layout.addWidget(self.stitch_button, 7, 2, 1, 2)
 
-        layout.addWidget(self.import_parameters_button, 10, 0, 1, 2)
-        layout.addWidget(self.save_parameters_button, 10, 2, 1, 2)
+        layout.addWidget(self.import_parameters_button, 8, 0, 1, 2)
+        layout.addWidget(self.save_parameters_button, 8, 2, 1, 2)
 
         self.setLayout(layout)
 
@@ -211,9 +203,6 @@ class MultiStitch360Group(QGroupBox):
         self.parameters = {'parameters_type': '360_multi_stitch'}
         self.parameters['360multi_input_dir'] = os.path.expanduser('~')# #EZVARS['360-batch-stitch']['indir']
         self.input_dir_entry.setText(self.parameters['360multi_input_dir'])
-        self.parameters['360multi_temp_dir'] = os.path.join(  #EZVARS['360-batch-stitch']['tmpdir']
-                        os.path.expanduser('~'), "tmp-batch360stitch")
-        self.temp_dir_entry.setText(self.parameters['360multi_temp_dir'])
         self.parameters['360multi_output_dir'] = os.path.join(os.path.expanduser('~'),'stitched360') #EZVARS['360-batch-stitch']['outdir']
         self.output_dir_entry.setText(self.parameters['360multi_output_dir'])
         self.parameters['360multi_crop_projections'] = True   #EZVARS['360-batch-stitch']['crop']
@@ -237,7 +226,6 @@ class MultiStitch360Group(QGroupBox):
         self.parameters = new_parameters
         # Update displayed parameters for GUI
         self.input_dir_entry.setText(self.parameters['360multi_input_dir'])
-        self.temp_dir_entry.setText(self.parameters['360multi_temp_dir'])
         self.output_dir_entry.setText(self.parameters['360multi_output_dir'])
         self.crop_checkbox.setChecked(self.parameters['360multi_crop_projections'])
         self.axis_bottom_entry.setText(str(self.parameters['360multi_bottom_axis']))
@@ -267,16 +255,6 @@ class MultiStitch360Group(QGroupBox):
         LOG.debug("Input directory: " + str(self.input_dir_entry.text()))
         self.parameters['360multi_input_dir'] = str(self.input_dir_entry.text())
         self.set_output_entry()
-
-    def temp_button_pressed(self):
-        LOG.debug("Temp button pressed")
-        dir_explore = QFileDialog(self)
-        self.temp_dir_entry.setText(dir_explore.getExistingDirectory())
-        self.set_temp_entry()
-
-    def set_temp_entry(self):
-        LOG.debug("Temp directory: " + str(self.temp_dir_entry.text()))
-        self.parameters['360multi_temp_dir'] = str(self.temp_dir_entry.text())
 
     def output_button_pressed(self):
         LOG.debug("Output button pressed")
@@ -367,11 +345,6 @@ class MultiStitch360Group(QGroupBox):
     def stitch_button_pressed(self):
         LOG.debug("Stitch button pressed")
         self.get_fdt_names_on_stitch_pressed.emit()
-        if os.path.exists(self.parameters['360multi_temp_dir']) and \
-                    len(os.listdir(self.parameters['360multi_temp_dir'])) > 0:
-            qm = QMessageBox()
-            rep = qm.warning(self, '', "Temp directory exists and is not empty.")            
-            return
 
         if os.path.exists(self.parameters['360multi_output_dir']) and \
                     len(os.listdir(self.parameters['360multi_output_dir'])) > 0:
@@ -404,18 +377,6 @@ class MultiStitch360Group(QGroupBox):
         else:
             return
         
-        rep = qm.question(self, '', "Is it safe to delete the temp directory?", qm.Yes | qm.No)
-        if not os.path.exists(self.parameters['360multi_temp_dir']):
-            warning_message("Temp directory does not exist")
-        elif rep == qm.Yes:
-            try:
-                rmtree(self.parameters['360multi_temp_dir'])
-            except:
-                warning_message("Problems with deleting temp directory")
-        else:
-            return
-        
-
     def help_button_pressed(self):
         LOG.debug("Help button pressed")
         h = "Stitches images horizontally\n"

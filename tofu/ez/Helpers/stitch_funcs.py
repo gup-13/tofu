@@ -384,8 +384,13 @@ def main_360_mp_depth1(indir, outdir, ax, cro):
                 with futures.ThreadPoolExecutor(mp.cpu_count()) as executor:
                     executor.map(exec_func, idxs)
             else:
+                count = 0
+                len_idxs = len(idxs)
                 for idx in idxs:
                     st_mp_idx(offst, ax, cro, in_fmt, out_fmt, idx)
+                    count = count + 1
+                    print("     Stitched ", count, "out of", len_idxs, end='\r')
+                print()
                 
         elif len(shape) == 3:
             tfs = TiffSequenceReader(os.path.join(indir, sdir))
@@ -403,9 +408,14 @@ def main_360_mp_depth1(indir, outdir, ax, cro):
                     executor.map(exec_func, idxs)
                 
             else:
+                count = 0
+                len_idxs = len(idxs)
                 for idx in idxs:
                     st_mp_bigtiff_pages(npairs, ax, cro, tfs, out_fmt, idx)
-    
+                    count = count + 1
+                    print("    Stitched ", count, "out of", len_idxs, end='\r')
+                print()
+                
             tfs.close()
 
     print("========== Done ==========")
