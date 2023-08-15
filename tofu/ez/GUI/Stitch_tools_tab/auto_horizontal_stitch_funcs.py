@@ -1,15 +1,6 @@
 import os
-import tifffile
-from collections import defaultdict
 import numpy as np
-import multiprocessing as mp
-from functools import partial
-from scipy.stats import gmean
-import math
 import yaml
-import sys
-from tofu.ez.util import get_dims
-from tofu.ez.find_axis_cmd_gen import find_axis_std, move_axis_images
 from tofu.ez.Helpers.stitch_funcs import main_360_mp_depth1
 from tofu.ez.main import get_CTdirs_list
 from tofu.ez.Helpers.find_360_overlap import find_overlap
@@ -29,7 +20,7 @@ class AutoHorizontalStitchFunctions:
             'common_darks': self.parameters['darks_dir'],
             'common_flats': self.parameters['flats_dir'],
             'common_flats2': self.parameters['flats2_dir'],
-            'use_common_flats2': True if len(self.parameters['flats2_dir']) > 0 else False,
+            'use_common_flats2': True if len(str(self.parameters['flats2_dir'])) > 0 else False,
             'use_shared_flatsdarks': self.parameters['common_flats_darks']
         }
 
@@ -50,44 +41,35 @@ class AutoHorizontalStitchFunctions:
             print("Error: Could not find any input CT directories")
             print("-> Ensure that the directory you selected contains subdirectories named 'tomo'")
             return -1
-
-        # For each zview we compute the axis of rotation
-        print("--> Finding Axis of Rotation for each Z-View")
-        self.compute_centers()
-        print("\n ==> Found the following z-views and their corresponding axis of rotation <==")
-
-        # Check the axis values and adjust for any outliers
-        # If difference between two subsequent zdirs is > 3 then just change it to be 1 greater than previous
-        self.correct_outliers()
-        print("--> ct_axis_dict after correction: ")
-        print(self.ct_axis_dict)
-
-        # Find the greatest axis value for use in determining overall cropping amount when stitching
-        # self.find_greatest_axis_value()
-        # print("Greatest axis value: " + str(self.greatest_axis_value))
         
-
+        ax_range_list = self.parameters['search_half_acquisition_axis'].split(",")
+        range_min = int(ax_range_list[0])
+        range_max = int(ax_range_list[1])
+        step = int(ax_range_list[2])
         
-        overlap = 0
-        if self.parameters['enable_half_acquisition_axis']:
-            ax_range_list = self.parameters['search_half_acquisition_axis'].split(",")
-            range_min = ax_range_list[0]
-            range_max = ax_range_list[1]
-            step = ax_range_list[2]
-            
-            overlap_parameters = {
-                '360overlap_input_dir': self.parameters["input_dir"], #TODO Support multiple view folders
-                '360overlap_temp_dir': os.path.join(self.parameters["temp_dir"], "tmp-360axis-search"),
-                '360overlap_output_dir': os.path.join(self.parameters["output_dir"], "ezufo-360axis-search"),
-                '360overlap_row': self.parameters['search_slice'],
-                '360overlap_lower_limit': range_min,
-                '360overlap_upper_limit': range_max,
-                '360overlap_increment': step,
-                '360overlap_doRR': self.parameters['enable_ring_removal']
-            }
-            
-            overlap = find_overlap(overlap_parameters, self.fdt_settings)
-            print("Pixel Overlap:", overlap)
+        overlap_parameters = {
+            '360overlap_input_dir': self.parameters['input_dir'],
+            '360overlap_temp_dir': self.parameters["temp_dir"],
+            '360overlap_output_dir': os.path.join(self.parameters["output_dir"], "360axis-search"),
+            '360overlap_row': self.parameters['search_slice'],
+            '360overlap_lower_limit': range_min,
+            '360overlap_upper_limit': range_max,
+            '360overlap_increment': step,
+            '360overlap_doRR': self.parameters['enable_ring_removal'],
+            'parameters_type': '360_overlap'
+        }
+        
+        #TODO Figure out why this call isn't working.
+        overlaps = find_overlap(overlap_parameters, self.fdt_settings)
+        
+        if(len(overlaps) != len(self.ct_dirs)):
+            print("Error: Could not find overlaps in one of the ct directories")
+            return -1
+        
+        for i, ctset in enumerate(self.ct_dirs):          
+            # Assign axis to a ct directory
+            self.ct_axis_dict[ctset[0]] = overlaps[i]
+
         
         # Output the input parameters and axis values to the log file
         self.write_to_log_file()
@@ -102,9 +84,8 @@ class AutoHorizontalStitchFunctions:
         for i, (ctdir, ax) in enumerate(self.ct_axis_dict.items()):
             print("================================================================")
             print(" -> Working On: " + str(ctdir))
-            #cra = float(self.greatest_axis_value) - float(ax)   #TODO Replace with 360-axis-search result
-            cra = 0
-            print(f"    axis position {ax}, margin to crop {cra} pixels")
+            crop_pixels = 0
+            print(f"    horizontal acquisition axis position {ax}, margin to crop {crop_pixels} pixels")
             stitch_folder = "stitched"
             stack_folder = ctdir[len(self.lvl0):]
             if len(stack_folder) > 0 and (stack_folder[0] == '/' or stack_folder[0] == "\\"):
@@ -112,7 +93,7 @@ class AutoHorizontalStitchFunctions:
                 
             main_360_mp_depth1(ctdir,
                     os.path.join(self.parameters['output_dir'], stitch_folder, stack_folder),
-                    ax, cra)
+                    ax, crop_pixels)
 
     def write_yaml_params(self):
         try:
@@ -127,44 +108,6 @@ class AutoHorizontalStitchFunctions:
             print("--> Output Directory Exists - Delete Before Proceeding")
             return -1
         
-    def compute_centers(self):
-        """
-        Computes the rotational axis for each image in half-acquisition mode by minimizing STD of a slice
-        """
-
-        for i, ctset in enumerate(self.ct_dirs):          
-            search_slice = int(self.parameters['search_slice'])
-            nviews, wh, multipage = get_dims(os.path.join(ctset[0], self.fdt_settings['tomo']))
-            
-            # Obtain the largest patch size
-            patch_size = 0
-            if(wh[0] > wh[1]):
-                patch_size = wh[0]
-            else:
-                patch_size = wh[1]
-            print("WH:", wh)
-            
-            # Find center of rotation axis of each stack
-            axis_folder = 'axis-search'
-            os.system('rm -rf {}'.format(os.path.join(self.parameters['temp_dir'], axis_folder)))
-            ax = find_axis_std(
-                ctset,
-                self.parameters['temp_dir'],
-                self.parameters['search_rotational_axis'],
-                search_slice,
-                patch_size,
-                False,
-                nviews, wh
-            )
-            
-            # Move axis for each stack to an output axis folder            
-            move_axis_images(                        
-                ctset[0][len(self.lvl0):],
-                os.path.join(self.parameters['temp_dir'], axis_folder),
-                os.path.join(self.parameters['output_dir'], axis_folder),
-                self.parameters['search_rotational_axis'])
-            self.ct_axis_dict[ctset[0]] = ax
-
     def get_filtered_filenames(self, path, exts=['.tif', '.edf']):
         result = []
 
@@ -212,9 +155,10 @@ class AutoHorizontalStitchFunctions:
             file_handle.write("Input Directory: " + self.parameters['input_dir'] + "\n")
             file_handle.write("Output Directory: " + self.parameters['output_dir'] + "\n")
             file_handle.write("Using common set of flats and darks: " + str(self.parameters['common_flats_darks']) + "\n")
-            file_handle.write("Flats Directory: " + self.parameters['flats_dir'] + "\n")
             file_handle.write("Darks Directory: " + self.parameters['darks_dir'] + "\n")
-            file_handle.write("Search Rotational Axis:" + str(self.parameters['search_rotational_axis']) + "\n")
+            file_handle.write("Flats Directory: " + self.parameters['flats_dir'] + "\n")
+            file_handle.write("Flats2 Directory: " + self.parameters['flats2_dir'] + "\n")
+            file_handle.write("Search Axis:" + str(self.parameters['search_half_acquisition_axis']) + "\n")
 
             # Print z-directory and corresponding axis value
             file_handle.write("\n======================== Axis Values ========================\n")
@@ -226,58 +170,7 @@ class AutoHorizontalStitchFunctions:
             file_handle.write("\nGreatest axis value: " + str(self.greatest_axis_value))
         except FileNotFoundError:
             print("Error: Could not write log file")
-
-    def correct_outliers(self):
-        """
-        This function looks at each CTDir containing Z00-Z0N
-        If the axis values for successive zviews are greater than 3 (an outlier)
-        Then we correct this by tying the outlier to the previous Z-View axis plus one
-        self.ct_axis_dict is updated with corrected axis values
-        """
-        sorted_by_ctdir_dict = defaultdict(dict)
-        for key in self.ct_axis_dict:
-            path_key, zdir = os.path.split(str(key))
-            axis_value = self.ct_axis_dict[key]
-            sorted_by_ctdir_dict[path_key][zdir] = axis_value
-
-        for dir_key in sorted_by_ctdir_dict:
-            z_dir_list = list(sorted_by_ctdir_dict[dir_key].values())
-
-            # Need to account for the case where the first z-view is an outlier
-            min_value = min(z_dir_list)
-            if z_dir_list[0] > min_value + 2:
-                z_dir_list[0] = min_value
-
-            # Compare the difference of successive pairwise axis values
-            # If the difference is greater than 3 then set the second pair value to be 1 more than the first pair value
-            for index in range(len(z_dir_list) - 1):
-                first_value = z_dir_list[index]
-                second_value = z_dir_list[index + 1]
-                difference = abs(second_value - first_value)
-                if difference > 3:
-                    # Set second value to be one more than first
-                    z_dir_list[index + 1] = z_dir_list[index] + 1
-
-            # Assigns the values in z_dir_list back to the ct_dir_dict
-            index = 0
-            for zdir in sorted_by_ctdir_dict[dir_key]:
-                corrected_axis_value = z_dir_list[index]
-                sorted_by_ctdir_dict[dir_key][zdir] = corrected_axis_value
-                index += 1
-
-        # Assigns the corrected values back to self.ct_axis_dict
-        for path_key in sorted_by_ctdir_dict:
-            for z_key in sorted_by_ctdir_dict[path_key]:
-                path_string = os.path.join(str(path_key), str(z_key))
-                self.ct_axis_dict[path_string] = sorted_by_ctdir_dict[path_key][z_key]
-
-    def find_greatest_axis_value(self):
-        """
-        Looks through all axis values and determines the greatest value
-        """
-        axis_list = list(self.ct_axis_dict.values())
-        self.greatest_axis_value = max(axis_list)
-
+            
     def print_parameters(self):
         """
         Prints parameter values with line formatting
@@ -288,7 +181,8 @@ class AutoHorizontalStitchFunctions:
         print("Input Directory: " + self.parameters['input_dir'])
         print("Output Directory: " + self.parameters['output_dir'])
         print("Using common set of flats and darks: " + str(self.parameters['common_flats_darks']))
-        print("Flats Directory: " + self.parameters['flats_dir'])
         print("Darks Directory: " + self.parameters['darks_dir'])
-        print("Search Rotational Axis:", str(self.parameters['search_rotational_axis']))
+        print("Flats Directory: " + self.parameters['flats_dir'])
+        print("Flats2 Directory: " + self.parameters['flats2_dir'])
+        print("Search Axis:", str(self.parameters['search_half_acquisition_axis']))
         print("============================================================")

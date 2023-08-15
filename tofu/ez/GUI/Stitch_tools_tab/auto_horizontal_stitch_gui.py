@@ -60,14 +60,6 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.enable_ring_removal_checkbox = QCheckBox("Enable ring removal")
         self.enable_ring_removal_checkbox.stateChanged.connect(self.set_enable_ring_removal_checkbox)
         
-        self.enable_half_acquisition_checkbox = QCheckBox("Enable half-acquisition axis search")
-        self.enable_half_acquisition_checkbox.stateChanged.connect(self.set_enable_half_acquisition_axis_checkbox)
-
-        self.search_rotational_axis_label = QLabel("Search rotation axis in\n[start, stop, step] interval")
-        self.search_rotational_axis_entry = QLineEdit()
-        self.search_rotational_axis_entry.setValidator(get_tuple_validator())
-        self.search_rotational_axis_entry.textChanged.connect(self.set_search_rotational_axis_entry)
-        
         self.search_slice_label = QLabel("Search in Slice Number")
         self.search_slice_entry = QLineEdit()
         self.search_slice_entry.setValidator(get_int_validator())
@@ -97,15 +89,15 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.show()
 
     def set_layout(self):
-        self.setMaximumSize(800, 500)
+        self.setMaximumSize(800, 400)
 
         layout = QGridLayout()
         layout.addWidget(self.input_button, 0, 0, 1, 1)
-        layout.addWidget(self.input_entry, 0, 1, 1, 3)
-        layout.addWidget(self.temp_button, 1, 0, 1, 1)
-        layout.addWidget(self.temp_entry, 1, 1, 1, 3)
-        layout.addWidget(self.output_button, 2, 0, 1, 1)
-        layout.addWidget(self.output_entry, 2, 1, 1, 3)
+        layout.addWidget(self.input_entry, 0, 1, 1, 4)
+        layout.addWidget(self.output_button, 1, 0, 1, 1)
+        layout.addWidget(self.output_entry, 1, 1, 1, 4)
+        layout.addWidget(self.temp_button, 2, 0, 1, 1)
+        layout.addWidget(self.temp_entry, 2, 1, 1, 4)
 
         self.flats_darks_group.setCheckable(True)
         self.flats_darks_group.setChecked(False)
@@ -121,27 +113,23 @@ class AutoHorizontalStitchGUI(QGroupBox):
         
         layout.addWidget(self.search_half_acquisition_axis_label, 4, 0)
         layout.addWidget(self.search_half_acquisition_axis_entry, 4, 1)
-        layout.addWidget(self.enable_ring_removal_checkbox, 4, 2)
-        layout.addWidget(self.enable_half_acquisition_checkbox, 4, 3)
+        layout.addWidget(self.search_slice_label, 4, 2)
+        layout.addWidget(self.search_slice_entry, 4, 3)
+        layout.addWidget(self.enable_ring_removal_checkbox, 4, 4)
 
-        layout.addWidget(self.search_rotational_axis_label, 5, 0)
-        layout.addWidget(self.search_rotational_axis_entry, 5, 1)
-        layout.addWidget(self.search_slice_label, 5, 2)
-        layout.addWidget(self.search_slice_entry, 5, 3)
+        layout.addWidget(self.save_params_button, 5, 0, 1, 2)
+        layout.addWidget(self.help_button, 5, 2, 1, 1)
+        layout.addWidget(self.import_params_button, 5, 3, 1, 2)
 
-        layout.addWidget(self.save_params_button, 6, 0, 1, 2)
-        layout.addWidget(self.help_button, 6, 2, 1, 1)
-        layout.addWidget(self.import_params_button, 6, 3, 1, 1)
-
-        layout.addWidget(self.stitch_button, 7, 0, 1, 2)
-        layout.addWidget(self.dry_run_checkbox, 7, 2, 1, 1)
-        layout.addWidget(self.delete_temp_button, 7, 3, 1, 1)
+        layout.addWidget(self.stitch_button, 6, 0, 1, 2)
+        layout.addWidget(self.dry_run_checkbox, 6, 2, 1, 1)
+        layout.addWidget(self.delete_temp_button, 6, 3, 1, 2)
         self.setLayout(layout)
 
     def init_values(self):
         self.input_entry.setText("...enter input directory")
-        self.temp_entry.setText("...enter temp directory")
         self.output_entry.setText("...enter output directory")
+        self.temp_entry.setText("...enter temp directory")
         self.parameters['common_flats_darks'] = False
         self.darks_entry.setText("...enter darks directory")
         self.parameters['darks_dir'] = ""
@@ -153,12 +141,8 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.parameters['search_half_acquisition_axis'] = "100,200,1"
         self.enable_ring_removal_checkbox.setChecked(False)
         self.parameters['enable_ring_removal'] = False
-        self.enable_half_acquisition_checkbox.setChecked(True)
-        self.parameters['enable_half_acquisition_axis'] = True
-        self.search_rotational_axis_entry.setText("1010,1030,0.5")
-        self.parameters['search_rotational_axis'] = "1010,1030,0.5"
-        self.search_slice_entry.setText("100")
-        self.parameters['search_slice'] = "100"
+        self.search_slice_entry.setText("200")
+        self.parameters['search_slice'] = "200"
         self.dry_run_checkbox.setChecked(False)
         self.parameters['dry_run'] = False
 
@@ -173,11 +157,9 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.flats_darks_group.setChecked(bool(self.parameters['common_flats_darks']))
         self.darks_entry.setText(self.parameters['darks_dir'])
         self.flats_entry.setText(self.parameters['flats_dir'])
-        self.flats_entry.setText(self.parameters['flats2_dir'])
-        self.search_half_acqusition_axis_entry.setText(self.parameters['search_half_acqusition_axis'])
+        self.flats2_entry.setText(self.parameters['flats2_dir'])
+        self.search_half_acquisition_axis_entry.setText(self.parameters['search_half_acquisition_axis'])
         self.enable_ring_removal_checkbox.setChecked(bool(self.parameters['enable_ring_removal']))
-        self.enable_half_acquisition_checkbox.setChecked(bool(self.parameters['enable_half_acqusition_axis']))
-        self.search_rotational_axis_entry.setText(self.parameters['search_rotational_axis'])
         self.search_slice_entry.setText(self.parameters['search_slice'])
         self.dry_run_checkbox.setChecked(bool(self.parameters['dry_run']))
 
@@ -261,17 +243,7 @@ class AutoHorizontalStitchGUI(QGroupBox):
     def set_enable_ring_removal_checkbox(self):
         logging.debug("Enable ring removal Checkbox: " + str(self.enable_ring_removal_checkbox.isChecked()))
         self.parameters['enable_ring_removal'] = self.enable_ring_removal_checkbox.isChecked()
-    
-    def set_enable_half_acquisition_axis_checkbox(self):
-        logging.debug("Enable half-acqusition Checkbox: " + str(self.enable_half_acquisition_checkbox.isChecked()))
-        self.parameters['enable_half_acquisition_axis'] = self.enable_half_acquisition_checkbox.isChecked()
-        self.search_half_acquisition_axis_entry.setEnabled(self.parameters['enable_half_acquisition_axis'])
-        self.enable_ring_removal_checkbox.setEnabled(self.parameters['enable_half_acquisition_axis'])
 
-    def set_search_rotational_axis_entry(self):
-        logging.debug("Search Rotational Axis: " + str(self.search_rotational_axis_entry.text()))
-        self.parameters['search_rotational_axis'] = str(self.search_rotational_axis_entry.text())
-        
     def set_search_slice_entry(self):
         logging.debug("Search Slice: " + str(self.search_slice_entry.text()))
         self.parameters['search_slice'] = self.search_slice_entry.text()

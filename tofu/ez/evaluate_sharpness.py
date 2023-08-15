@@ -137,13 +137,42 @@ def evaluate_metrics(images, out_prefix, *args, **kwargs):
     passed to :func:`evaluate`. Except for *fwhm* in *kwargs* which is used to filter low
     frequencies from the results.
     """
-    sys.modules['__main__'].__spec__ = 0
+    
     fwhm = kwargs.pop("fwhm") if "fwhm" in kwargs else None
-    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
-    exec_func = partial(evaluate, *args, **kwargs)
-    results = pool.map(exec_func, images)
-    merged = {}
+    
+    #################
+    ## Old multiprocessing code
+    # sys.modules['__main__'].__spec__ = 0
+    # pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
+    # exec_func = partial(evaluate, *args, **kwargs)
+    # results = pool.map(exec_func, images)
+    # merged = {}
+    ############
+    
+    results = []
+    file_count = 0
+    file_total = len(images)
+    
+    for image_dir in images:
+        if image_dir.lower().endswith('.tif') or image_dir.lower().endswith('.tiff'):
+            from tifffile import TiffFile
+            with TiffFile(image_dir) as tif:
+                page_count = 0
+                page_total = len(tif.pages)
+                if(page_total > 1):
+                    for page in tif.pages:
+                        image = page.asarray(out='memmap')
+                        results.append(evaluate(image, *args, **kwargs))
+                        page_count = page_count + 1
+                        print("    page: ", page_count, "out of", page_total, end = '\r')
+                    print()
+                else:
+                    results.append(evaluate(image_dir, *args, **kwargs))
+        file_count = file_count + 1
+        print("Evaluating metric:    ", file_count , "out of", file_total, end='\r')
+    print()    
 
+    merged = {}
     for metric in results[0].keys():
         merged[metric] = np.array([result[metric] for result in results])
         if fwhm:

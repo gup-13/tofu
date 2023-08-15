@@ -42,7 +42,8 @@ def find_overlap(parameters, fdt_settings):
     ctdirs, lvl0 = findCTdirs(parameters['360overlap_input_dir'],
                               fdt_settings['tomo'])
     print(ctdirs)
-    
+
+    dirtomo = fdt_settings['tomo']
     dirdark = fdt_settings['darks']
     dirflats = fdt_settings['flats']
     dirflats2 = fdt_settings['flats2']
@@ -50,8 +51,9 @@ def find_overlap(parameters, fdt_settings):
         dirdark = fdt_settings['common_darks']
         dirflats = fdt_settings['common_flats']
         dirflats2 = fdt_settings['common_flats2']
-    
+        
     # concatenate images with various overlap and generate sinograms
+    overlaps = []
     for ctset in ctdirs:
         print("Working on ctset:" + str(ctset))
         index_dir = os.path.basename(os.path.normpath(ctset))
@@ -60,21 +62,20 @@ def find_overlap(parameters, fdt_settings):
             row_flat = np.mean(extract_row(
                 os.path.join(ctset, dirflats), parameters['360overlap_row']))
         except:
-            print(f"Problem loading flats in {ctset}")
+            print(f"Problem loading flats in {os.path.join(ctset, dirflats)}")
             continue
         try:
             row_dark = np.mean(extract_row(
                 os.path.join(ctset, dirdark), parameters['360overlap_row']))
         except:
-            print(f"Problem loading darks in {ctset}")
+            print(f"Problem loading darks in {os.path.join(ctset, dirdark)}")
             continue
         try:
             row_tomo = extract_row(
-                os.path.join(ctset, fdt_settings['tomo']),
-                                   parameters['360overlap_row'])
+                os.path.join(ctset, dirtomo), parameters['360overlap_row'])
         except:
             print(f"Problem loading projections from "
-                  f"{os.path.join(ctset, fdt_settings['tomo'])}")
+                  f"{os.path.join(ctset, dirtomo)}")
             continue
         row_flat2 = None
         tmpstr = os.path.join(ctset, dirflats2)
@@ -82,7 +83,7 @@ def find_overlap(parameters, fdt_settings):
             try:
                 row_flat2 = np.mean(extract_row(tmpstr, parameters['360overlap_row']))
             except:
-                print(f"Problem loading flats2 in {ctset}")
+                print(f"Problem loading flats2 in {tmpstr}")
 
         (num_proj, M) = row_tomo.shape
 
@@ -116,7 +117,6 @@ def find_overlap(parameters, fdt_settings):
                 cro = axis - parameters['360overlap_lower_limit']
             A = stitch_float32_output(
                 tomo_ffc[: num_proj//2, :], tomo_ffc[num_proj//2:, ::-1], axis, cro)
-            print(A.shape[1])
             tifffile.imwrite(os.path.join(
                 sin_tmp_dir, 'sin-axis-' + str(axis).zfill(4) + '.tif'), A.astype(np.float32))
 
@@ -149,6 +149,7 @@ def find_overlap(parameters, fdt_settings):
         print('Calculating overlap...')
         points, maximum = evaluate_images_simp(outname, "msag")
         overlap = parameters['360overlap_lower_limit'] + parameters['360overlap_increment'] * maximum
+        overlaps.append(overlap)
         print(f"Estimated overlap:", f"{overlap}")
 
         print("Finished processing: " + str(index_dir))
@@ -156,6 +157,6 @@ def find_overlap(parameters, fdt_settings):
 
     #shutil.rmtree(parameters['360overlap_temp_dir'])
     print("Finished processing: " + str(parameters['360overlap_input_dir']))
-    return overlap
+    return overlaps
     
 

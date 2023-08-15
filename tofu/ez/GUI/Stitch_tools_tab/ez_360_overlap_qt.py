@@ -87,10 +87,10 @@ class Overlap360Group(QGroupBox):
         layout = QGridLayout()
         layout.addWidget(self.input_dir_button, 0, 0, 1, 2)
         layout.addWidget(self.input_dir_entry, 1, 0, 1, 2)
-        layout.addWidget(self.temp_dir_button, 2, 0, 1, 2)
-        layout.addWidget(self.temp_dir_entry, 3, 0, 1, 2)
-        layout.addWidget(self.output_dir_button, 4, 0, 1, 2)
-        layout.addWidget(self.output_dir_entry, 5, 0, 1, 2)
+        layout.addWidget(self.output_dir_button, 2, 0, 1, 2)
+        layout.addWidget(self.output_dir_entry, 3, 0, 1, 2)
+        layout.addWidget(self.temp_dir_button, 4, 0, 1, 2)
+        layout.addWidget(self.temp_dir_entry, 5, 0, 1, 2)
         layout.addWidget(self.pixel_row_label, 6, 0)
         layout.addWidget(self.pixel_row_entry, 6, 1)
         layout.addWidget(self.min_label, 7, 0)
@@ -110,12 +110,12 @@ class Overlap360Group(QGroupBox):
         self.parameters = {'parameters_type': '360_overlap'}
         self.parameters['360overlap_input_dir'] = os.path.expanduser('~')  #EZVARS['360-olap-search']['indir']
         self.input_dir_entry.setText(self.parameters['360overlap_input_dir'])
-        self.parameters['360overlap_temp_dir'] = os.path.join(   #EZVARS['360-olap-search']['tmpdir']
-                        os.path.expanduser('~'), "tmp-360axis-search")
-        self.temp_dir_entry.setText(self.parameters['360overlap_temp_dir'])
         self.parameters['360overlap_output_dir'] = os.path.join(    #EZVARS['360-olap-search']['outdir']
                         os.path.expanduser('~'), "ezufo-360axis-search")
         self.output_dir_entry.setText(self.parameters['360overlap_output_dir'])
+        self.parameters['360overlap_temp_dir'] = os.path.join(   #EZVARS['360-olap-search']['tmpdir']
+                        os.path.expanduser('~'), "tmp-360axis-search")
+        self.temp_dir_entry.setText(self.parameters['360overlap_temp_dir'])
         self.parameters['360overlap_row'] = 200       #EZVARS['360-olap-search']['y']
         self.pixel_row_entry.setText(str(self.parameters['360overlap_row']))
         self.parameters['360overlap_lower_limit'] = 100   #EZVARS['360-olap-search']['column_first']
