@@ -142,7 +142,7 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.enable_ring_removal_checkbox.setChecked(False)
         self.parameters['enable_ring_removal'] = False
         self.search_slice_entry.setText("200")
-        self.parameters['search_slice'] = "200"
+        self.parameters['search_slice'] = int(200)
         self.dry_run_checkbox.setChecked(False)
         self.parameters['dry_run'] = False
 
@@ -160,7 +160,7 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.flats2_entry.setText(self.parameters['flats2_dir'])
         self.search_half_acquisition_axis_entry.setText(self.parameters['search_half_acquisition_axis'])
         self.enable_ring_removal_checkbox.setChecked(bool(self.parameters['enable_ring_removal']))
-        self.search_slice_entry.setText(self.parameters['search_slice'])
+        self.search_slice_entry.setText(str(self.parameters['search_slice']))
         self.dry_run_checkbox.setChecked(bool(self.parameters['dry_run']))
 
     def input_button_pressed(self):
@@ -246,7 +246,7 @@ class AutoHorizontalStitchGUI(QGroupBox):
 
     def set_search_slice_entry(self):
         logging.debug("Search Slice: " + str(self.search_slice_entry.text()))
-        self.parameters['search_slice'] = self.search_slice_entry.text()
+        self.parameters['search_slice'] = int(self.search_slice_entry.text())
 
     def save_params_button_clicked(self):
         logging.debug("Save params button clicked")
@@ -305,6 +305,17 @@ class AutoHorizontalStitchGUI(QGroupBox):
                 print("Deleted directory: " + self.parameters['output_dir'])
             except FileNotFoundError:
                 print("Directory does not exist: " + self.parameters['output_dir'])
+                
+        delete_dialog = QMessageBox.question(self, 'Quit', 'Are you sure you want to delete the temp directory?',
+                                             QMessageBox.Yes | QMessageBox.No)
+        if delete_dialog == QMessageBox.Yes:
+            try:
+                print("Deleting: " + self.parameters['temp_dir'] + " ...")
+                shutil.rmtree(self.parameters['temp_dir'])
+                print("Deleted directory: " + self.parameters['temp_dir'])
+            except FileNotFoundError:
+                print("Directory does not exist: " + self.parameters['temp_dir'])
+
 
     def stitch_button_pressed(self):
         logging.debug("Stitch Button Pressed")
