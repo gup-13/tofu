@@ -13,9 +13,6 @@ class AutoHorizontalStitchGUI(QGroupBox):
         super().__init__()
         self.setTitle('Auto Horizontal Stitch')
 
-        #logger = logging.getLogger()
-        #logger.setLevel(logging.DEBUG)
-
         self.parameters = {'parameters_type': 'auto_horizontal_stitch'}
         self.auto_horizontal_stitch_funcs = None
 

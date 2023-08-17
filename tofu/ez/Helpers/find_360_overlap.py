@@ -18,8 +18,6 @@ from tofu.util import get_filenames, get_image_shape
 from tofu.ez.ufo_cmd_gen import get_filter2d_sinos_cmd
 from tofu.ez.find_axis_cmd_gen import evaluate_images_simp
 
-
-
 def extract_row(dir_name, row):
     tsr = TiffSequenceReader(dir_name)
     tmp = tsr.read(0)

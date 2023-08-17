@@ -70,6 +70,8 @@ class AutoHorizontalStitchFunctions:
             # Assign axis to a ct directory
             self.ct_axis_dict[ctset[0]] = overlaps[i]
 
+        # Find the greatest axis value for use in determining overall cropping amount when stitching
+        self.find_greatest_axis_value()
         
         # Output the input parameters and axis values to the log file
         self.write_to_log_file()
@@ -84,7 +86,7 @@ class AutoHorizontalStitchFunctions:
         for i, (ctdir, ax) in enumerate(self.ct_axis_dict.items()):
             print("================================================================")
             print(" -> Working On: " + str(ctdir))
-            crop_pixels = 0
+            crop_pixels = self.greatest_axis_value - ax
             print(f"    horizontal acquisition axis position {ax}, margin to crop {crop_pixels} pixels")
             stitch_folder = "stitched"
             stack_folder = ctdir[len(self.lvl0):]
@@ -107,37 +109,13 @@ class AutoHorizontalStitchFunctions:
         except FileExistsError:
             print("--> Output Directory Exists - Delete Before Proceeding")
             return -1
-        
-    def get_filtered_filenames(self, path, exts=['.tif', '.edf']):
-        result = []
-
-        try:
-            for ext in exts:
-                result += [os.path.join(path, f) for f in os.listdir(path) if f.endswith(ext)]
-        except OSError:
-            return []
-
-        return sorted(result)
-
-    def compute_rotation_axis(self, first_projection, last_projection):
+    
+    def find_greatest_axis_value(self):
         """
-        Compute the tomographic rotation axis based on cross-correlation technique.
-        *first_projection* is the projection at 0 deg, *last_projection* is the projection
-        at 180 deg.
+        Looks through all axis values and determines the greatest value
         """
-        from scipy.signal import fftconvolve
-        width = first_projection.shape[1]
-        first_projection = first_projection - first_projection.mean()
-        last_projection = last_projection - last_projection.mean()
-
-        # The rotation by 180 deg flips the image horizontally, in order
-        # to do cross-correlation by convolution we must also flip it
-        # vertically, so the image is transposed and we can apply convolution
-        # which will act as cross-correlation
-        convolved = fftconvolve(first_projection, last_projection[::-1, :], mode='same')
-        center = np.unravel_index(convolved.argmax(), convolved.shape)[1]
-
-        return (width / 2.0 + center) / 2
+        axis_list = list(self.ct_axis_dict.values())
+        self.greatest_axis_value = max(axis_list)
 
     def write_to_log_file(self):
         '''

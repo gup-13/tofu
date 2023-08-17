@@ -8,6 +8,9 @@ import glob, os, tifffile
 import numpy as np
 import os               # create directories
 import shutil           # move files
+import logging          # debug logs
+from scipy.signal import detrend
+
 from tofu.ez.evaluate_sharpness import process as process_metrics
 from tofu.ez.util import enquote, make_inpaths
 from tofu.util import get_filenames, read_image, determine_shape
@@ -156,7 +159,7 @@ def evaluate_images_simp(
     # simplified version of original evaluate_images function
     # from Tomas's optimize_parameters script
     names = sorted(glob.glob(input_pattern))
-    res = process_metrics(
+    results = process_metrics(
         names,
         num_images_for_stats=num_images_for_stats,
         metric_names=(metric,),
@@ -164,4 +167,16 @@ def evaluate_images_simp(
         fwhm=fwhm,
         blur_fwhm=blur_fwhm,
     )[metric]
-    return res, np.argmax(res)
+    max_result = np.argmax(results)
+    
+    #TODO Get logger to work with debug mode
+    # LOG = logging.getLogger(__name__)
+    # LOG.propagate = False   # Prevent double printing logs
+    # LOG.debug("Original max sharpness value: %s\n%s", max_result, results)
+    print("Before detrending max sharpness slice:", max_result, "\n", results)
+    results = detrend(results)
+    max_result = np.argmax(results)
+    # LOG.debug("After detrending max sharpness value: %s\n%s", max_result, results)
+    print("After detrending max sharpness slice:", max_result, "\n", results)
+    
+    return results, max_result
