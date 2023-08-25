@@ -8,6 +8,7 @@ is located (much like the axis search function commonly used in reconstruction s
 """
 
 import os
+import logging
 import numpy as np
 import tifffile
 
@@ -17,6 +18,8 @@ from tofu.ez.Helpers.stitch_funcs import findCTdirs, stitch_float32_output
 from tofu.util import get_filenames, get_image_shape
 from tofu.ez.ufo_cmd_gen import get_filter2d_sinos_cmd
 from tofu.ez.find_axis_cmd_gen import evaluate_images_simp
+
+LOG = logging.getLogger(__name__) #TODO Address the duplicate messages
 
 def extract_row(dir_name, row):
     tsr = TiffSequenceReader(dir_name)
@@ -107,6 +110,7 @@ def find_overlap(parameters, fdt_settings):
         sin_tmp_dir = os.path.join(parameters['360overlap_temp_dir'], index_dir, 'sinos')
         print(sin_tmp_dir)
         os.makedirs(sin_tmp_dir)
+        
         for axis in range(parameters['360overlap_lower_limit'],
                           parameters['360overlap_upper_limit']+parameters['360overlap_increment'],
                           parameters['360overlap_increment']):
@@ -115,6 +119,15 @@ def find_overlap(parameters, fdt_settings):
                 cro = axis - parameters['360overlap_lower_limit']
             A = stitch_float32_output(
                 tomo_ffc[: num_proj//2, :], tomo_ffc[num_proj//2:, ::-1], axis, cro)
+            
+            h, w = A.shape
+            sino_crop = int((w - parameters['360overlap_patch_size'])/2)
+            if(sino_crop > num_proj):
+                sino_crop = num_proj
+            elif sino_crop < 0:
+                sino_crop = 0
+            A = A[:, sino_crop: -sino_crop] # crop down to desired patch size
+            
             tifffile.imwrite(os.path.join(
                 sin_tmp_dir, 'sin-axis-' + str(axis).zfill(4) + '.tif'), A.astype(np.float32))
 
@@ -146,6 +159,9 @@ def find_overlap(parameters, fdt_settings):
         
         print('Calculating overlap...')
         points, maximum = evaluate_images_simp(outname, "msag")
+        LOG.debug("Minimum STD index: %s", maximum)
+        LOG.debug("List of image STD:\n%s", points)
+        
         overlap = parameters['360overlap_lower_limit'] + parameters['360overlap_increment'] * maximum
         overlaps.append(overlap)
         print(f"Estimated overlap:", f"{overlap}")

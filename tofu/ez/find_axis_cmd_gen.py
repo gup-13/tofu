@@ -8,7 +8,6 @@ import glob, os, tifffile
 import numpy as np
 import os               # create directories
 import shutil           # move files
-import logging          # debug logs
 from scipy.signal import detrend
 
 from tofu.ez.evaluate_sharpness import process as process_metrics
@@ -49,6 +48,7 @@ def find_axis_std(ctset, tmpdir, ax_range, search_row, p_width, use_lamino, nvie
     cmd += gpu_optim()
     os.system(cmd)
     points, maximum = evaluate_images_simp(out_pattern + "*.tif", "msag")
+    
     return res[0] + res[2] * maximum
 
 def move_axis_images(stack_folder, tmp_axis_dir, output_dir, ax_range):
@@ -167,16 +167,7 @@ def evaluate_images_simp(
         fwhm=fwhm,
         blur_fwhm=blur_fwhm,
     )[metric]
-    max_result = np.argmax(results)
-    
-    #TODO Get logger to work with debug mode
-    # LOG = logging.getLogger(__name__)
-    # LOG.propagate = False   # Prevent double printing logs
-    # LOG.debug("Original max sharpness value: %s\n%s", max_result, results)
-    print("Before detrending max sharpness slice:", max_result, "\n", results)
     results = detrend(results)
     max_result = np.argmax(results)
-    # LOG.debug("After detrending max sharpness value: %s\n%s", max_result, results)
-    print("After detrending max sharpness slice:", max_result, "\n", results)
     
     return results, max_result

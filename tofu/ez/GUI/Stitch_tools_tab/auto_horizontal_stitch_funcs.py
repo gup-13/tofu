@@ -55,11 +55,11 @@ class AutoHorizontalStitchFunctions:
             '360overlap_lower_limit': range_min,
             '360overlap_upper_limit': range_max,
             '360overlap_increment': step,
+            '360overlap_patch_size': self.parameters['patch_size'],
             '360overlap_doRR': self.parameters['enable_ring_removal'],
             'parameters_type': '360_overlap'
         }
         
-        #TODO Figure out why this call isn't working.
         overlaps = find_overlap(overlap_parameters, self.fdt_settings)
         
         if(len(overlaps) != len(self.ct_dirs)):
@@ -83,11 +83,13 @@ class AutoHorizontalStitchFunctions:
             print("--> Finished Stitching")
             
     def stitch_images(self):
-        for i, (ctdir, ax) in enumerate(self.ct_axis_dict.items()):
+        for i, (ctdir, axis) in enumerate(self.ct_axis_dict.items()):
             print("================================================================")
             print(" -> Working On: " + str(ctdir))
-            crop_pixels = self.greatest_axis_value - ax
-            print(f"    horizontal acquisition axis position {ax}, margin to crop {crop_pixels} pixels")
+            crop_pixels = self.greatest_axis_value - axis
+            # TODO Address images flipping
+            
+            print(f"    horizontal acquisition axis position {axis}, margin to crop {crop_pixels} pixels")
             stitch_folder = "stitched"
             stack_folder = ctdir[len(self.lvl0):]
             if len(stack_folder) > 0 and (stack_folder[0] == '/' or stack_folder[0] == "\\"):
@@ -95,7 +97,7 @@ class AutoHorizontalStitchFunctions:
                 
             main_360_mp_depth1(ctdir,
                     os.path.join(self.parameters['output_dir'], stitch_folder, stack_folder),
-                    ax, crop_pixels)
+                    axis, crop_pixels)
 
     def write_yaml_params(self):
         try:

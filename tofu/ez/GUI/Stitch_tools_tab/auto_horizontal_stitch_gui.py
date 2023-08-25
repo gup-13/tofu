@@ -61,6 +61,11 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.search_slice_entry = QLineEdit()
         self.search_slice_entry.setValidator(get_int_validator())
         self.search_slice_entry.textChanged.connect(self.set_search_slice_entry)
+        
+        self.patch_size_label = QLabel("Image Patch Size")
+        self.patch_size_entry = QLineEdit()
+        self.patch_size_entry.setValidator(get_int_validator())
+        self.patch_size_entry.textChanged.connect(self.set_patch_size_entry)
 
         self.save_params_button = QPushButton("Save parameters")
         self.save_params_button.clicked.connect(self.save_params_button_clicked)
@@ -86,7 +91,7 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.show()
 
     def set_layout(self):
-        self.setMaximumSize(800, 400)
+        self.setMaximumSize(800, 450)
 
         layout = QGridLayout()
         layout.addWidget(self.input_button, 0, 0, 1, 1)
@@ -113,14 +118,17 @@ class AutoHorizontalStitchGUI(QGroupBox):
         layout.addWidget(self.search_slice_label, 4, 2)
         layout.addWidget(self.search_slice_entry, 4, 3)
         layout.addWidget(self.enable_ring_removal_checkbox, 4, 4)
+        
+        layout.addWidget(self.patch_size_label, 5, 0)
+        layout.addWidget(self.patch_size_entry, 5, 1)
 
-        layout.addWidget(self.save_params_button, 5, 0, 1, 2)
-        layout.addWidget(self.help_button, 5, 2, 1, 1)
-        layout.addWidget(self.import_params_button, 5, 3, 1, 2)
+        layout.addWidget(self.save_params_button, 6, 0, 1, 2)
+        layout.addWidget(self.help_button, 6, 2, 1, 1)
+        layout.addWidget(self.import_params_button, 6, 3, 1, 2)
 
-        layout.addWidget(self.stitch_button, 6, 0, 1, 2)
-        layout.addWidget(self.dry_run_checkbox, 6, 2, 1, 1)
-        layout.addWidget(self.delete_temp_button, 6, 3, 1, 2)
+        layout.addWidget(self.stitch_button, 7, 0, 1, 2)
+        layout.addWidget(self.dry_run_checkbox, 7, 2, 1, 1)
+        layout.addWidget(self.delete_temp_button, 7, 3, 1, 2)
         self.setLayout(layout)
 
     def init_values(self):
@@ -140,6 +148,8 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.parameters['enable_ring_removal'] = False
         self.search_slice_entry.setText("200")
         self.parameters['search_slice'] = int(200)
+        self.patch_size_entry.setText("512")
+        self.parameters['patch_size'] = int(512)
         self.dry_run_checkbox.setChecked(False)
         self.parameters['dry_run'] = False
 
@@ -158,6 +168,7 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.search_half_acquisition_axis_entry.setText(self.parameters['search_half_acquisition_axis'])
         self.enable_ring_removal_checkbox.setChecked(bool(self.parameters['enable_ring_removal']))
         self.search_slice_entry.setText(str(self.parameters['search_slice']))
+        self.patch_size_entry.setText(str(self.parameters['patch_size']))
         self.dry_run_checkbox.setChecked(bool(self.parameters['dry_run']))
 
     def input_button_pressed(self):
@@ -244,6 +255,10 @@ class AutoHorizontalStitchGUI(QGroupBox):
     def set_search_slice_entry(self):
         logging.debug("Search Slice: " + str(self.search_slice_entry.text()))
         self.parameters['search_slice'] = int(self.search_slice_entry.text())
+        
+    def set_patch_size_entry(self):
+        logging.debug("Image Patch Size: " + str(self.patch_size_entry.text()))
+        self.parameters['patch_size'] = int(self.patch_size_entry.text())
 
     def save_params_button_clicked(self):
         logging.debug("Save params button clicked")

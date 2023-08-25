@@ -16,6 +16,7 @@ import os
 from tofu.ez.Helpers.find_360_overlap import find_overlap
 import tofu.ez.params as params
 from tofu.ez.params import EZVARS
+from tofu.util import get_int_validator, get_tuple_validator
 
 #TODO Make all stitching tools compatible with the bigtiffs
 
@@ -48,21 +49,29 @@ class Overlap360Group(QGroupBox):
         self.output_dir_entry.editingFinished.connect(self.set_output_entry)
 
         self.pixel_row_label = QLabel("Row to be reconstructed")
-        self.pixel_row_label.setToolTip("TEST")
         self.pixel_row_entry = QLineEdit()
+        self.pixel_row_entry.setValidator(get_int_validator())
         self.pixel_row_entry.editingFinished.connect(self.set_pixel_row)
 
         self.min_label = QLabel("Lower limit of stitch/axis search range")
         self.min_entry = QLineEdit()
+        self.min_entry.setValidator(get_int_validator())
         self.min_entry.editingFinished.connect(self.set_lower_limit)
 
         self.max_label = QLabel("Upper limit of stitch/axis search range")
         self.max_entry = QLineEdit()
+        self.max_entry.setValidator(get_int_validator())
         self.max_entry.editingFinished.connect(self.set_upper_limit)
 
         self.step_label = QLabel("Value by which to increment through search range")
         self.step_entry = QLineEdit()
+        self.step_entry.setValidator(get_int_validator())
         self.step_entry.editingFinished.connect(self.set_increment)
+        
+        self.patch_size_label = QLabel("Image patch size")
+        self.patch_size_entry = QLineEdit()
+        self.patch_size_entry.setValidator(get_int_validator())
+        self.patch_size_entry.editingFinished.connect(self.set_patch_size)
 
         self.doRR = QCheckBox("Apply ring removal")
         #self.doRR.setEnabled(False)
@@ -99,11 +108,13 @@ class Overlap360Group(QGroupBox):
         layout.addWidget(self.max_entry, 8, 1)
         layout.addWidget(self.step_label, 9, 0)
         layout.addWidget(self.step_entry, 9, 1)
-        layout.addWidget(self.doRR, 10, 0)
-        layout.addWidget(self.help_button, 11, 0)
-        layout.addWidget(self.find_overlap_button, 11, 1)
-        layout.addWidget(self.import_parameters_button, 12, 0)
-        layout.addWidget(self.save_parameters_button, 12, 1)
+        layout.addWidget(self.patch_size_label, 10, 0)
+        layout.addWidget(self.patch_size_entry, 10, 1)
+        layout.addWidget(self.doRR, 11, 0)
+        layout.addWidget(self.help_button, 12, 0)
+        layout.addWidget(self.find_overlap_button, 12, 1)
+        layout.addWidget(self.import_parameters_button, 13, 0)
+        layout.addWidget(self.save_parameters_button, 13, 1)
         self.setLayout(layout)
 
     def init_values(self):
@@ -124,6 +135,8 @@ class Overlap360Group(QGroupBox):
         self.max_entry.setText(str(self.parameters['360overlap_upper_limit']))
         self.parameters['360overlap_increment'] = 1    #EZVARS['360-olap-search']['column_step']
         self.step_entry.setText(str(self.parameters['360overlap_increment']))
+        self.parameters['360overlap_patch_size'] = 512
+        self.patch_size_entry.setText(str(self.parameters['360overlap_patch_size']))
         self.parameters['360overlap_doRR'] = False  # replace with #EZVARS['360-olap-search']['remove-rings']
         self.doRR.setChecked(bool(self.parameters['360overlap_doRR']))
 
@@ -142,6 +155,7 @@ class Overlap360Group(QGroupBox):
         self.min_entry.setText(str(self.parameters['360overlap_lower_limit']))
         self.max_entry.setText(str(self.parameters['360overlap_upper_limit']))
         self.step_entry.setText(str(self.parameters['360overlap_increment']))
+        self.patch_size_entry.setText(str(self.parameters['360overlap_patch_size']))
         self.doRR.setChecked(bool(self.parameters['360overlap_doRR']))
 
     def input_button_pressed(self):
@@ -189,6 +203,10 @@ class Overlap360Group(QGroupBox):
     def set_increment(self):
         LOG.debug("Value of increment: " + str(self.step_entry.text()))
         self.parameters['360overlap_increment'] = int(self.step_entry.text())
+        
+    def set_patch_size(self):
+        LOG.debug("Image Patch Size: " + str(self.patch_size_entry.text()))
+        self.parameters['360overlap_patch_size'] = int(self.patch_size_entry.text())
 
     def set_RR_checkbox(self):
         LOG.debug("Apply RR in 360-search: " + str(self.doRR.isChecked()))
