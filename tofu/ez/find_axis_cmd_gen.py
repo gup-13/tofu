@@ -8,7 +8,6 @@ import glob, os, tifffile
 import numpy as np
 import os               # create directories
 import shutil           # move files
-from scipy.signal import detrend
 
 from tofu.ez.evaluate_sharpness import process as process_metrics
 from tofu.ez.util import enquote, make_inpaths
@@ -167,7 +166,4 @@ def evaluate_images_simp(
         fwhm=fwhm,
         blur_fwhm=blur_fwhm,
     )[metric]
-    results = detrend(results)
-    max_result = np.argmax(results)
-    
-    return results, max_result
+    return results, np.argmax(results)

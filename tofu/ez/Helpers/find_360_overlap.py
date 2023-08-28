@@ -18,6 +18,8 @@ from tofu.ez.Helpers.stitch_funcs import findCTdirs, stitch_float32_output
 from tofu.util import get_filenames, get_image_shape
 from tofu.ez.ufo_cmd_gen import get_filter2d_sinos_cmd
 from tofu.ez.find_axis_cmd_gen import evaluate_images_simp
+from scipy.signal import detrend
+from tofu.ez.evaluate_sharpness import evaluate_image_std_using_np
 
 LOG = logging.getLogger(__name__) #TODO Address the duplicate messages
 
@@ -122,9 +124,7 @@ def find_overlap(parameters, fdt_settings):
             
             h, w = A.shape
             sino_crop = int((w - parameters['360overlap_patch_size'])/2)
-            if(sino_crop > num_proj):
-                sino_crop = num_proj
-            elif sino_crop < 0:
+            if(parameters['360overlap_patch_size'] <= 0):
                 sino_crop = 0
             A = A[:, sino_crop: -sino_crop] # crop down to desired patch size
             
@@ -159,6 +159,18 @@ def find_overlap(parameters, fdt_settings):
         
         print('Calculating overlap...')
         points, maximum = evaluate_images_simp(outname, "msag")
+        results = detrend(points)
+        maximum = np.argmax(results)
+        
+        ##############################
+        # Minimize STD of an image using np.std(image)
+        # import glob
+        # names = sorted(glob.glob(outname))
+        # points = evaluate_image_std_using_np(names)
+        # results = detrend(points)
+        # maximum = np.argmax(results)
+        ##############################
+
         LOG.debug("Minimum STD index: %s", maximum)
         LOG.debug("List of image STD:\n%s", points)
         
