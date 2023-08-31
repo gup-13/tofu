@@ -60,7 +60,7 @@ class AutoHorizontalStitchFunctions:
             'parameters_type': '360_overlap'
         }
         
-        overlaps = find_overlap(overlap_parameters, self.fdt_settings)
+        overlaps, _ = find_overlap(overlap_parameters, self.fdt_settings)
         
         if(len(overlaps) != len(self.ct_dirs)):
             print("Error: Could not find overlaps in one of the ct directories")

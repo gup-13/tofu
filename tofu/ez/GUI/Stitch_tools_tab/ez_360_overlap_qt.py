@@ -135,7 +135,7 @@ class Overlap360Group(QGroupBox):
         self.max_entry.setText(str(self.parameters['360overlap_upper_limit']))
         self.parameters['360overlap_increment'] = 1    #EZVARS['360-olap-search']['column_step']
         self.step_entry.setText(str(self.parameters['360overlap_increment']))
-        self.parameters['360overlap_patch_size'] = 512
+        self.parameters['360overlap_patch_size'] = 0    #full size
         self.patch_size_entry.setText(str(self.parameters['360overlap_patch_size']))
         self.parameters['360overlap_doRR'] = False  # replace with #EZVARS['360-olap-search']['remove-rings']
         self.doRR.setChecked(bool(self.parameters['360overlap_doRR']))
@@ -258,7 +258,9 @@ class Overlap360Group(QGroupBox):
             'use_shared_flatsdarks': EZVARS['inout']['shared-flatsdarks']['value']
         }
             
-        find_overlap(self.parameters, fdt_settings)
+        overlaps, points_list = find_overlap(self.parameters, fdt_settings)
+        for i in range(0, len(overlaps)):
+            LOG.debug("For view index %d with overlap %d, the calculations are: %s", i, overlaps[i], points_list[i])
         if os.path.exists(self.parameters['360overlap_output_dir']):
             params_file_path = os.path.join(self.parameters['360overlap_output_dir'], '360_overlap_params.yaml')
             params.save_parameters(self.parameters, params_file_path)

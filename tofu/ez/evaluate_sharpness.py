@@ -1,6 +1,6 @@
 import argparse
 import glob
-import multiprocessing
+# import multiprocessing
 import os
 import time
 import sys
@@ -68,7 +68,9 @@ METRICS_1D = {
 }
 
 
-METRICS_2D = {"sag": sum_abs_gradient}
+METRICS_2D = {
+    "sag": sum_abs_gradient,
+    "std": np.std}
 
 for key in list(METRICS_1D):
     METRICS_1D["m" + key] = partial(inverted, METRICS_1D[key])
@@ -131,7 +133,7 @@ def evaluate(
     return results
 
 
-def evaluate_metrics(images, out_prefix, *args, **kwargs):
+def evaluate_metrics(image_paths, out_prefix, *args, **kwargs):
     """Evaluate many *images* which are either file paths or images. *out_prefix* is the metric
     results file prefix. Metric names and file extension are appended to it. *args* and *kwargs* are
     passed to :func:`evaluate`. Except for *fwhm* in *kwargs* which is used to filter low
@@ -151,23 +153,24 @@ def evaluate_metrics(images, out_prefix, *args, **kwargs):
     
     results = []
     file_count = 0
-    file_total = len(images)
+    file_total = len(image_paths)
     
-    for image_dir in images:
-        if image_dir.lower().endswith('.tif') or image_dir.lower().endswith('.tiff'):
+    for image_path in image_paths:
+        if image_path.lower().endswith('.tif') or image_path.lower().endswith('.tiff'):
             from tifffile import TiffFile
-            with TiffFile(image_dir) as tif:
+            with TiffFile(image_path) as tif:
                 page_count = 0
                 page_total = len(tif.pages)
-                if(page_total > 1):
-                    for page in tif.pages:
-                        image = page.asarray(out='memmap')
-                        results.append(evaluate(image, *args, **kwargs))
+                
+                for page in tif.pages:
+                    image = page.asarray(out='memmap')
+                    results.append(evaluate(image, *args, **kwargs))
+                    
+                    if(page_total > 1):
                         page_count = page_count + 1
                         print("    page: ", page_count, "out of", page_total, end = '\r')
-                    print()
-                else:
-                    results.append(evaluate(image_dir, *args, **kwargs))
+            print()
+                        
         file_count = file_count + 1
         print("Evaluating metric:    ", file_count , "out of", file_total, end='\r')
     print()    

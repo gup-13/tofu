@@ -19,7 +19,6 @@ from tofu.util import get_filenames, get_image_shape
 from tofu.ez.ufo_cmd_gen import get_filter2d_sinos_cmd
 from tofu.ez.find_axis_cmd_gen import evaluate_images_simp
 from scipy.signal import detrend
-from tofu.ez.evaluate_sharpness import evaluate_image_std_using_np
 
 LOG = logging.getLogger(__name__) #TODO Address the duplicate messages
 
@@ -57,6 +56,7 @@ def find_overlap(parameters, fdt_settings):
         
     # concatenate images with various overlap and generate sinograms
     overlaps = []
+    points_list = []
     for ctset in ctdirs:
         print("Working on ctset:" + str(ctset))
         index_dir = os.path.basename(os.path.normpath(ctset))
@@ -122,11 +122,11 @@ def find_overlap(parameters, fdt_settings):
             A = stitch_float32_output(
                 tomo_ffc[: num_proj//2, :], tomo_ffc[num_proj//2:, ::-1], axis, cro)
             
+            
             h, w = A.shape
-            sino_crop = int((w - parameters['360overlap_patch_size'])/2)
-            if(parameters['360overlap_patch_size'] <= 0):
-                sino_crop = 0
-            A = A[:, sino_crop: -sino_crop] # crop down to desired patch size
+            if (parameters['360overlap_patch_size'] > 0 and parameters['360overlap_patch_size'] < w // 2):
+                sino_crop = int((w - parameters['360overlap_patch_size']) // 2)
+                A = A[:, sino_crop: -sino_crop] # crop down to desired patch size
             
             tifffile.imwrite(os.path.join(
                 sin_tmp_dir, 'sin-axis-' + str(axis).zfill(4) + '.tif'), A.astype(np.float32))
@@ -158,22 +158,20 @@ def find_overlap(parameters, fdt_settings):
         os.system(cmd)
         
         print('Calculating overlap...')
-        points, maximum = evaluate_images_simp(outname, "msag")
+        
+        points = None
+        maximum = None
+        parameters['360overlap_evaluate_type'] = "std"  #TODO replace with combobox GUI
+        if(parameters['360overlap_evaluate_type'] == 'std'):
+            points, maximum = evaluate_images_simp(outname, "mstd")    
+        else:
+            points, maximum = evaluate_images_simp(outname, "msag")
         results = detrend(points)
         maximum = np.argmax(results)
         
-        ##############################
-        # Minimize STD of an image using np.std(image)
-        # import glob
-        # names = sorted(glob.glob(outname))
-        # points = evaluate_image_std_using_np(names)
-        # results = detrend(points)
-        # maximum = np.argmax(results)
-        ##############################
+        points_list.append(points)
+        print("Minimum index: %s", maximum)
 
-        LOG.debug("Minimum STD index: %s", maximum)
-        LOG.debug("List of image STD:\n%s", points)
-        
         overlap = parameters['360overlap_lower_limit'] + parameters['360overlap_increment'] * maximum
         overlaps.append(overlap)
         print(f"Estimated overlap:", f"{overlap}")
@@ -183,6 +181,6 @@ def find_overlap(parameters, fdt_settings):
 
     #shutil.rmtree(parameters['360overlap_temp_dir'])
     print("Finished processing: " + str(parameters['360overlap_input_dir']))
-    return overlaps
+    return overlaps, points_list
     
 
