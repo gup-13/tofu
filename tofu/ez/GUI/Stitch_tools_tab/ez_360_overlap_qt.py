@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import (
     QCheckBox,
     QLabel,
     QLineEdit,
+    QComboBox,
     QGridLayout,
     QFileDialog,
     QMessageBox,
@@ -26,6 +27,11 @@ LOG = logging.getLogger(__name__)
 class Overlap360Group(QGroupBox):
     get_fdt_names_on_stitch_pressed = pyqtSignal()
     get_RR_params_on_start_pressed = pyqtSignal()
+    map_sharpness_type_to_name = {
+        "msag": "Gradient",
+        "mstd": "Standard Deviation"
+    }
+    
     def __init__(self):
         super().__init__()
 
@@ -73,10 +79,18 @@ class Overlap360Group(QGroupBox):
         self.patch_size_entry.setValidator(get_int_validator())
         self.patch_size_entry.editingFinished.connect(self.set_patch_size)
 
-        self.doRR = QCheckBox("Apply ring removal")
-        #self.doRR.setEnabled(False)
-        self.doRR.stateChanged.connect(self.set_RR_checkbox)
-
+        self.RR_checkbox = QCheckBox("Apply ring removal")
+        self.RR_checkbox.stateChanged.connect(self.set_RR_checkbox)
+        
+        self.detrend_checkbox = QCheckBox("Apply detrend")
+        self.detrend_checkbox.stateChanged.connect(self.set_detrend_checkbox)
+        
+        self.sharpness_type_label = QLabel("Sharpness evaluation Type")
+        self.sharpness_type_entry = QComboBox()
+        for key in self.map_sharpness_type_to_name:
+            self.sharpness_type_entry.addItem(self.map_sharpness_type_to_name[key])
+        self.sharpness_type_entry.currentIndexChanged.connect(self.set_sharpness_type)
+        
         self.help_button = QPushButton("Help")
         self.help_button.clicked.connect(self.help_button_pressed)
 
@@ -110,11 +124,14 @@ class Overlap360Group(QGroupBox):
         layout.addWidget(self.step_entry, 9, 1)
         layout.addWidget(self.patch_size_label, 10, 0)
         layout.addWidget(self.patch_size_entry, 10, 1)
-        layout.addWidget(self.doRR, 11, 0)
-        layout.addWidget(self.help_button, 12, 0)
-        layout.addWidget(self.find_overlap_button, 12, 1)
-        layout.addWidget(self.import_parameters_button, 13, 0)
-        layout.addWidget(self.save_parameters_button, 13, 1)
+        layout.addWidget(self.sharpness_type_label, 11, 0)
+        layout.addWidget(self.sharpness_type_entry, 11, 1)
+        layout.addWidget(self.RR_checkbox, 12, 0)
+        layout.addWidget(self.detrend_checkbox, 12, 1)
+        layout.addWidget(self.help_button, 13, 0)
+        layout.addWidget(self.find_overlap_button, 13, 1)
+        layout.addWidget(self.import_parameters_button, 14, 0)
+        layout.addWidget(self.save_parameters_button, 14, 1)
         self.setLayout(layout)
 
     def init_values(self):
@@ -137,8 +154,12 @@ class Overlap360Group(QGroupBox):
         self.step_entry.setText(str(self.parameters['360overlap_increment']))
         self.parameters['360overlap_patch_size'] = 0    #full size
         self.patch_size_entry.setText(str(self.parameters['360overlap_patch_size']))
+        self.parameters['360overlap_sharpness_type'] = "msag"
+        self.update_sharpness_type_entry()
         self.parameters['360overlap_doRR'] = False  # replace with #EZVARS['360-olap-search']['remove-rings']
-        self.doRR.setChecked(bool(self.parameters['360overlap_doRR']))
+        self.RR_checkbox.setChecked(bool(self.parameters['360overlap_doRR']))
+        self.parameters['360overlap_detrend'] = False
+        self.RR_checkbox.setChecked(bool(self.parameters['360overlap_detrend']))
 
     def update_parameters(self, new_parameters):
         LOG.debug("Update parameters")
@@ -146,7 +167,9 @@ class Overlap360Group(QGroupBox):
             print("Error: Invalid parameter file type: " + str(new_parameters['parameters_type']))
             return -1
         # Update parameters dictionary (which is passed to auto_stitch_funcs)
-        self.parameters = new_parameters
+        for key in new_parameters:
+            self.parameters[key] = new_parameters[key]
+        
         # Update displayed parameters for GUI
         self.input_dir_entry.setText(self.parameters['360overlap_input_dir'])
         self.temp_dir_entry.setText(self.parameters['360overlap_temp_dir'])
@@ -156,7 +179,9 @@ class Overlap360Group(QGroupBox):
         self.max_entry.setText(str(self.parameters['360overlap_upper_limit']))
         self.step_entry.setText(str(self.parameters['360overlap_increment']))
         self.patch_size_entry.setText(str(self.parameters['360overlap_patch_size']))
-        self.doRR.setChecked(bool(self.parameters['360overlap_doRR']))
+        self.update_sharpness_type_entry()
+        self.RR_checkbox.setChecked(bool(self.parameters['360overlap_doRR']))
+        self.detrend_checkbox.setChecked(bool(self.parameters['360overlap_detrend']))
 
     def input_button_pressed(self):
         LOG.debug("Select input button pressed")
@@ -207,10 +232,32 @@ class Overlap360Group(QGroupBox):
     def set_patch_size(self):
         LOG.debug("Image Patch Size: " + str(self.patch_size_entry.text()))
         self.parameters['360overlap_patch_size'] = int(self.patch_size_entry.text())
-
+        
+    def set_sharpness_type(self):
+        LOG.debug("Sharpness evaluation type: " + str(self.sharpness_type_entry.currentText()))
+        if(self.sharpness_type_entry.currentText() == "Gradient"):
+            self.parameters['360overlap_sharpness_type'] = "msag"
+        elif(self.sharpness_type_entry.currentText() == "Standard Deviation"):
+            self.parameters['360overlap_sharpness_type'] = "mstd"
+        else:
+            self.parameters['360overlap_sharpness_type'] = "invalid"
+            
+    def update_sharpness_type_entry(self):
+        LOG.debug("Apply sharpness evaluation type: " + str(self.sharpness_type_entry.currentText()))
+        combobox_index = 0 
+        for key in self.map_sharpness_type_to_name:
+            if self.map_sharpness_type_to_name[key] == self.parameters['360overlap_sharpness_type']:
+                self.sharpness_type_entry.setCurrentIndex(combobox_index)
+            
+            combobox_index = combobox_index + 1
+        
     def set_RR_checkbox(self):
-        LOG.debug("Apply RR in 360-search: " + str(self.doRR.isChecked()))
-        self.parameters['360overlap_doRR'] = bool(self.doRR.isChecked())
+        LOG.debug("Apply RR in 360-search: " + str(self.RR_checkbox.isChecked()))
+        self.parameters['360overlap_doRR'] = bool(self.RR_checkbox.isChecked())
+    
+    def set_detrend_checkbox(self):
+        LOG.debug("Apply Detrend in 360-search: " + str(self.detrend_checkbox.isChecked()))
+        self.parameters['360overlap_detrend'] = bool(self.detrend_checkbox.isChecked())
 
     def overlap_button_pressed(self):
         LOG.debug("Find overlap button pressed")

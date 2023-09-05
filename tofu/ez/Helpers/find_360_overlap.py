@@ -159,15 +159,14 @@ def find_overlap(parameters, fdt_settings):
         
         print('Calculating overlap...')
         
-        points = None
-        maximum = None
-        parameters['360overlap_evaluate_type'] = "std"  #TODO replace with combobox GUI
-        if(parameters['360overlap_evaluate_type'] == 'std'):
-            points, maximum = evaluate_images_simp(outname, "mstd")    
-        else:
-            points, maximum = evaluate_images_simp(outname, "msag")
-        results = detrend(points)
-        maximum = np.argmax(results)
+        points = []
+        maximum = 0
+        if (parameters['360overlap_sharpness_type'] != "invalid"):
+            points, maximum = evaluate_images_simp(outname, parameters['360overlap_sharpness_type'])    
+            
+        if(parameters['360overlap_detrend']):
+            results = detrend(points)
+            maximum = np.argmax(results)
         
         points_list.append(points)
         print("Minimum index: %s", maximum)

@@ -57,6 +57,8 @@ class AutoHorizontalStitchFunctions:
             '360overlap_increment': step,
             '360overlap_patch_size': self.parameters['patch_size'],
             '360overlap_doRR': self.parameters['enable_ring_removal'],
+            '360overlap_detrend': True,             #TODO Add a GUI
+            '360overlap_sharpness_type': 'msag',     #TODO Add a GUI
             'parameters_type': '360_overlap'
         }
         
