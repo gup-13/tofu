@@ -156,7 +156,9 @@ class AutoHorizontalStitchGUI(QGroupBox):
     def update_parameters(self, new_parameters):
         logging.debug("Update parameters")
         # Update parameters dictionary (which is passed to auto_stitch_funcs)
-        self.parameters = new_parameters
+        for key in new_parameters:
+            self.parameters[key] = new_parameters[key]
+        
         # Update displayed parameters for GUI
         self.input_entry.setText(self.parameters['input_dir'])
         self.temp_entry.setText(self.parameters['temp_dir'])

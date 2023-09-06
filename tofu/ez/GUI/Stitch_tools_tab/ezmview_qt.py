@@ -139,7 +139,9 @@ class EZMViewGroup(QGroupBox):
             print("Error: Invalid parameter file type: " + str(new_parameters['parameters_type']))
             return -1
         # Update parameters dictionary (which is passed to auto_stitch_funcs)
-        self.parameters = new_parameters
+        for key in new_parameters:
+            self.parameters[key] = new_parameters[key]
+        
         # Update displayed parameters for GUI
         self.input_dir_entry.setText(str(self.parameters['ezmview_input_dir']))
         self.num_projections_entry.setText(str(self.parameters['ezmview_num_projections']))

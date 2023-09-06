@@ -223,7 +223,9 @@ class MultiStitch360Group(QGroupBox):
             print("Error: Invalid parameter file type: " + str(new_parameters['parameters_type']))
             return -1
         # Update parameters dictionary (which is passed to auto_stitch_funcs)
-        self.parameters = new_parameters
+        for key in new_parameters:
+            self.parameters[key] = new_parameters[key]
+            
         # Update displayed parameters for GUI
         self.input_dir_entry.setText(self.parameters['360multi_input_dir'])
         self.output_dir_entry.setText(self.parameters['360multi_output_dir'])
