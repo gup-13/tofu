@@ -4,9 +4,10 @@ import shutil
 import yaml
 
 from PyQt5.QtWidgets import QPushButton, QLabel, QLineEdit, QGridLayout, QFileDialog, QCheckBox,\
-                            QMessageBox, QGroupBox
+                            QMessageBox, QGroupBox, QComboBox
 from tofu.ez.GUI.Stitch_tools_tab.auto_horizontal_stitch_funcs import AutoHorizontalStitchFunctions
 from tofu.util import get_tuple_validator, get_int_validator
+from tofu.ez.Helpers.find_360_overlap import map_sharpness_type_to_name
 
 class AutoHorizontalStitchGUI(QGroupBox):
     def __init__(self):
@@ -54,8 +55,8 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.search_half_acquisition_axis_entry.setValidator(get_tuple_validator())
         self.search_half_acquisition_axis_entry.textChanged.connect(self.set_search_half_acquisition_axis_entry)
         
-        self.enable_ring_removal_checkbox = QCheckBox("Enable ring removal")
-        self.enable_ring_removal_checkbox.stateChanged.connect(self.set_enable_ring_removal_checkbox)
+        self.apply_ring_removal_checkbox = QCheckBox("Enable ring removal")
+        self.apply_ring_removal_checkbox.stateChanged.connect(self.set_apply_ring_removal_checkbox)
         
         self.search_slice_label = QLabel("Search in Slice Number")
         self.search_slice_entry = QLineEdit()
@@ -66,6 +67,15 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.patch_size_entry = QLineEdit()
         self.patch_size_entry.setValidator(get_int_validator())
         self.patch_size_entry.textChanged.connect(self.set_patch_size_entry)
+        
+        self.detrend_checkbox = QCheckBox("Apply detrend")
+        self.detrend_checkbox.stateChanged.connect(self.set_detrend_checkbox)
+        
+        self.sharpness_type_label = QLabel("Sharpness evaluation Type")
+        self.sharpness_type_entry = QComboBox()
+        for key in map_sharpness_type_to_name:
+            self.sharpness_type_entry.addItem(map_sharpness_type_to_name[key])
+        self.sharpness_type_entry.currentIndexChanged.connect(self.set_sharpness_type)
 
         self.save_params_button = QPushButton("Save parameters")
         self.save_params_button.clicked.connect(self.save_params_button_clicked)
@@ -117,10 +127,13 @@ class AutoHorizontalStitchGUI(QGroupBox):
         layout.addWidget(self.search_half_acquisition_axis_entry, 4, 1)
         layout.addWidget(self.search_slice_label, 4, 2)
         layout.addWidget(self.search_slice_entry, 4, 3)
-        layout.addWidget(self.enable_ring_removal_checkbox, 4, 4)
+        layout.addWidget(self.apply_ring_removal_checkbox, 4, 4)
         
         layout.addWidget(self.patch_size_label, 5, 0)
         layout.addWidget(self.patch_size_entry, 5, 1)
+        layout.addWidget(self.sharpness_type_label, 5, 2)
+        layout.addWidget(self.sharpness_type_entry, 5, 3)
+        layout.addWidget(self.detrend_checkbox, 5, 4)
 
         layout.addWidget(self.save_params_button, 6, 0, 1, 2)
         layout.addWidget(self.help_button, 6, 2, 1, 1)
@@ -144,14 +157,18 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.parameters['flats2_dir'] = ""
         self.search_half_acquisition_axis_entry.setText("100,200,1")
         self.parameters['search_half_acquisition_axis'] = "100,200,1"
-        self.enable_ring_removal_checkbox.setChecked(False)
-        self.parameters['enable_ring_removal'] = False
+        self.apply_ring_removal_checkbox.setChecked(False)
+        self.parameters['apply_ring_removal'] = False
         self.search_slice_entry.setText("200")
         self.parameters['search_slice'] = int(200)
         self.patch_size_entry.setText("512")
         self.parameters['patch_size'] = int(512)
         self.dry_run_checkbox.setChecked(False)
         self.parameters['dry_run'] = False
+        self.parameters['sharpness_type'] = "msag"
+        self.update_sharpness_type_entry()
+        self.parameters['detrend'] = False
+        self.detrend_checkbox.setChecked(bool(self.parameters['detrend']))
 
     def update_parameters(self, new_parameters):
         logging.debug("Update parameters")
@@ -168,7 +185,9 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.flats_entry.setText(self.parameters['flats_dir'])
         self.flats2_entry.setText(self.parameters['flats2_dir'])
         self.search_half_acquisition_axis_entry.setText(self.parameters['search_half_acquisition_axis'])
-        self.enable_ring_removal_checkbox.setChecked(bool(self.parameters['enable_ring_removal']))
+        self.apply_ring_removal_checkbox.setChecked(bool(self.parameters['apply_ring_removal']))
+        self.update_sharpness_type_entry()
+        self.detrend_checkbox.setChecked(bool(self.parameters['detrend']))
         self.search_slice_entry.setText(str(self.parameters['search_slice']))
         self.patch_size_entry.setText(str(self.parameters['patch_size']))
         self.dry_run_checkbox.setChecked(bool(self.parameters['dry_run']))
@@ -250,9 +269,30 @@ class AutoHorizontalStitchGUI(QGroupBox):
         logging.debug("Search Half-Acquisition Axis: " + str(self.search_half_acquisition_axis_entry.text()))
         self.parameters['search_half_acquisition_axis'] = str(self.search_half_acquisition_axis_entry.text())
         
-    def set_enable_ring_removal_checkbox(self):
-        logging.debug("Enable ring removal Checkbox: " + str(self.enable_ring_removal_checkbox.isChecked()))
-        self.parameters['enable_ring_removal'] = self.enable_ring_removal_checkbox.isChecked()
+    def set_apply_ring_removal_checkbox(self):
+        logging.debug("Apply ring removal: " + str(self.apply_ring_removal_checkbox.isChecked()))
+        self.parameters['apply_ring_removal'] = self.apply_ring_removal_checkbox.isChecked()
+        
+    def set_sharpness_type(self):
+        logging.debug("Sharpness evaluation type: " + str(self.sharpness_type_entry.currentText()))
+        if(self.sharpness_type_entry.currentText() == "Gradient"):
+            self.parameters['sharpness_type'] = "msag"
+        elif(self.sharpness_type_entry.currentText() == "Standard Deviation"):
+            self.parameters['sharpness_type'] = "mstd"
+        else:
+            self.parameters['sharpness_type'] = "invalid"
+        
+    def update_sharpness_type_entry(self):
+        logging.debug("Apply sharpness evaluation type: " + str(self.sharpness_type_entry.currentText()))
+        combobox_index = 0 
+        for key in map_sharpness_type_to_name:
+            if map_sharpness_type_to_name[key] == self.parameters['sharpness_type']:
+                self.sharpness_type_entry.setCurrentIndex(combobox_index)
+            combobox_index = combobox_index + 1
+            
+    def set_detrend_checkbox(self):
+        logging.debug("Apply detrend: " + str(self.detrend_checkbox.isChecked()))
+        self.parameters['detrend'] = bool(self.detrend_checkbox.isChecked())
 
     def set_search_slice_entry(self):
         logging.debug("Search Slice: " + str(self.search_slice_entry.text()))

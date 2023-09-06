@@ -14,7 +14,7 @@ import logging
 from shutil import rmtree
 import yaml
 import os
-from tofu.ez.Helpers.find_360_overlap import find_overlap
+from tofu.ez.Helpers.find_360_overlap import find_overlap, map_sharpness_type_to_name
 import tofu.ez.params as params
 from tofu.ez.params import EZVARS
 from tofu.util import get_int_validator, get_tuple_validator
@@ -27,10 +27,6 @@ LOG = logging.getLogger(__name__)
 class Overlap360Group(QGroupBox):
     get_fdt_names_on_stitch_pressed = pyqtSignal()
     get_RR_params_on_start_pressed = pyqtSignal()
-    map_sharpness_type_to_name = {
-        "msag": "Gradient",
-        "mstd": "Standard Deviation"
-    }
     
     def __init__(self):
         super().__init__()
@@ -87,8 +83,8 @@ class Overlap360Group(QGroupBox):
         
         self.sharpness_type_label = QLabel("Sharpness evaluation Type")
         self.sharpness_type_entry = QComboBox()
-        for key in self.map_sharpness_type_to_name:
-            self.sharpness_type_entry.addItem(self.map_sharpness_type_to_name[key])
+        for key in map_sharpness_type_to_name:
+            self.sharpness_type_entry.addItem(map_sharpness_type_to_name[key])
         self.sharpness_type_entry.currentIndexChanged.connect(self.set_sharpness_type)
         
         self.help_button = QPushButton("Help")
@@ -159,7 +155,7 @@ class Overlap360Group(QGroupBox):
         self.parameters['360overlap_doRR'] = False  # replace with #EZVARS['360-olap-search']['remove-rings']
         self.RR_checkbox.setChecked(bool(self.parameters['360overlap_doRR']))
         self.parameters['360overlap_detrend'] = False
-        self.RR_checkbox.setChecked(bool(self.parameters['360overlap_detrend']))
+        self.detrend_checkbox.setChecked(bool(self.parameters['360overlap_detrend']))
 
     def update_parameters(self, new_parameters):
         LOG.debug("Update parameters")
@@ -245,18 +241,18 @@ class Overlap360Group(QGroupBox):
     def update_sharpness_type_entry(self):
         LOG.debug("Apply sharpness evaluation type: " + str(self.sharpness_type_entry.currentText()))
         combobox_index = 0 
-        for key in self.map_sharpness_type_to_name:
-            if self.map_sharpness_type_to_name[key] == self.parameters['360overlap_sharpness_type']:
+        for key in map_sharpness_type_to_name:
+            if map_sharpness_type_to_name[key] == self.parameters['360overlap_sharpness_type']:
                 self.sharpness_type_entry.setCurrentIndex(combobox_index)
             
             combobox_index = combobox_index + 1
         
     def set_RR_checkbox(self):
-        LOG.debug("Apply RR in 360-search: " + str(self.RR_checkbox.isChecked()))
+        LOG.debug("Apply ring removal: " + str(self.RR_checkbox.isChecked()))
         self.parameters['360overlap_doRR'] = bool(self.RR_checkbox.isChecked())
     
     def set_detrend_checkbox(self):
-        LOG.debug("Apply Detrend in 360-search: " + str(self.detrend_checkbox.isChecked()))
+        LOG.debug("Apply detrend: " + str(self.detrend_checkbox.isChecked()))
         self.parameters['360overlap_detrend'] = bool(self.detrend_checkbox.isChecked())
 
     def overlap_button_pressed(self):

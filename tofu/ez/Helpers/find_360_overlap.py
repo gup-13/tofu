@@ -22,6 +22,11 @@ from scipy.signal import detrend
 
 LOG = logging.getLogger(__name__) #TODO Address the duplicate messages
 
+map_sharpness_type_to_name = {
+        "msag": "Gradient",
+        "mstd": "Standard Deviation"
+    }
+
 def extract_row(dir_name, row):
     tsr = TiffSequenceReader(dir_name)
     tmp = tsr.read(0)
@@ -169,7 +174,7 @@ def find_overlap(parameters, fdt_settings):
             maximum = np.argmax(results)
         
         points_list.append(points)
-        print("Minimum index: %s", maximum)
+        print("Minimum index: ", maximum)
 
         overlap = parameters['360overlap_lower_limit'] + parameters['360overlap_increment'] * maximum
         overlaps.append(overlap)
