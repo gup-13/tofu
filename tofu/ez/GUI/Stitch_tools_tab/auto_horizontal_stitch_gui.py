@@ -95,13 +95,21 @@ class AutoHorizontalStitchGUI(QGroupBox):
         self.dry_run_checkbox = QCheckBox("Dry Run")
         self.dry_run_checkbox.stateChanged.connect(self.set_dry_run_checkbox)
 
+        self.setCheckable(True)
         self.set_layout()
+        self.clicked.connect(self.update_size)
 
         self.init_values()
         self.show()
+    
+    def update_size(self):
+        if self.isChecked():
+            self.setMaximumSize(800, 450) # Expanded
+        else:
+            self.setMaximumSize(800, 20) # Collapsed
 
     def set_layout(self):
-        self.setMaximumSize(800, 450)
+        self.update_size()
 
         layout = QGridLayout()
         layout.addWidget(self.input_button, 0, 0, 1, 1)

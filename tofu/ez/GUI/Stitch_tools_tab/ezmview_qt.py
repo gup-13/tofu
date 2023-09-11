@@ -92,9 +92,19 @@ class EZMViewGroup(QGroupBox):
         self.import_parameters_button = QPushButton("Import Parameters from File")
         self.import_parameters_button.clicked.connect(self.import_parameters_button_pressed)
 
+        self.setCheckable(True)
         self.set_layout()
+        self.clicked.connect(self.update_size)
+    
+    def update_size(self):
+        if self.isChecked():
+            self.setMaximumSize(10000, 500) # Expanded
+        else:
+            self.setMaximumSize(10000, 20) # Collapsed
 
     def set_layout(self):
+        self.update_size()
+        
         layout = QGridLayout()
         layout.addWidget(self.input_dir_button, 0, 0, 1, 3)
         layout.addWidget(self.input_dir_entry, 1, 0, 1, 3)

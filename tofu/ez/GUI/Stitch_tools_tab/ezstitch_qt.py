@@ -147,7 +147,15 @@ class EZStitchGroup(QGroupBox):
         self.save_parameters_button = QPushButton("Save Parameters to File")
         self.save_parameters_button.clicked.connect(self.save_parameters_button_pressed)
 
+        self.setCheckable(True)
         self.set_layout()
+        self.clicked.connect(self.update_size)
+    
+    def update_size(self):
+        if self.isChecked():
+            self.setMaximumSize(10000, 700) # Expanded
+        else:
+            self.setMaximumSize(10000, 20) # Collapsed
 
     def set_layout(self):
         layout = QGridLayout()
