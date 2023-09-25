@@ -260,8 +260,10 @@ class MultiStitch360Group(QGroupBox):
     def input_button_pressed(self):
         LOG.debug("Input button pressed")
         dir_explore = QFileDialog(self)
-        self.input_dir_entry.setText(dir_explore.getExistingDirectory())
-        self.set_input_entry()
+        dir = dir_explore.getExistingDirectory()
+        if dir:
+            self.input_dir_entry.setText(dir)
+            self.set_input_entry()
 
     def set_input_entry(self):
         LOG.debug("Input directory: " + str(self.input_dir_entry.text()))
@@ -271,8 +273,10 @@ class MultiStitch360Group(QGroupBox):
     def output_button_pressed(self):
         LOG.debug("Output button pressed")
         dir_explore = QFileDialog(self)
-        self.output_dir_entry.setText(dir_explore.getExistingDirectory())
-        self.set_output_entry()
+        dir = dir_explore.getExistingDirectory()
+        if dir:
+            self.output_dir_entry.setText(dir)
+            self.set_output_entry()
 
     def set_output_entry(self):
         LOG.debug("Output directory: " + str(self.output_dir_entry.text()))

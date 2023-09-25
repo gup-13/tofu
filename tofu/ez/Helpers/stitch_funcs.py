@@ -332,7 +332,7 @@ def st_mp_idx(offst, ax, crop, in_fmt, out_fmt, idx):
 
 def st_mp_bigtiff_pages(offst, ax, crop, tfs, out_fmt, idx):
     first = tfs.read(idx)
-    second = tfs.read(idx+offst)
+    second = tfs.read(idx+offst)[:, ::-1]
     stitched = stitch(first, second, ax, crop)
     tifffile.imwrite(out_fmt.format(idx), stitched)
 

@@ -192,8 +192,10 @@ class Overlap360Group(QGroupBox):
     def input_button_pressed(self):
         LOG.debug("Select input button pressed")
         dir_explore = QFileDialog(self)
-        self.parameters['360overlap_input_dir'] = dir_explore.getExistingDirectory()
-        self.input_dir_entry.setText(self.parameters['360overlap_input_dir'])
+        dir = dir_explore.getExistingDirectory()
+        if dir:
+            self.parameters['360overlap_input_dir'] = dir
+            self.input_dir_entry.setText(self.parameters['360overlap_input_dir'])
 
     def set_input_entry(self):
         LOG.debug("Input: " + str(self.input_dir_entry.text()))
@@ -202,8 +204,10 @@ class Overlap360Group(QGroupBox):
     def temp_button_pressed(self):
         LOG.debug("Select temp button pressed")
         dir_explore = QFileDialog(self)
-        self.parameters['360overlap_temp_dir'] = dir_explore.getExistingDirectory()
-        self.temp_dir_entry.setText(self.parameters['360overlap_temp_dir'])
+        dir = dir_explore.getExistingDirectory()
+        if dir:
+            self.parameters['360overlap_temp_dir'] = dir
+            self.temp_dir_entry.setText(self.parameters['360overlap_temp_dir'])
 
     def set_temp_entry(self):
         LOG.debug("Temp: " + str(self.temp_dir_entry.text()))
@@ -212,8 +216,10 @@ class Overlap360Group(QGroupBox):
     def output_button_pressed(self):
         LOG.debug("Select output button pressed")
         dir_explore = QFileDialog(self)
-        self.parameters['360overlap_output_dir'] = dir_explore.getExistingDirectory()
-        self.output_dir_entry.setText(self.parameters['360overlap_output_dir'])
+        dir = dir_explore.getExistingDirectory()
+        if dir:
+            self.parameters['360overlap_output_dir'] = dir
+            self.output_dir_entry.setText(self.parameters['360overlap_output_dir'])
 
     def set_output_entry(self):
         LOG.debug("Output: " + str(self.output_dir_entry.text()))

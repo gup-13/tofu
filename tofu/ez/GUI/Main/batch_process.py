@@ -66,8 +66,9 @@ class BatchProcessGroup(QGroupBox):
         logging.debug("Input Button Pressed")
         dir_explore = QFileDialog(self)
         input_dir = dir_explore.getExistingDirectory()
-        self.input_dir_entry.setText(input_dir)
-        self.parameters['input_dir'] = input_dir
+        if input_dir:
+            self.input_dir_entry.setText(input_dir)
+            self.parameters['input_dir'] = input_dir
 
     def set_input_entry(self):
         logging.debug("Input Entry: " + str(self.input_dir_entry.text()))

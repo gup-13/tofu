@@ -204,8 +204,9 @@ class AutoHorizontalStitchGUI(QGroupBox):
         logging.debug("Input Button Pressed")
         dir_explore = QFileDialog(self)
         input_dir = dir_explore.getExistingDirectory()
-        self.input_entry.setText(input_dir)
-        self.parameters['input_dir'] = input_dir
+        if input_dir:
+            self.input_entry.setText(input_dir)
+            self.parameters['input_dir'] = input_dir
 
     def set_input_entry(self):
         logging.debug("Input Entry: " + str(self.input_entry.text()))
@@ -215,8 +216,9 @@ class AutoHorizontalStitchGUI(QGroupBox):
         logging.debug("Temp Button Pressed")
         dir_explore = QFileDialog(self)
         temp_dir = dir_explore.getExistingDirectory()
-        self.temp_entry.setText(temp_dir)
-        self.parameters['temp_dir'] = temp_dir
+        if temp_dir:
+            self.temp_entry.setText(temp_dir)
+            self.parameters['temp_dir'] = temp_dir
             
     def set_temp_entry(self):
         logging.debug("Temp Entry: " + str(self.temp_entry.text()))
@@ -226,8 +228,9 @@ class AutoHorizontalStitchGUI(QGroupBox):
         logging.debug("Output Button Pressed")
         dir_explore = QFileDialog(self)
         output_dir = dir_explore.getExistingDirectory()
-        self.output_entry.setText(output_dir)
-        self.parameters['output_dir'] = output_dir
+        if output_dir:
+            self.output_entry.setText(output_dir)
+            self.parameters['output_dir'] = output_dir
 
     def set_output_entry(self):
         logging.debug("Output Entry: " + str(self.output_entry.text()))
@@ -244,8 +247,9 @@ class AutoHorizontalStitchGUI(QGroupBox):
         logging.debug("Darks Button Pressed")
         dir_explore = QFileDialog(self)
         darks_dir = dir_explore.getExistingDirectory()
-        self.darks_entry.setText(darks_dir)
-        self.parameters['darks_dir'] = darks_dir
+        if darks_dir:
+            self.darks_entry.setText(darks_dir)
+            self.parameters['darks_dir'] = darks_dir
 
     def set_darks_entry(self):
         logging.debug("Darks Entry: " + str(self.darks_entry.text()))
@@ -255,8 +259,9 @@ class AutoHorizontalStitchGUI(QGroupBox):
         logging.debug("Flats Button Pressed")
         dir_explore = QFileDialog(self)
         flats_dir = dir_explore.getExistingDirectory()
-        self.flats_entry.setText(flats_dir)
-        self.parameters['flats_dir'] = flats_dir
+        if flats_dir:
+            self.flats_entry.setText(flats_dir)
+            self.parameters['flats_dir'] = flats_dir
 
     def set_flats_entry(self):
         logging.debug("Flats Entry: " + str(self.flats_entry.text()))
@@ -266,8 +271,9 @@ class AutoHorizontalStitchGUI(QGroupBox):
         logging.debug("Flats2 Button Pressed")
         dir_explore = QFileDialog(self)
         flats2_dir = dir_explore.getExistingDirectory()
-        self.flats2_entry.setText(flats2_dir)
-        self.parameters['flats2_dir'] = flats2_dir
+        if flats2_dir:
+            self.flats2_entry.setText(flats2_dir)
+            self.parameters['flats2_dir'] = flats2_dir
 
     def set_flats2_entry(self):
         logging.debug("Flats2 Entry: " + str(self.flats2_entry.text()))

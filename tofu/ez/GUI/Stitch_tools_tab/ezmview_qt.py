@@ -165,8 +165,9 @@ class EZMViewGroup(QGroupBox):
         LOG.debug("Select directory button pressed")
         dir_explore = QFileDialog(self)
         directory = dir_explore.getExistingDirectory()
-        self.input_dir_entry.setText(directory)
-        self.parameters['ezmview_input_dir'] = directory
+        if directory:
+            self.input_dir_entry.setText(directory)
+            self.parameters['ezmview_input_dir'] = directory    
 
     def set_directory_entry(self):
         LOG.debug("Directory entry: " + str(self.input_dir_entry.text()))
